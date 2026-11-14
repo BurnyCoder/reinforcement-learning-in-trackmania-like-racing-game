@@ -21,7 +21,7 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 | `specialist-campaign-05/seed1` | evaluated | 2-single-seed | 200,278,016 | 0.31 | v1 | b8ad75761b | test, campaign |
 | `specialist-finetune-campaign-01/seed1` | evaluated | 2-single-seed | 200,278,016 | 0.26 | v1 | 1a990052bb | test, campaign |
 | `specialist-finetune-campaign-02/seed1` | evaluated | 2-single-seed | 200,278,016 | 0.25 | v1 | 30ea48b44d | test, campaign |
-| `specialist-finetune-campaign-03/seed1` | planned | 2-single-seed | — | — | v1 | — | — |
+| `specialist-finetune-campaign-03/seed1` | trained | 2-single-seed | 200,278,016 | 0.27 | v1 | f534e2ecfd | — |
 | `specialist-finetune-campaign-04/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
 | `specialist-finetune-campaign-05/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
 | `specialist-campaign-01/seed2` | not started | 6-seed-sensitivity | — | — | v1 | — | — |
@@ -56,6 +56,7 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 | `specialist-campaign-05/seed1` | 200000000 | 16384 | 32 | 0.001 | 0.99 | 0.95 | 0.01 | 0.2 | [256, 256] | factored | 0.0 | 1 | 20 | False | 0.0 | 0.0 | 0.5 | 1500 | 0.0 | False | 1 |
 | `specialist-finetune-campaign-01/seed1` | 200000000 | 16384 | 32 | 0.0003 | 0.99 | 0.95 | 0.01 | 0.2 | [256, 256] | factored | 0.0 | 1 | 20 | False | 0.0 | 0.0 | 0.5 | 1500 | 0.0 | False | 1 |
 | `specialist-finetune-campaign-02/seed1` | 200000000 | 16384 | 32 | 0.0003 | 0.99 | 0.95 | 0.01 | 0.2 | [256, 256] | factored | 0.0 | 1 | 20 | False | 0.0 | 0.0 | 0.5 | 1500 | 0.0 | False | 1 |
+| `specialist-finetune-campaign-03/seed1` | 200000000 | 16384 | 32 | 0.0003 | 0.99 | 0.95 | 0.01 | 0.2 | [256, 256] | factored | 0.0 | 1 | 20 | False | 0.0 | 0.0 | 0.5 | 1500 | 0.0 | False | 1 |
 
 ## Results
 
@@ -141,6 +142,10 @@ Rows from other groups are shown for comparison. Track counts: Test (unseen gene
 ![Training curves of Fine-tuned specialist (campaign-02); one line per seed (seeds 1). Return and finish rate are over training episodes (standing and random starts); validation SWS is the evaluator's score on the validation tracks.](../figures/curves_specialist-finetune-campaign-02.png)
 
 *Training curves of Fine-tuned specialist (campaign-02); one line per seed (seeds 1). Return and finish rate are over training episodes (standing and random starts); validation SWS is the evaluator's score on the validation tracks.*
+
+![Training curves of Fine-tuned specialist (campaign-03); one line per seed (seeds 1). Return and finish rate are over training episodes (standing and random starts); validation SWS is the evaluator's score on the validation tracks.](../figures/curves_specialist-finetune-campaign-03.png)
+
+*Training curves of Fine-tuned specialist (campaign-03); one line per seed (seeds 1). Return and finish rate are over training episodes (standing and random starts); validation SWS is the evaluator's score on the validation tracks.*
 
 ## Learnings
 
