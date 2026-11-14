@@ -105,11 +105,11 @@ Runs follow the preregistered order: (1) the first two models (seed 0), which mu
 |---|---|---|---|---|---|---|
 | baselines | 0 | 0 | 0 | 0 | 15 | 15 |
 | 1-first-models | 0 | 0 | 0 | 0 | 2 | 2 |
-| 2-single-seed | 19 | 0 | 0 | 0 | 6 | 25 |
+| 2-single-seed | 18 | 1 | 0 | 0 | 6 | 25 |
 | 4-imitation-hybrids | 5 | 0 | 0 | 0 | 0 | 5 |
 | 5-hyperparameters | 4 | 0 | 0 | 0 | 0 | 4 |
 | 6-seed-sensitivity | 65 | 0 | 0 | 0 | 0 | 65 |
-| **all** | 93 | 0 | 0 | 0 | 23 | 116 |
+| **all** | 92 | 1 | 0 | 0 | 23 | 116 |
 
 # Results
 
