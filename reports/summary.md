@@ -39,10 +39,10 @@ Decision rule: refuted if the 95 % interval lies below the threshold; confirmed 
 
 | Configuration | Role | Seeds | Val SWS [95 % CI] | Val finished | Train SWS [95 % CI] | Train finished | Campaign SWS [95 % CI] | Campaign finished |
 |---|---|---|---|---|---|---|---|---|
-| Scripted driver | Reference | 1 | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
+| Scripted driver | Reference | 1 | 1.000 [1.000, 1.000] | 100.0 % | 0.999 [0.997, 1.000] | 99.9 % | 1.000 [1.000, 1.000] | 100.0 % |
 | Random actions | Control | 3 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
 | Untrained network | Control | 10 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
-| Generalist (PPO) [pilot, seed 0] | Main method | 1 | 1.242 [1.159, 1.319] | 82.7 % | 1.218 [1.181, 1.253] | 81.6 % | 1.596 [1.445, 1.799] | 100.0 % |
+| Generalist (PPO) [pilot, seed 0] | Main method | 1 | 1.242 [1.159, 1.319] | 82.7 % | 1.234 [1.198, 1.269] | 82.6 % | 1.596 [1.447, 1.799] | 100.0 % |
 | Specialist (campaign-01) [pilot, seed 0] | Specialist | 1 | 0.188 [0.123, 0.260] | 13.2 % | — | — | 0.306 [0.000, 0.918] | 20.0 % |
 
 Track counts: Validation: 197 tracks; Training sample: 1,000 tracks; Campaign (hand-made): 5 tracks.
@@ -55,11 +55,11 @@ Track counts: Validation: 197 tracks; Training sample: 1,000 tracks; Campaign (h
 
 | Configuration | Role | Algorithm | Architecture | Objective | Observation | Training data | Start states | Seeds with results | Status (runs) | SWS / finish rate per set |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Scripted driver | Reference | SCRIPTED | pure pursuit + curvature speed profile (no network) | none (not trained) | car state + look-ahead points (default) | none | - | 0 | 1 evaluated | Val 1.000 / 100 %; Train 1.000 / 100 %; Campaign 1.000 / 100 % |
+| Scripted driver | Reference | SCRIPTED | pure pursuit + curvature speed profile (no network) | none (not trained) | car state + look-ahead points (default) | none | - | 0 | 1 evaluated | Val 1.000 / 100 %; Train 0.999 / 100 %; Campaign 1.000 / 100 % |
 | Random actions | Control | RANDOM | none (uniform random actions) | none (not trained) | car state + look-ahead points (default) | none | - | 0, 1, 2 | 3 evaluated | Val 0.000 / 0 %; Train 0.000 / 0 %; Campaign 0.000 / 0 % |
 | Untrained network | Control | UNTRAINED | MLP 2x256 tanh (actor and critic), two 3-way heads | none (not trained) | car state + look-ahead points (default) | none | - | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 | 10 evaluated | Val 0.000 / 0 %; Train 0.000 / 0 %; Campaign 0.000 / 0 % |
 | Blind control | Control | PPO | MLP 2x256 tanh (actor and critic), two 3-way heads | centreline progress | car state + nearest centreline point only (blind) | generated training pool | standing + random centreline | — | 5 not started | — |
-| Generalist (PPO) [pilot, seed 0] | Main method | PPO | MLP 2x256 tanh (actor and critic), two 3-way heads | centreline progress | car state + 20 look-ahead points | 48,949 generated tracks | standing + random centreline (p=0.5) | 0 | 1 evaluated | Val 1.242 / 83 %; Train 1.218 / 82 %; Campaign 1.596 / 100 % |
+| Generalist (PPO) [pilot, seed 0] | Main method | PPO | MLP 2x256 tanh (actor and critic), two 3-way heads | centreline progress | car state + 20 look-ahead points | 48,949 generated tracks | standing + random centreline (p=0.5) | 0 | 1 evaluated | Val 1.242 / 83 %; Train 1.234 / 83 %; Campaign 1.596 / 100 % |
 | Generalist (PPO) | Main method | PPO | MLP 2x256 tanh (actor and critic), two 3-way heads | centreline progress | car state + look-ahead points (default) | generated training pool | standing + random centreline | — | 10 not started | — |
 | PQN | Baseline algorithm | PQN | Q-network 2x256, LayerNorm, one 9-way head | centreline progress | car state + look-ahead points (default) | generated training pool | standing + random centreline | — | 3 not started | — |
 | Trained on 1 track | Ablation | PPO | MLP 2x256 tanh (actor and critic), two 3-way heads | centreline progress | car state + look-ahead points (default) | 1 generated tracks | standing + random centreline | — | 5 not started | — |
@@ -138,7 +138,7 @@ _No exploit list yet (`results/exploits.json` does not exist)._
 
 | Configuration | Set | Overspeed flags | Coasting energy-gain flags | Seeds | Tracks |
 |---|---|---|---|---|---|
-| Generalist (PPO) [pilot, seed 0] | Train | 0 | 2 | 1 | 1000 |
+| Generalist (PPO) [pilot, seed 0] | Train | 0 | 3 | 1 | 1000 |
 
 ## Key terms
 

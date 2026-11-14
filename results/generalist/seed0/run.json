@@ -4,7 +4,7 @@
   "track": null,
   "status": "evaluated",
   "phase": "1-first-models",
-  "updated": "2026-11-14T10:24:57.129136+00:00",
+  "updated": "2026-11-14T11:10:05.928407+00:00",
   "algo": "ppo",
   "description": "Generalist PPO agent trained on the whole generated training pool",
   "git_commit": "1c8e972820d695e7e9f0e589e3e475dc9b7b7a16",
@@ -80,17 +80,17 @@
       "flags_energy_gain": 0
     },
     "train_sample": {
-      "sws": 1.2178244980794029,
-      "finish_rate": 0.816,
-      "speed_ratio_finished": 1.4924319829404447,
+      "sws": 1.2336422656173713,
+      "finish_rate": 0.826,
+      "speed_ratio_finished": 1.4935136387619505,
       "n_tracks": 1000,
       "flags_overspeed": 0,
-      "flags_energy_gain": 2
+      "flags_energy_gain": 3
     },
     "campaign": {
-      "sws": 1.5956878544607627,
+      "sws": 1.5959332142070077,
       "finish_rate": 1.0,
-      "speed_ratio_finished": 1.5956878544607627,
+      "speed_ratio_finished": 1.5959332142070077,
       "n_tracks": 5,
       "flags_overspeed": 0,
       "flags_energy_gain": 0

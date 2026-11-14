@@ -35,7 +35,7 @@ _No run of this group has logged its configuration yet (the experiment files are
 
 | Configuration | Role | Seeds | Val SWS [95 % CI] | Val finished | Train SWS [95 % CI] | Train finished | Campaign SWS [95 % CI] | Campaign finished |
 |---|---|---|---|---|---|---|---|---|
-| Scripted driver | Reference | 1 | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
+| Scripted driver | Reference | 1 | 1.000 [1.000, 1.000] | 100.0 % | 0.999 [0.997, 1.000] | 99.9 % | 1.000 [1.000, 1.000] | 100.0 % |
 | Random actions | Control | 3 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
 | Untrained network | Control | 10 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
 
@@ -69,7 +69,7 @@ _Not yet available: the runs behind this table have no results yet._
 
 | Configuration | Set | Overspeed flags | Coasting energy-gain flags | Seeds | Tracks |
 |---|---|---|---|---|---|
-| Generalist (PPO) [pilot, seed 0] | Train | 0 | 2 | 1 | 1000 |
+| Generalist (PPO) [pilot, seed 0] | Train | 0 | 3 | 1 | 1000 |
 
 ## Learnings
 

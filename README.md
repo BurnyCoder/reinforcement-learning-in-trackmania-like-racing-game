@@ -43,10 +43,10 @@ _Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-14;
 
 | Configuration | Role | Seeds | Campaign SWS [95 % CI] | Campaign finished | Val SWS [95 % CI] | Val finished | Train SWS [95 % CI] | Train finished |
 |---|---|---|---|---|---|---|---|---|
-| Scripted driver | Reference | 1 | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
+| Scripted driver | Reference | 1 | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % | 0.999 [0.997, 1.000] | 99.9 % |
 | Random actions | Control | 3 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
 | Untrained network | Control | 10 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
-| Generalist (PPO) [pilot, seed 0] | Main method | 1 | 1.596 [1.445, 1.799] | 100.0 % | 1.242 [1.159, 1.319] | 82.7 % | 1.218 [1.181, 1.253] | 81.6 % |
+| Generalist (PPO) [pilot, seed 0] | Main method | 1 | 1.596 [1.447, 1.799] | 100.0 % | 1.242 [1.159, 1.319] | 82.7 % | 1.234 [1.198, 1.269] | 82.6 % |
 | Specialist (campaign-01) [pilot, seed 0] | Specialist | 1 | 0.306 [0.000, 0.918] | 20.0 % | 0.188 [0.123, 0.260] | 13.2 % | — | — |
 
 **Preregistered hypotheses:**
