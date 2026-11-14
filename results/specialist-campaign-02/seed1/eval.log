@@ -1,0 +1,3 @@
+2026-11-14 18:58:43.204 INFO racingmania.runs: specialist-campaign-02/seed1 on campaign: {'sws': 0.3124356775300171, 'finish_rate': 0.2, 'speed_ratio_finished': 1.5621783876500857, 'n_tracks': 5, 'flags_overspeed': 0, 'flags_energy_gain': 0}
+2026-11-14 18:58:43.698 INFO racingmania.eval.evaluator: protected set 'test' read by specialist-campaign-02/seed1 (971 tracks); logged
+2026-11-14 18:59:29.577 INFO racingmania.runs: specialist-campaign-02/seed1 on test: {'sws': 0.31171328462766823, 'finish_rate': 0.21009268795056643, 'speed_ratio_finished': 1.4836941145758131, 'n_tracks': 971, 'flags_overspeed': 0, 'flags_energy_gain': 3}
