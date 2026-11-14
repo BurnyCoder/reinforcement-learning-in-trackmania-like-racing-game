@@ -16,7 +16,7 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 |---|---|---|---|---|---|---|---|
 | `specialist-campaign-01/seed1` | evaluated | 2-single-seed | 200,278,016 | 0.25 | v1 | 11c90044c8 | test, campaign |
 | `specialist-campaign-02/seed1` | evaluated | 2-single-seed | 200,278,016 | 0.36 | v1 | 7d9d62a239 | test, campaign |
-| `specialist-campaign-03/seed1` | trained | 2-single-seed | 200,278,016 | 0.35 | v1 | 8b86d3895e | — |
+| `specialist-campaign-03/seed1` | evaluated | 2-single-seed | 200,278,016 | 0.35 | v1 | 8b86d3895e | test, campaign |
 | `specialist-campaign-04/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
 | `specialist-campaign-05/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
 | `specialist-finetune-campaign-01/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
@@ -63,6 +63,7 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 | Generalist (PPO) | Main method | 1 | 1.214 [1.177, 1.250] | 81.5 % | 1.236 [1.153, 1.315] | 82.7 % | 1.250 [1.214, 1.283] | 83.9 % | 1.250 [1.214, 1.283] | 83.9 % | 0.875 [0.769, 0.982] | 57.8 % | 1.590 [1.451, 1.783] | 100.0 % | 1.231 [1.147, 1.311] | 82.0 % |
 | Specialist (campaign-01) | Specialist | 1 | 0.286 [0.250, 0.323] | 19.8 % | — | — | — | — | — | — | — | — | 0.577 [0.000, 1.188] | 40.0 % | — | — |
 | Specialist (campaign-02) | Specialist | 1 | 0.312 [0.274, 0.351] | 21.0 % | — | — | — | — | — | — | — | — | 0.312 [0.000, 0.937] | 20.0 % | — | — |
+| Specialist (campaign-03) | Specialist | 1 | 0.329 [0.291, 0.367] | 22.3 % | — | — | — | — | — | — | — | — | 0.290 [0.000, 0.870] | 20.0 % | — | — |
 
 Rows from other groups are shown for comparison. Track counts: Test (unseen generated): 971 tracks; Validation: 197 tracks; Training sample: 1,000 tracks; Own training tracks: 1,000 tracks; Out-of-range test: 187 tracks; Campaign (hand-made): 5 tracks; Unfiltered test: 200 tracks.
 
@@ -85,6 +86,7 @@ Rows from other groups are shown for comparison. Track counts: Test (unseen gene
 | campaign-03 | 48.50 | Scripted driver | reference | 1/1 | 48.52 | s0: 48.52 |
 | campaign-03 | 48.50 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 35.15 | s0: 35.15 |
 | campaign-03 | 48.50 | Generalist (PPO) | zero-shot | 1/1 | 34.56 | s1: 34.56 |
+| campaign-03 | 48.50 | Specialist (campaign-03) | own track | 1/1 | 33.46 | s1: 33.46 |
 | campaign-04 | 42.52 | CEM planner | reference | 1/1 | 22.38 | s0: 22.38 |
 | campaign-04 | 42.52 | Scripted driver | reference | 1/1 | 42.52 | s0: 42.52 |
 | campaign-04 | 42.52 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 21.27 | s0: 21.27 |

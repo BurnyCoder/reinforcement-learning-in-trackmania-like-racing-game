@@ -1,4 +1,4 @@
-_Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-14; 22 of 116 planned runs evaluated. Full tables: [`reports/summary.md`](reports/summary.md)._
+_Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-14; 23 of 116 planned runs evaluated. Full tables: [`reports/summary.md`](reports/summary.md)._
 
 - The Generalist (PPO) (1 seed) finished 81.5 % of the 971 unseen test tracks (95 % CI 79.0 % to 83.8 %), with a success-weighted speed (SWS) of 1.214 [1.177, 1.250]; an SWS of 1.0 would mean finishing every track as fast as the scripted driver.
 - On the tracks it finished, it needed 0.67 times the scripted driver's time (32.7 % less time on average).
@@ -6,6 +6,7 @@ _Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-14;
 - The preregistered hypotheses H1-H3 are not tested yet: they need test results from 10 generalist seeds and 5 seeds each of the blind control and the single-track ablation (1 generalist seeds so far).
 - On campaign track campaign-01 the generalist (zero-shot) was 2.8 % slower than the specialist trained on that track.
 - On campaign track campaign-02 the generalist (zero-shot) was 5.5 % slower than the specialist trained on that track.
+- On campaign track campaign-03 the generalist (zero-shot) was 3.3 % slower than the specialist trained on that track.
 
 **Main evaluation table** (SWS = success-weighted speed, 1.0 = as fast as the scripted driver on every track; 95 % two-level bootstrap intervals over seeds and tracks):
 
@@ -22,6 +23,7 @@ _Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-14;
 | Specialist (campaign-01) [pilot, seed 0] | Specialist | 1 | — | — | — | — | 0.306 [0.000, 0.918] | 20.0 % | 0.188 [0.123, 0.260] | 13.2 % | — | — |
 | Specialist (campaign-01) | Specialist | 1 | 0.286 [0.250, 0.323] | 19.8 % | — | — | 0.577 [0.000, 1.188] | 40.0 % | — | — | — | — |
 | Specialist (campaign-02) | Specialist | 1 | 0.312 [0.274, 0.351] | 21.0 % | — | — | 0.312 [0.000, 0.937] | 20.0 % | — | — | — | — |
+| Specialist (campaign-03) | Specialist | 1 | 0.329 [0.291, 0.367] | 22.3 % | — | — | 0.290 [0.000, 0.870] | 20.0 % | — | — | — | — |
 
 **Preregistered hypotheses:**
 

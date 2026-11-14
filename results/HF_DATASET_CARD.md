@@ -22,7 +22,7 @@ tags:
 
 Every result file of the RacingMania project: per-run `run.json` (status, configuration, hardware, physics version), per-track evaluation CSVs (`eval_<set>.csv`: track, finished, ticks, time, reference ticks, score, end reason, progress, maximum speed, exploit flags), training and validation curves, track-set summaries, the test-access log, and the generated reports and paper. Column definitions: `docs/formats.md` in the repository.
 
-Snapshot of 2026-11-14: 23 registered runs (22 evaluated), 51,264 per-track evaluation rows.
+Snapshot of 2026-11-14: 23 registered runs (23 evaluated), 52,240 per-track evaluation rows.
 
 ## Headline (Test (unseen generated))
 
@@ -37,6 +37,7 @@ Snapshot of 2026-11-14: 23 registered runs (22 evaluated), 51,264 per-track eval
 | PQN | 1 | 1.054 [1.020, 1.086] | 79.8 % |
 | Specialist (campaign-01) | 1 | 0.286 [0.250, 0.323] | 19.8 % |
 | Specialist (campaign-02) | 1 | 0.312 [0.274, 0.351] | 21.0 % |
+| Specialist (campaign-03) | 1 | 0.329 [0.291, 0.367] | 22.3 % |
 
 ## Layout
 
