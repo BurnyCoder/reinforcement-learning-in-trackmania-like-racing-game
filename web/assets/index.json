@@ -184,6 +184,14 @@
       "stride": 3,
       "description": "Specialist fine-tuned from the seed-1 generalist",
       "run": "specialist-finetune-campaign-05/seed1"
+    },
+    {
+      "name": "size-1-seed1",
+      "file": "assets/models/size-1-seed1.onnx",
+      "K": 20,
+      "stride": 3,
+      "description": "PPO trained on only 1 generated tracks",
+      "run": "size-1/seed1"
     }
   ],
   "ghosts": {
@@ -193,6 +201,7 @@
       "assets/ghosts/campaign-01/generalist-seed1.json",
       "assets/ghosts/campaign-01/pqn-seed1.json",
       "assets/ghosts/campaign-01/random-seed0.json",
+      "assets/ghosts/campaign-01/size-1-seed1.json",
       "assets/ghosts/campaign-01/specialist-campaign-01-seed0.json",
       "assets/ghosts/campaign-01/specialist-campaign-01-seed1.json",
       "assets/ghosts/campaign-01/specialist-campaign-05-seed1.json",
@@ -221,6 +230,7 @@
       "assets/ghosts/campaign-03/generalist-seed1.json",
       "assets/ghosts/campaign-03/pqn-seed1.json",
       "assets/ghosts/campaign-03/random-seed0.json",
+      "assets/ghosts/campaign-03/size-1-seed1.json",
       "assets/ghosts/campaign-03/specialist-campaign-01-seed0.json",
       "assets/ghosts/campaign-03/specialist-campaign-01-seed1.json",
       "assets/ghosts/campaign-03/specialist-campaign-03-seed1.json",
