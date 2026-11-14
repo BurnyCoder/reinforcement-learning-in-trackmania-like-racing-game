@@ -71,3 +71,4 @@
 {"time": "2026-11-14T18:48:18.725548+00:00", "split": "test", "policy": "specialist-campaign-04/seed1", "tracks": 971}
 {"time": "2026-11-14T19:12:49.174411+00:00", "split": "test", "policy": "specialist-campaign-05/seed1", "tracks": 971}
 {"time": "2026-11-14T19:35:03.388677+00:00", "split": "test", "policy": "specialist-finetune-campaign-01/seed1", "tracks": 971}
+{"time": "2026-11-14T19:56:23.574773+00:00", "split": "test", "policy": "specialist-finetune-campaign-02/seed1", "tracks": 971}
