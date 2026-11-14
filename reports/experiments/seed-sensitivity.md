@@ -14,9 +14,14 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 
 ### Spread over seeds (test set)
 
-_Not yet available: no configuration has test results from two or more seeds._
+| Configuration | Seeds | Mean SWS | Min | Max | SD | Variance: seeds | Variance: tracks | Variance: seed x track | Tracks |
+|---|---|---|---|---|---|---|---|---|---|
+| Random actions | 3 | 0.000 | 0.000 | 0.000 | 0.000 | — | — | — | 971 |
+| Untrained network | 10 | 0.000 | 0.000 | 0.000 | 0.000 | — | — | — | 971 |
 
-_Figure not yet available: its runs have no results yet._
+![Seed sensitivity: test SWS of every seed (dots) and the mean with its 95 % two-level bootstrap interval, for every configuration with at least two seeds.](../figures/seed_spread.png)
+
+*Seed sensitivity: test SWS of every seed (dots) and the mean with its 95 % two-level bootstrap interval, for every configuration with at least two seeds.*
 
 ### Do single-seed comparisons hold?
 

@@ -4,27 +4,27 @@
   "status": "evaluated",
   "algo": "scripted",
   "eval_summary": {
-    "campaign": {
-      "sws": 1.0001266534197364,
-      "finish_rate": 1.0,
-      "speed_ratio_finished": 1.0001266534197364,
-      "n_tracks": 5,
+    "test": {
+      "sws": 0.9979117288158776,
+      "finish_rate": 0.9979402677651905,
+      "speed_ratio_finished": 0.9999714021467669,
+      "n_tracks": 971,
       "flags_overspeed": 0,
       "flags_energy_gain": 0
     },
-    "val": {
-      "sws": 1.0,
+    "oor": {
+      "sws": 0.9999287324823272,
       "finish_rate": 1.0,
-      "speed_ratio_finished": 1.0,
-      "n_tracks": 197,
+      "speed_ratio_finished": 0.9999287324823272,
+      "n_tracks": 187,
       "flags_overspeed": 0,
       "flags_energy_gain": 0
     },
-    "train_sample": {
-      "sws": 0.9989415270625379,
-      "finish_rate": 0.999,
-      "speed_ratio_finished": 0.9999414685310689,
-      "n_tracks": 1000,
+    "test_unfiltered": {
+      "sws": 0.9999985157973249,
+      "finish_rate": 1.0,
+      "speed_ratio_finished": 0.9999985157973249,
+      "n_tracks": 200,
       "flags_overspeed": 0,
       "flags_energy_gain": 0
     }
@@ -35,5 +35,5 @@
     "torch": "2.15.0+cu132",
     "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU"
   },
-  "updated": "2026-11-14T10:45:32.573484+00:00"
+  "updated": "2026-11-14T11:33:15.133751+00:00"
 }

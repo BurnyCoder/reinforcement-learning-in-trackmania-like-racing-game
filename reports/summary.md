@@ -20,9 +20,9 @@ Statuses: **not started** = in the run matrix, not yet registered; **planned** =
 
 ## Headline results in plain words
 
-- The Generalist (PPO) [pilot, seed 0] (1 seed) finished 82.7 % of the 197 validation tracks (the development set used for decisions, so these numbers are preliminary; test tracks are read only after the recipe is frozen) (95 % CI 77.2 % to 87.8 %), with a success-weighted speed (SWS) of 1.242 [1.159, 1.319]; an SWS of 1.0 would mean finishing every track as fast as the scripted driver.
-- On the tracks it finished, it needed 0.67 times the scripted driver's time (33.2 % faster on average).
-- Its finish rate was 82.7 percentage points more than the untrained network (0.0 %, 10 seeds); 82.7 percentage points more than the random actions (0.0 %, 3 seeds).
+- The Generalist (PPO) [pilot, seed 0] (1 seed) finished 80.2 % of the 971 unseen test tracks (95 % CI 77.7 % to 82.7 %), with a success-weighted speed (SWS) of 1.199 [1.160, 1.237]; an SWS of 1.0 would mean finishing every track as fast as the scripted driver.
+- On the tracks it finished, it needed 0.67 times the scripted driver's time (32.9 % less time on average).
+- Its finish rate was 80.2 percentage points more than the untrained network (0.0 %, 10 seeds); 80.2 percentage points more than the random actions (0.0 %, 3 seeds).
 - The preregistered hypotheses H1-H3 are not tested yet: they need test results from 10 generalist seeds and 5 seeds each of the blind control and the single-track ablation (0 generalist seeds so far).
 
 ## Hypotheses (preregistered)
@@ -37,29 +37,29 @@ Decision rule: refuted if the 95 % interval lies below the threshold; confirmed 
 
 ## Main evaluation table
 
-| Configuration | Role | Seeds | Val SWS [95 % CI] | Val finished | Train SWS [95 % CI] | Train finished | Campaign SWS [95 % CI] | Campaign finished |
-|---|---|---|---|---|---|---|---|---|
-| Scripted driver | Reference | 1 | 1.000 [1.000, 1.000] | 100.0 % | 0.999 [0.997, 1.000] | 99.9 % | 1.000 [1.000, 1.000] | 100.0 % |
-| Random actions | Control | 3 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
-| Untrained network | Control | 10 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
-| Generalist (PPO) [pilot, seed 0] | Main method | 1 | 1.242 [1.159, 1.319] | 82.7 % | 1.234 [1.198, 1.269] | 82.6 % | 1.596 [1.447, 1.799] | 100.0 % |
-| Specialist (campaign-01) [pilot, seed 0] | Specialist | 1 | 0.188 [0.123, 0.260] | 13.2 % | — | — | 0.306 [0.000, 0.918] | 20.0 % |
+| Configuration | Role | Seeds | Test SWS [95 % CI] | Test finished | Val SWS [95 % CI] | Val finished | Train SWS [95 % CI] | Train finished | OOR SWS [95 % CI] | OOR finished | Campaign SWS [95 % CI] | Campaign finished | Unfiltered SWS [95 % CI] | Unfiltered finished |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Scripted driver | Reference | 1 | 0.998 [0.995, 1.000] | 99.8 % | 1.000 [1.000, 1.000] | 100.0 % | 0.999 [0.997, 1.000] | 99.9 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
+| Random actions | Control | 3 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
+| Untrained network | Control | 10 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
+| Generalist (PPO) [pilot, seed 0] | Main method | 1 | 1.199 [1.160, 1.237] | 80.2 % | 1.242 [1.159, 1.319] | 82.7 % | 1.234 [1.198, 1.269] | 82.6 % | 0.788 [0.678, 0.899] | 52.4 % | 1.596 [1.447, 1.799] | 100.0 % | 1.227 [1.143, 1.306] | 81.5 % |
+| Specialist (campaign-01) [pilot, seed 0] | Specialist | 1 | — | — | 0.188 [0.123, 0.260] | 13.2 % | — | — | — | — | 0.306 [0.000, 0.918] | 20.0 % | — | — |
 
-Track counts: Validation: 197 tracks; Training sample: 1,000 tracks; Campaign (hand-made): 5 tracks.
+Track counts: Test (unseen generated): 971 tracks; Validation: 197 tracks; Training sample: 1,000 tracks; Out-of-range test: 187 tracks; Campaign (hand-made): 5 tracks; Unfiltered test: 200 tracks.
 
-![SWS and finish rate on the validation set (development set; preliminary) (197 tracks), mean over seeds with 95 % two-level bootstrap intervals (10,000 resamples of seeds and tracks); n = number of seeds. With one seed the interval reflects track sampling only.](figures/sws_by_method.png)
+![SWS and finish rate on the test set (971 tracks), mean over seeds with 95 % two-level bootstrap intervals (10,000 resamples of seeds and tracks); n = number of seeds. With one seed the interval reflects track sampling only.](figures/sws_by_method.png)
 
-*SWS and finish rate on the validation set (development set; preliminary) (197 tracks), mean over seeds with 95 % two-level bootstrap intervals (10,000 resamples of seeds and tracks); n = number of seeds. With one seed the interval reflects track sampling only.*
+*SWS and finish rate on the test set (971 tracks), mean over seeds with 95 % two-level bootstrap intervals (10,000 resamples of seeds and tracks); n = number of seeds. With one seed the interval reflects track sampling only.*
 
 ## All networks and runs
 
 | Configuration | Role | Algorithm | Architecture | Objective | Observation | Training data | Start states | Seeds with results | Status (runs) | SWS / finish rate per set |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Scripted driver | Reference | SCRIPTED | pure pursuit + curvature speed profile (no network) | none (not trained) | car state + look-ahead points (default) | none | - | 0 | 1 evaluated | Val 1.000 / 100 %; Train 0.999 / 100 %; Campaign 1.000 / 100 % |
-| Random actions | Control | RANDOM | none (uniform random actions) | none (not trained) | car state + look-ahead points (default) | none | - | 0, 1, 2 | 3 evaluated | Val 0.000 / 0 %; Train 0.000 / 0 %; Campaign 0.000 / 0 % |
-| Untrained network | Control | UNTRAINED | MLP 2x256 tanh (actor and critic), two 3-way heads | none (not trained) | car state + look-ahead points (default) | none | - | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 | 10 evaluated | Val 0.000 / 0 %; Train 0.000 / 0 %; Campaign 0.000 / 0 % |
+| Scripted driver | Reference | SCRIPTED | pure pursuit + curvature speed profile (no network) | none (not trained) | car state + look-ahead points (default) | none | - | 0 | 1 evaluated | Test 0.998 / 100 %; Val 1.000 / 100 %; Train 0.999 / 100 %; OOR 1.000 / 100 %; Campaign 1.000 / 100 %; Unfiltered 1.000 / 100 % |
+| Random actions | Control | RANDOM | none (uniform random actions) | none (not trained) | car state + look-ahead points (default) | none | - | 0, 1, 2 | 3 evaluated | Test 0.000 / 0 %; Val 0.000 / 0 %; Train 0.000 / 0 %; OOR 0.000 / 0 %; Campaign 0.000 / 0 %; Unfiltered 0.000 / 0 % |
+| Untrained network | Control | UNTRAINED | MLP 2x256 tanh (actor and critic), two 3-way heads | none (not trained) | car state + look-ahead points (default) | none | - | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 | 10 evaluated | Test 0.000 / 0 %; Val 0.000 / 0 %; Train 0.000 / 0 %; OOR 0.000 / 0 %; Campaign 0.000 / 0 %; Unfiltered 0.000 / 0 % |
 | Blind control | Control | PPO | MLP 2x256 tanh (actor and critic), two 3-way heads | centreline progress | car state + nearest centreline point only (blind) | generated training pool | standing + random centreline | — | 5 not started | — |
-| Generalist (PPO) [pilot, seed 0] | Main method | PPO | MLP 2x256 tanh (actor and critic), two 3-way heads | centreline progress | car state + 20 look-ahead points | 48,949 generated tracks | standing + random centreline (p=0.5) | 0 | 1 evaluated | Val 1.242 / 83 %; Train 1.234 / 83 %; Campaign 1.596 / 100 % |
+| Generalist (PPO) [pilot, seed 0] | Main method | PPO | MLP 2x256 tanh (actor and critic), two 3-way heads | centreline progress | car state + 20 look-ahead points | 48,949 generated tracks | standing + random centreline (p=0.5) | 0 | 1 evaluated | Test 1.199 / 80 %; Val 1.242 / 83 %; Train 1.234 / 83 %; OOR 0.788 / 52 %; Campaign 1.596 / 100 %; Unfiltered 1.227 / 82 % |
 | Generalist (PPO) | Main method | PPO | MLP 2x256 tanh (actor and critic), two 3-way heads | centreline progress | car state + look-ahead points (default) | generated training pool | standing + random centreline | — | 10 not started | — |
 | PQN | Baseline algorithm | PQN | Q-network 2x256, LayerNorm, one 9-way head | centreline progress | car state + look-ahead points (default) | generated training pool | standing + random centreline | — | 3 not started | — |
 | Trained on 1 track | Ablation | PPO | MLP 2x256 tanh (actor and critic), two 3-way heads | centreline progress | car state + look-ahead points (default) | 1 generated tracks | standing + random centreline | — | 5 not started | — |
@@ -124,7 +124,47 @@ Track counts: Validation: 197 tracks; Training sample: 1,000 tracks; Campaign (h
 
 ### Reads of the protected test sets
 
-_The protected test sets have not been read yet._
+| Protected set | Policy | Reads |
+|---|---|---|
+| oor | RandomDriver | 3 |
+| oor | generalist/seed0 | 1 |
+| oor | scripted | 1 |
+| oor | untrained-seed0 | 1 |
+| oor | untrained-seed1 | 1 |
+| oor | untrained-seed2 | 1 |
+| oor | untrained-seed3 | 1 |
+| oor | untrained-seed4 | 1 |
+| oor | untrained-seed5 | 1 |
+| oor | untrained-seed6 | 1 |
+| oor | untrained-seed7 | 1 |
+| oor | untrained-seed8 | 1 |
+| oor | untrained-seed9 | 1 |
+| test | RandomDriver | 3 |
+| test | generalist/seed0 | 1 |
+| test | scripted | 1 |
+| test | untrained-seed0 | 1 |
+| test | untrained-seed1 | 1 |
+| test | untrained-seed2 | 1 |
+| test | untrained-seed3 | 1 |
+| test | untrained-seed4 | 1 |
+| test | untrained-seed5 | 1 |
+| test | untrained-seed6 | 1 |
+| test | untrained-seed7 | 1 |
+| test | untrained-seed8 | 1 |
+| test | untrained-seed9 | 1 |
+| test_unfiltered | RandomDriver | 3 |
+| test_unfiltered | generalist/seed0 | 1 |
+| test_unfiltered | scripted | 1 |
+| test_unfiltered | untrained-seed0 | 1 |
+| test_unfiltered | untrained-seed1 | 1 |
+| test_unfiltered | untrained-seed2 | 1 |
+| test_unfiltered | untrained-seed3 | 1 |
+| test_unfiltered | untrained-seed4 | 1 |
+| test_unfiltered | untrained-seed5 | 1 |
+| test_unfiltered | untrained-seed6 | 1 |
+| test_unfiltered | untrained-seed7 | 1 |
+| test_unfiltered | untrained-seed8 | 1 |
+| test_unfiltered | untrained-seed9 | 1 |
 
 ## Simulator throughput
 
@@ -138,6 +178,7 @@ _No exploit list yet (`results/exploits.json` does not exist)._
 
 | Configuration | Set | Overspeed flags | Coasting energy-gain flags | Seeds | Tracks |
 |---|---|---|---|---|---|
+| Untrained network | OOR | 0 | 1 | 10 | 187 |
 | Generalist (PPO) [pilot, seed 0] | Train | 0 | 3 | 1 | 1000 |
 
 ## Key terms
@@ -166,4 +207,4 @@ _No exploit list yet (`results/exploits.json` does not exist)._
 
 ## Data integrity
 
-47 evaluation files read; 0 per-track scores disagree with finished x reference ticks / ticks (they are reported as written by the evaluator).
+92 evaluation files read; 0 per-track scores disagree with finished x reference ticks / ticks (they are reported as written by the evaluator).
