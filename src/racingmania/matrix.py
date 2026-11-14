@@ -68,10 +68,17 @@ def publish_all(message: str, rid: str | None = None, status: str | None = None)
     modules imported when the queue started with templates pulled since (on 2026-11-14 a new paper template
     met the old render.py and the publish crashed the queue), and pulling only after the build leaves the
     regenerated files in the way of the pull. Pulling first while the generated files are still clean, then
-    building in a child that imports the code just pulled, avoids both."""
+    building in a child that imports the code just pulled, avoids both.
+
+    A failed publish (network, a service's rate limit) is logged and the queue goes on: every publish carries
+    the whole project state, so the next one catches up, while stopping would leave the GPU idle for hours
+    (a Hugging Face rate limit stopped the queue on 2026-11-14)."""
     subprocess.run(["git", "pull", "--ff-only"], cwd=REPO_ROOT, check=False)
     args = ["--message", message] + (["--run", rid, "--status", status] if rid else [])
-    subprocess.run([sys.executable, "scripts/08_publish.py", *args], cwd=REPO_ROOT, check=True)
+    code = subprocess.run([sys.executable, "scripts/08_publish.py", *args], cwd=REPO_ROOT).returncode
+    if code:
+        log.error("publish failed (exit %d) for %r; the queue continues and the next publish carries the full state",
+                  code, message)
 
 
 def run_queue(phases: list[str] | None = None, publish: bool = True, limit: int | None = None):
