@@ -14,11 +14,25 @@ export class Hud {
     this.el = {
       mode: $('hud-mode'), timer: $('hud-timer'), split: $('hud-split'), cp: $('hud-cp'),
       speed: $('hud-speed-value'), medals: $('hud-medals'), best: $('hud-best'), message: $('hud-message'),
-      ai: $('hud-ai'),
+      ai: $('hud-ai'), countdown: $('hud-countdown'),
     };
     this.finish = $('finish');
     this.splitUntil = 0; // performance.now() after which the split delta hides
     this.messageUntil = 0;
+    this.countdownText = '';
+    this.countdownUntil = Infinity; // performance.now() after which "GO!" hides
+  }
+
+  // Start countdown in the middle of the screen: "3", "2", "1", then "GO!" briefly; '' hides it.
+  countdown(text) {
+    if (text === this.countdownText) return;
+    this.countdownText = text;
+    const el = this.el.countdown;
+    el.textContent = text;
+    el.classList.remove('pop');
+    void el.offsetWidth; // reflow, so re-adding the class restarts the CSS animation for each number
+    if (text) el.classList.add('pop');
+    this.countdownUntil = text === 'GO!' ? performance.now() + 700 : Infinity;
   }
 
   // Prepare for a race: mode ('race' | 'race-ai' | 'watch') and its label, medal targets (or none), personal best.
@@ -38,6 +52,7 @@ export class Hud {
     this.el.split.textContent = '';
     this.el.message.textContent = '';
     this.el.ai.textContent = '';
+    this.countdown('');
   }
 
   hide() { this.root.hidden = true; this.finish.hidden = true; }
@@ -51,6 +66,7 @@ export class Hud {
     this.el.cp.textContent = `Checkpoint ${Math.min(cp, total)} / ${total}`;
     if (now > this.splitUntil) this.el.split.textContent = '';
     if (now > this.messageUntil) this.el.message.textContent = '';
+    if (now > this.countdownUntil) this.countdown('');
     if (ai != null) this.el.ai.textContent = ai;
   }
 
