@@ -58,7 +58,26 @@ const authorTime = (name) => {
 };
 const targetsOf = (name) => (app.tracks.has(name) ? medalTargets(app.tracks.get(name), authorTime(name)) : null);
 const ghostOn = (key) => app.settings.ghosts?.[key] ?? key === 'best'; // your best: on by default; AI ghosts: off
-const currentModel = () => app.index.models.find((m) => m.name === app.settings.model) ?? app.index.models[0];
+
+// The AI drivers of a track: every exported network (index.json "models") and every recorded run on the track
+// (its AI ghosts, e.g. the scripted driver or a control), merged by name. Order: the ghosts' order (best run
+// first, assets.js byBestRun), then networks with no recorded run here, in index order.
+function driversOf(name) {
+  const ghosts = app.aiGhosts.get(name) ?? [];
+  const runOf = new Map(ghosts.map((g) => [g.model, g]));
+  const rows = app.index.models.map((m) => ({ name: m.name, model: m, ghost: runOf.get(m.name) ?? null }));
+  const networks = new Set(rows.map((r) => r.name));
+  for (const g of ghosts) if (!networks.has(g.model)) rows.push({ name: g.model, model: null, ghost: g }); // recorded run only
+  const rank = (r) => (r.ghost ? ghosts.indexOf(r.ghost) : ghosts.length);
+  return rows.sort((a, b) => rank(a) - rank(b)); // stable: networks without a run keep index order
+}
+
+// The chosen AI driver (Race vs AI, Watch AI, Watch replay): the saved choice if this track lists it, else the
+// best driver with a live network, else the best recorded run.
+const chosenDriver = (name) => {
+  const drivers = driversOf(name);
+  return drivers.find((d) => d.name === app.settings.model) ?? drivers.find((d) => d.model) ?? drivers[0] ?? null;
+};
 const persist = () => saveSettings(app.settings);
 
 function loadPolicy(model) {
@@ -82,25 +101,30 @@ function renderList() {
 function renderDetail() {
   const name = app.selected, track = app.tracks.get(name);
   if (!track) return;
-  const best = loadBest(name), targets = targetsOf(name);
-  // AI drivers for "Race vs AI" in the same order as the ghosts: by their finished run on this track, fastest
-  // first; drivers with no finished run here follow in index order (NaN from Infinity - Infinity sorts as a tie).
-  const finishTime = new Map((app.aiGhosts.get(name) ?? []).filter(finishedRun).map((g) => [g.model, g.time]));
-  const models = [...app.index.models].sort((a, b) => (finishTime.get(a.name) ?? Infinity) - (finishTime.get(b.name) ?? Infinity))
-    .map((m) => ({ ...m, label: finishTime.has(m.name) ? `${m.name} (${formatTime(finishTime.get(m.name))})` : m.name }));
+  const best = loadBest(name), targets = targetsOf(name), chosen = chosenDriver(name);
+  const drivers = driversOf(name).map((d) => {
+    const g = d.ghost, run = d.model?.run ?? '';
+    const learner = d.model && !run.startsWith('baselines/'); // a trained network (not a control)
+    return {
+      name: d.name, selected: d.name === chosen?.name, live: Boolean(d.model),
+      description: d.model?.description ?? 'Recorded run only: no network to drive live in the game',
+      // Specialists are named after their track (run "specialist-campaign-01/seed0"); every other network
+      // trained on generated pool tracks, which the menu never lists, so for them every menu track is new.
+      tag: learner ? (run.split('/')[0].endsWith(name) ? 'trained on this track' : 'never trained on this track') : '',
+      finished: Boolean(g && finishedRun(g)),
+      timeText: !g ? 'no run here' : finishedRun(g) ? formatTime(g.time) : `out (${g.end ?? 'fell'}) at ${formatTime(g.time)}`,
+      medal: g && finishedRun(g) ? medalFor(g.time, targets) : null,
+      ghostKey: g?.path ?? null, ghostOn: Boolean(g) && ghostOn(g.path),
+    };
+  });
   const jumps = track.gap.filter((g, i) => g && !track.gap[i - 1]).length; // runs of gap segments
   const cps = track.checkpoints.length - 1;
   app.menu.renderDetail({
     title: meta(name).title ?? name, name,
     info: `${Math.round(track.length)} m · ${cps} checkpoint${cps === 1 ? '' : 's'} · ${jumps} jump${jumps === 1 ? '' : 's'}`,
     best: best?.time ?? null, medal: medalFor(best?.time ?? null, targets), targets,
-    ghosts: [
-      { key: 'best', label: best ? `Your best (${formatTime(best.time)})` : 'Your best (none yet)', on: Boolean(best) && ghostOn('best'), disabled: !best },
-      ...(app.aiGhosts.get(name) ?? []).map((g) => ({ key: g.path, on: ghostOn(g.path),
-        label: finishedRun(g) ? `AI · ${g.model} (${formatTime(g.time)})` : `AI · ${g.model} (did not finish: ${g.end ?? 'out'} at ${formatTime(g.time)})` })),
-    ],
-    hasModels: app.hasModels, models, model: app.hasModels ? currentModel().name : null,
-    hasReplay: (app.aiGhosts.get(name) ?? []).length > 0,
+    bestGhost: { on: Boolean(best) && ghostOn('best'), disabled: !best },
+    drivers, canLive: Boolean(chosen?.model), canReplay: Boolean(chosen?.ghost),
   });
 }
 
@@ -122,13 +146,15 @@ function moveSelection(delta) {
 }
 
 function onGhostToggle(key, on) { app.settings.ghosts = { ...app.settings.ghosts, [key]: on }; persist(); }
-function onModel(name) { app.settings.model = name; persist(); }
+function onModel(name) { app.settings.model = name; persist(); renderDetail(); } // the chosen AI driver
 
 // ---- race ---------------------------------------------------------------------------------------
 
 async function startRace(mode) {
   if (app.state !== 'menu' || app.starting) return;
-  if ((mode === 'race-ai' || mode === 'watch') && !app.hasModels) return;
+  const driver = chosenDriver(app.selected);
+  if ((mode === 'race-ai' || mode === 'watch') && !driver?.model) return;
+  if (mode === 'replay' && !driver?.ghost) return;
   app.starting = true;
   try {
     const name = app.selected;
@@ -136,16 +162,14 @@ async function startRace(mode) {
     let policy = null, replay = null;
     if (mode === 'race-ai' || mode === 'watch') {
       setStatus('Loading AI driver…');
-      policy = await loadPolicy(currentModel());
-    } else if (mode === 'replay') { // the first ticked AI ghost of this track, else its first AI ghost
-      const ghosts = app.aiGhosts.get(name) ?? [];
-      const ghost = ghosts.find((g) => ghostOn(g.path)) ?? ghosts[0];
-      if (!ghost) return;
-      replay = new ReplayCar(app.cfg, track, ghost);
+      policy = await loadPolicy(driver.model);
+    } else if (mode === 'replay') { // the chosen driver's recorded official run on this track
+      replay = new ReplayCar(app.cfg, track, driver.ghost);
     }
     document.activeElement?.blur(); // Enter must not re-click the button that started the race
     app.renderer.setTrack(track);
     app.session = new RaceSession({ cfg: app.cfg, track, mode, policy, replay, best: loadBest(name) });
+    app.session.driverName = mode === 'race' ? null : driver.name; // shown in the HUD's mode label
     app.targets = targetsOf(name);
     createCars();
     buildGhosts();
@@ -167,7 +191,7 @@ async function startRace(mode) {
 
 const hudArgs = () => ({
   mode: app.session.mode,
-  modeLabel: `${MODE_LABELS[app.session.mode]} · ${meta(app.selected).title ?? app.selected}`,
+  modeLabel: [MODE_LABELS[app.session.mode], app.session.driverName, meta(app.selected).title ?? app.selected].filter(Boolean).join(' · '),
   targets: app.targets, bestTime: app.session.best?.time ?? null, cpTotal: app.session.track.checkpoints.length,
 });
 
@@ -369,7 +393,7 @@ async function init() {
   setStatus('Loading…');
   const [index, cfg] = await Promise.all([loadIndex(), loadVehicle()]);
   index.models ??= [];
-  Object.assign(app, { index, cfg, hasModels: index.models.length > 0 });
+  Object.assign(app, { index, cfg });
   app.renderer = new Renderer($('view'));
   app.hud = new Hud();
   app.keyboard = new Keyboard();
