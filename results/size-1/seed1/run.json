@@ -2,9 +2,9 @@
   "experiment": "size-1",
   "seed": 1,
   "track": null,
-  "status": "trained",
+  "status": "evaluated",
   "phase": "2-single-seed",
-  "updated": "2026-11-14T22:31:12.145574+00:00",
+  "updated": "2026-11-14T22:48:15.956075+00:00",
   "algo": "ppo",
   "description": "PPO trained on only 1 generated tracks",
   "git_commit": "3e75ae37db322a34f61d1adaf7435d76f72c821b",
@@ -69,5 +69,69 @@
   "global_step": 1000341504,
   "iterations": 1908,
   "wall_hours": 1.3261645410458247,
-  "last_session_hours": 1.3262395397159787
+  "last_session_hours": 1.3262395397159787,
+  "eval_summary": {
+    "val": {
+      "sws": 0.5077209458923033,
+      "finish_rate": 0.3401015228426396,
+      "speed_ratio_finished": 1.492851139414683,
+      "n_tracks": 197,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    },
+    "train_sample": {
+      "sws": 0.4993632910325877,
+      "finish_rate": 0.335,
+      "speed_ratio_finished": 1.4906366896495158,
+      "n_tracks": 1000,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 4
+    },
+    "train_own": {
+      "sws": 1.6356164383561644,
+      "finish_rate": 1.0,
+      "speed_ratio_finished": 1.6356164383561644,
+      "n_tracks": 1,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    },
+    "campaign": {
+      "sws": 0.5843943248697754,
+      "finish_rate": 0.4,
+      "speed_ratio_finished": 1.4609858121744383,
+      "n_tracks": 5,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    },
+    "test": {
+      "sws": 0.5387333799367539,
+      "finish_rate": 0.364572605561277,
+      "speed_ratio_finished": 1.4777121805609832,
+      "n_tracks": 971,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 4
+    },
+    "oor": {
+      "sws": 0.21360097245221907,
+      "finish_rate": 0.1443850267379679,
+      "speed_ratio_finished": 1.479384512909814,
+      "n_tracks": 187,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 1
+    },
+    "test_unfiltered": {
+      "sws": 0.5441868925894147,
+      "finish_rate": 0.36,
+      "speed_ratio_finished": 1.5116302571928186,
+      "n_tracks": 200,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 2
+    }
+  },
+  "onnx_check": {
+    "agreement": 1.0,
+    "max_abs_logit_diff": 3.2901763916015625e-05,
+    "n": 512
+  },
+  "onnx_file": "assets/models/size-1-seed1.onnx"
 }

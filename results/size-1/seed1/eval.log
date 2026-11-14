@@ -1,0 +1,10 @@
+2026-11-14 23:37:54.233 INFO racingmania.runs: size-1/seed1 on val: {'sws': 0.5077209458923033, 'finish_rate': 0.3401015228426396, 'speed_ratio_finished': 1.492851139414683, 'n_tracks': 197, 'flags_overspeed': 0, 'flags_energy_gain': 0}
+2026-11-14 23:39:28.327 INFO racingmania.runs: size-1/seed1 on train_sample: {'sws': 0.4993632910325877, 'finish_rate': 0.335, 'speed_ratio_finished': 1.4906366896495158, 'n_tracks': 1000, 'flags_overspeed': 0, 'flags_energy_gain': 4}
+2026-11-14 23:42:33.718 INFO racingmania.runs: size-1/seed1 on train_own: {'sws': 1.6356164383561644, 'finish_rate': 1.0, 'speed_ratio_finished': 1.6356164383561644, 'n_tracks': 1, 'flags_overspeed': 0, 'flags_energy_gain': 0}
+2026-11-14 23:43:17.944 INFO racingmania.runs: size-1/seed1 on campaign: {'sws': 0.5843943248697754, 'finish_rate': 0.4, 'speed_ratio_finished': 1.4609858121744383, 'n_tracks': 5, 'flags_overspeed': 0, 'flags_energy_gain': 0}
+2026-11-14 23:43:19.072 INFO racingmania.eval.evaluator: protected set 'test' read by size-1/seed1 (971 tracks); logged
+2026-11-14 23:44:36.610 INFO racingmania.runs: size-1/seed1 on test: {'sws': 0.5387333799367539, 'finish_rate': 0.364572605561277, 'speed_ratio_finished': 1.4777121805609832, 'n_tracks': 971, 'flags_overspeed': 0, 'flags_energy_gain': 4}
+2026-11-14 23:44:37.008 INFO racingmania.eval.evaluator: protected set 'oor' read by size-1/seed1 (187 tracks); logged
+2026-11-14 23:45:52.578 INFO racingmania.runs: size-1/seed1 on oor: {'sws': 0.21360097245221907, 'finish_rate': 0.1443850267379679, 'speed_ratio_finished': 1.479384512909814, 'n_tracks': 187, 'flags_overspeed': 0, 'flags_energy_gain': 1}
+2026-11-14 23:45:53.177 INFO racingmania.eval.evaluator: protected set 'test_unfiltered' read by size-1/seed1 (200 tracks); logged
+2026-11-14 23:46:56.215 INFO racingmania.runs: size-1/seed1 on test_unfiltered: {'sws': 0.5441868925894147, 'finish_rate': 0.36, 'speed_ratio_finished': 1.5116302571928186, 'n_tracks': 200, 'flags_overspeed': 0, 'flags_energy_gain': 2}
