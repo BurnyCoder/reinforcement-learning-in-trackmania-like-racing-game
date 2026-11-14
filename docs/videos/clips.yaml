@@ -13,12 +13,12 @@ clips:
     run: specialist-campaign-01/seed0
     split: campaign
     rule: best
-  - title: Best generalist lap on a hand-made track
+  - title: Best generalist lap on a hand-made track it never saw in training
     replay: generalist-seed0
     run: generalist/seed0
     split: campaign
     rule: best
-  - title: Best generalist lap on a held-out generated track
+  - title: "Best generalist lap on a held-out generated track it never saw in training: it generalized"
     replay: generalist-seed0
     run: generalist/seed0
     split: test
@@ -29,7 +29,7 @@ clips:
     split: test
     rule: best
     rule_run: generalist/seed0   # the same track as the clip before
-  - title: Typical generalist lap on a held-out generated track
+  - title: Typical generalist lap on a held-out generated track it never saw in training
     replay: generalist-seed0
     run: generalist/seed0
     split: test

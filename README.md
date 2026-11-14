@@ -22,18 +22,18 @@ Each clip replays an official evaluation run in the browser game: the car states
 - **Evaluation:** official evaluation in `results/specialist-campaign-01/seed0/eval_campaign.csv` (standing start, most probable action, final checkpoint): finished in 19.71 s; the scripted driver needs 30.17 s, so this is 1.53× its speed. The clip replays this run.
 - **Why this clip:** chosen by a fixed rule as its only finished campaign track in its official evaluation.
 
-### 2. Best generalist lap on a hand-made track
+### 2. Best generalist lap on a hand-made track it never saw in training
 
-[![Best generalist lap on a hand-made track: generalist-seed0 on campaign-04](docs/videos/generalist-seed0_campaign-04.gif)](docs/videos/generalist-seed0_campaign-04.mp4)
+[![Best generalist lap on a hand-made track it never saw in training: generalist-seed0 on campaign-04](docs/videos/generalist-seed0_campaign-04.gif)](docs/videos/generalist-seed0_campaign-04.mp4)
 
 - **Model:** `generalist/seed0`: PPO, trained by reinforcement learning for 1 billion agent steps on 48,949 generated training tracks (seed 0, 1.3 h on one GPU).
 - **Map:** Technical (`campaign-04`), a hand-made campaign track, 666 m long with no jumps and up to 5° of banking; this model never saw it during training.
 - **Evaluation:** official evaluation in `results/generalist/seed0/eval_campaign.csv` (standing start, most probable action, final checkpoint): finished in 21.27 s; the scripted driver needs 42.52 s, so this is 2.00× its speed. The clip replays this run.
 - **Why this clip:** chosen by a fixed rule as the highest-scoring finished track of the 5 campaign tracks it finished in its official evaluation.
 
-### 3. Best generalist lap on a held-out generated track
+### 3. Best generalist lap on a held-out generated track it never saw in training: it generalized
 
-[![Best generalist lap on a held-out generated track: generalist-seed0 on test-2000747](docs/videos/generalist-seed0_test-2000747.gif)](docs/videos/generalist-seed0_test-2000747.mp4)
+[![Best generalist lap on a held-out generated track it never saw in training: it generalized: generalist-seed0 on test-2000747](docs/videos/generalist-seed0_test-2000747.gif)](docs/videos/generalist-seed0_test-2000747.mp4)
 
 - **Model:** `generalist/seed0`: PPO, trained by reinforcement learning for 1 billion agent steps on 48,949 generated training tracks (seed 0, 1.3 h on one GPU).
 - **Map:** Unseen test track 2000747 (`test-2000747`), a held-out generated test track, 1,461 m long with no jumps and up to 11° of banking; this model never saw it during training.
@@ -49,9 +49,9 @@ Each clip replays an official evaluation run in the browser game: the car states
 - **Evaluation:** official evaluation in `results/baselines/scripted/seed0/eval_test.csv` (standing start, most probable action, final checkpoint): finished in 79.75 s (the track's reference time, from the scripted driver's separate certification run, is 79.77 s). The clip replays this run.
 - **Why this clip:** chosen by a fixed rule as the same track as the generalist/seed0 clip: the highest-scoring finished track of the 779 test tracks `generalist/seed0` finished in its official evaluation.
 
-### 5. Typical generalist lap on a held-out generated track
+### 5. Typical generalist lap on a held-out generated track it never saw in training
 
-[![Typical generalist lap on a held-out generated track: generalist-seed0 on test-2000386](docs/videos/generalist-seed0_test-2000386.gif)](docs/videos/generalist-seed0_test-2000386.mp4)
+[![Typical generalist lap on a held-out generated track it never saw in training: generalist-seed0 on test-2000386](docs/videos/generalist-seed0_test-2000386.gif)](docs/videos/generalist-seed0_test-2000386.mp4)
 
 - **Model:** `generalist/seed0`: PPO, trained by reinforcement learning for 1 billion agent steps on 48,949 generated training tracks (seed 0, 1.3 h on one GPU).
 - **Map:** Unseen test track 2000386 (`test-2000386`), a held-out generated test track, 1,097 m long with 1 jump and up to 10° of banking; this model never saw it during training.
