@@ -53,15 +53,22 @@ _No run of this group has logged its configuration yet (the experiment files are
 
 ### Scores
 
-_Not yet available: the runs behind this table have no results yet._
+| Configuration | Role | Seeds | Val SWS [95 % CI] | Val finished | Train SWS [95 % CI] | Train finished | Campaign SWS [95 % CI] | Campaign finished |
+|---|---|---|---|---|---|---|---|---|
+| Scripted driver | Reference | 1 | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
 
-Rows from other groups are shown for comparison. Track counts: Validation: 197 tracks; Campaign (hand-made): 5 tracks.
+Rows from other groups are shown for comparison. Track counts: Validation: 197 tracks; Training sample: 1,000 tracks; Campaign (hand-made): 5 tracks.
 
 ### Campaign tracks
 
 | Campaign track | Scripted time (s) | Agent | Kind | Finished | Mean time (s) | Per seed (s) |
 |---|---|---|---|---|---|---|
+| campaign-01 | 30.17 | Scripted driver | reference | 1/1 | 30.16 | s0: 30.16 |
 | campaign-01 | 30.17 | Specialist (campaign-01) [pilot, seed 0] | own track | 1/1 | 19.71 | s0: 19.71 |
+| campaign-02 | 36.43 | Scripted driver | reference | 1/1 | 36.43 | s0: 36.43 |
+| campaign-03 | 48.50 | Scripted driver | reference | 1/1 | 48.52 | s0: 48.52 |
+| campaign-04 | 42.52 | Scripted driver | reference | 1/1 | 42.52 | s0: 42.52 |
+| campaign-05 | 56.07 | Scripted driver | reference | 1/1 | 56.03 | s0: 56.03 |
 
 ![Finishing time on each campaign track: small marks are single seeds, large marks the mean over finishing seeds, x marks runs that did not finish (DNF); the black bar is the scripted driver's reference time. Specialists are scored on their own track; the generalist zero-shot.](../figures/specialists_campaign.png)
 

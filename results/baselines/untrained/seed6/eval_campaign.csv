@@ -1,0 +1,6 @@
+track,finished,ticks,time,ref_ticks,score,end,progress,max_speed,flag_overspeed,max_coast_energy_gain,flag_energy_gain
+campaign-01,0,200,2.0,3017,0.0,stalled,0.0,5.1152777671813965,0,0.0,0
+campaign-02,0,200,2.0,3643,0.0,stalled,0.0,5.1152777671813965,0,0.0,0
+campaign-03,0,200,2.0,4850,0.0,stalled,0.0,5.1152777671813965,0,0.0,0
+campaign-04,0,200,2.0,4252,0.0,stalled,0.0,5.1152777671813965,0,0.0,0
+campaign-05,0,200,2.0,5607,0.0,stalled,0.0,5.1152777671813965,0,0.0,0
