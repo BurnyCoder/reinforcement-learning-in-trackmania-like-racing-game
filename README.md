@@ -378,7 +378,7 @@ Online: <https://burnycoder.github.io/reinforcement-learning-in-trackmania-like-
 uv run python -m http.server 8123 --directory web
 ```
 
-Then open <http://localhost:8123/>. Arrows or WASD drive (up = gas, down = brake/reverse), Enter or R restarts, Backspace respawns at the last checkpoint, Esc returns to the menu. Each run starts with a 1.5 s "3, 2, 1, GO!" countdown during which the clock stays at zero; keys held during the countdown, or held through a restart, act from the first physics tick, so holding gas gives a full-throttle start. Besides the five campaign tracks, the menu has three held-out test tracks (added by [`scripts/12_export_unseen_track.py`](scripts/12_export_unseen_track.py)) on which you can race the generalist on tracks it never saw. "Watch AI" and "Race vs AI" run the exported policies live in the browser; The menu lists AI ghosts best time first. "Watch replay" plays a recorded official run (the first ticked AI ghost, otherwise the best run), including the scripted driver's and runs that fell off.
+Then open <http://localhost:8123/>. Arrows or WASD drive (up = gas, down = brake/reverse), Enter or R restarts, Backspace respawns at the last checkpoint, Esc returns to the menu. Each run starts with a 1.5 s "3, 2, 1, GO!" countdown during which the clock stays at zero; keys held during the countdown, or held through a restart, act from the first physics tick, so holding gas gives a full-throttle start. Besides the five campaign tracks, the menu has five held-out tracks (four test tracks and one out-of-range track, added by [`scripts/12_export_unseen_track.py`](scripts/12_export_unseen_track.py)) on which you can race the generalist on tracks it never saw. Each track's panel has an AI drivers table: every exported network and every recorded official run on that track (including the scripted driver's and runs that fell off), best time on that track first, with its medal, whether it was trained on that track, and a ghost toggle. The chosen driver is the one "Race vs AI" and "Watch AI" run live in the browser, and whose recorded run "Watch replay" plays.
 
 ## Reproduce
 
@@ -414,7 +414,7 @@ Videos: `scripts/12_export_unseen_track.py --run generalist/seed0 --split test -
 
 ## Features
 
-- Playable browser game: five campaign tracks and three held-out test tracks, medals, splits, your best ghost, AI ghosts, race against a live AI driver, and replays of the official evaluation runs.
+- Playable browser game: five campaign tracks and five held-out tracks, medals, splits, your best ghost, AI ghosts, race against a live AI driver, and replays of the official evaluation runs.
 - One physics implementation for game and training, with tick-by-tick parity tests against the original.
 - GPU simulator with `torch.compile` in WSL2 (16,384 cars in parallel): a 1-billion-step generalist run took about 1.3 hours of training on an RTX 5070 Laptop GPU (each run's wall time is in `results/<run>/run.json`; `scripts/bench_sim.py` measures the simulator alone).
 - Exploit detectors with step-by-step replays, failure-position analysis, and generated videos of the agents' laps.

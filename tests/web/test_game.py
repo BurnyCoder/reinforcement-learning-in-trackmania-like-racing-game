@@ -152,15 +152,16 @@ def test_unseen_tracks_in_the_index_are_listed_and_playable(page, site_url, cons
 
 
 def test_watch_replay_follows_a_recorded_run(page, site_url, console):
-    """"Watch replay" plays a recorded AI run (web/js/replay.js): the car follows the ghost's poses and the clock runs."""
+    """"Watch replay" plays the chosen AI driver's recorded run (web/js/replay.js): the car follows the ghost's poses
+    and the clock runs."""
     index = json.loads((WEB / "assets" / "index.json").read_text())
     track = next((t for t, g in index.get("ghosts", {}).items() if g), None)
     if track is None:
         pytest.skip("no AI ghost exported")
-    ghost = best_run_first([json.loads((WEB / p).read_text()) for p in index["ghosts"][track]])[0]  # the replay plays the best run
+    ghost = best_run_first([json.loads((WEB / p).read_text()) for p in index["ghosts"][track]])[0]
     open_menu(page, site_url)
     page.click(f'#track-list [data-track="{track}"]')
-    page.wait_for_selector('button[data-mode="replay"]')
+    page.click(f'#track-detail .driver[data-driver="{ghost["model"]}"] .dname')  # choose the driver whose run to replay
     page.click('button[data-mode="replay"]')
     page.wait_for_selector("#hud", state="visible")
     page.wait_for_timeout(2000)
@@ -172,24 +173,32 @@ def test_watch_replay_follows_a_recorded_run(page, site_url, console):
     assert console == []
 
 
-def test_bots_are_listed_best_time_first(page, site_url, console):
-    """The menu lists AI ghosts best run first (finished, fastest first; then unfinished, longest first), after
-    "Your best", and the "Race vs AI" driver list follows the same order with each driver's time on the track."""
+def test_ai_drivers_table_lists_every_driver_best_first(page, site_url, console):
+    """The track panel's AI drivers table lists every recorded run on the track best run first (finished, fastest
+    first; then unfinished, longest first) with its time, then the exported networks with no run here. The default
+    choice is the best driver with a live network; choosing a recorded-only driver turns off the live modes."""
     index = json.loads((WEB / "assets" / "index.json").read_text())
     track = max(index.get("ghosts", {}), key=lambda t: len(index["ghosts"][t]), default=None)
     if track is None or len(index["ghosts"][track]) < 2:
         pytest.skip("no track with two AI ghosts exported")
     ghosts = best_run_first([json.loads((WEB / p).read_text()) for p in index["ghosts"][track]])
+    with_run, networks = [g["model"] for g in ghosts], [m["name"] for m in index.get("models", [])]
+    expected = with_run + [n for n in networks if n not in with_run]
     open_menu(page, site_url)
     page.click(f'#track-list [data-track="{track}"]')
-    page.wait_for_selector("#track-detail .ghosts")
-    labels = page.locator("#track-detail .ghosts label").all_inner_texts()
-    assert labels[0].strip().startswith("Your best")
-    assert [l.split("AI · ")[1].split(" (")[0] for l in labels[1:]] == [g["model"] for g in ghosts], labels
-    if index.get("models"):
-        options = page.locator("#model-select option").all_inner_texts()
-        timed = [g["model"] for g in ghosts if g.get("finished", True) and g["model"] in {m["name"] for m in index["models"]}]
-        assert [o.split(" (")[0] for o in options[:len(timed)]] == timed, options
+    page.wait_for_selector("#track-detail .drivers")
+    assert page.eval_on_selector_all("#track-detail .driver", "els => els.map(e => e.dataset.driver)") == expected
+    times = page.locator("#track-detail .driver .dtime").all_inner_texts()
+    for g, text in zip(ghosts, times):
+        assert f"{int(g['time'] // 60):02d}:{g['time'] % 60:05.2f}" in text, (g["model"], text)
+    assert all(t == "no run here" for t in times[len(ghosts):])
+    if networks:
+        assert page.eval_on_selector("input[name=driver]:checked", "el => el.value") == next(n for n in expected if n in networks)
+    recorded_only = next((n for n in with_run if n not in networks), None)
+    if recorded_only:
+        page.click(f'#track-detail .driver[data-driver="{recorded_only}"] .dname')
+        modes = page.eval_on_selector_all("#track-detail .actions button", "els => Object.fromEntries(els.map(e => [e.dataset.mode, e.disabled]))")
+        assert modes == {"race": False, "race-ai": True, "watch": True, "replay": False}, modes
     assert console == []
 
 

@@ -114,25 +114,23 @@ def clip_info(c: dict) -> dict:
     track, why = (c["track"], "") if c.get("track") else select_track(RESULTS, rule_run, c["split"], c["rule"], who, c.get("variant"))
     if c.get("rule_run"):
         why = f"the same track as the {rule_run} clip: {why}"
-    c = {**c, "model": c["replay"], "mode": "replay", "ghost": f"assets/ghosts/{track}/{c['replay']}.json"}
+    c = {**c, "model": c["replay"], "mode": "replay"}
     row = next(r for r in csv.DictReader(open(RESULTS / run / f"eval_{c['split']}.csv", encoding="utf-8")) if r["track"] == track)
     return {**c, "until": c.get("until", "finish"), "run": run, "track": track, "why": why, "row": row,
             "official_s": int(row["ticks"]) * DT, "reference_s": int(row["ref_ticks"]) * DT}
 
 
-def record(new_page, model: str, track: str, until: str, mode: str = "watch", ghost: str | None = None) -> tuple[Path, float, float, dict]:
-    """Drive one Watch-AI run, or (mode "replay") play the recorded run ``ghost``; returns (raw video, run start s,
-    clip end s, game state at the finish or where an unfinished run ended)."""
+def record(new_page, model: str, track: str, until: str, mode: str = "watch") -> tuple[Path, float, float, dict]:
+    """Drive one Watch-AI run of ``model``, or (mode "replay") play its recorded run on ``track``; returns (raw video,
+    run start s, clip end s, game state at the finish or where an unfinished run ended)."""
     ctx, page, t0 = new_page()
     page.goto(a.url)
     page.wait_for_selector("#track-list [data-track]")
     page.click(f'#track-list [data-track="{track}"]')
-    if mode == "watch":
-        page.wait_for_selector("#model-select")
-        page.select_option("#model-select", model)
-    else:  # "Watch replay" plays the first ticked AI ghost: tick this clip's one (AI ghosts start unticked)
-        page.wait_for_selector(f'input[data-ghost="{ghost}"]', state="attached")
-        page.eval_on_selector(f'input[data-ghost="{ghost}"]', "el => { if (!el.checked) el.click(); }")  # the key-hint footer can cover it
+    # The chosen row of the menu's AI drivers table drives "Watch AI" (its network) and "Watch replay" (its recorded run).
+    pick = f'#track-detail input[name="driver"][value="{model}"]'
+    page.wait_for_selector(pick, state="attached")
+    page.eval_on_selector(pick, "el => el.click()")  # a JS click: the key-hint footer can cover the row
     page.eval_on_selector(f'button[data-mode="{mode}"]', "el => el.click()")
     page.wait_for_selector("#hud", state="visible")
     start = time.time() - t0
@@ -165,7 +163,7 @@ with sync_playwright() if todo else _nullcontext() as p:
         return ctx, ctx.new_page(), time.time()
 
     for c in [c for k, c in enumerate(clips, 1) if k in todo] if p else []:
-        raw, start, end, final = record(new_page, c["model"], c["track"], c["until"], c["mode"], c["ghost"])
+        raw, start, end, final = record(new_page, c["model"], c["track"], c["until"], c["mode"])
         stem = out_dir / f"{c['model']}_{c['track']}"
         trim = ["-ss", f"{max(0.0, start - 0.5):.2f}", "-to", f"{end:.2f}", "-i", str(raw)]
         subprocess.run(["ffmpeg", "-y", "-loglevel", "error", *trim, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "26",
