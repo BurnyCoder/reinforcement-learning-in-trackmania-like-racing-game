@@ -167,7 +167,7 @@ class PPOTrainer:
         if self.val_tracks is None:
             return {}
         rows = evaluate(self.policy(), self.cfg, self.val_tracks, device=self.device, env_cfg=self.env_cfg,
-                        compile=self.ppo.compile)
+                        compile=self.ppo.compile, fresh_compile=False)  # monitoring only: keep the compiled training step
         s = summarise(rows)
         s.update({"iteration": self.iteration, "global_step": self.global_step, "wall_hours": self.wall / 3600})
         new = not self.val_path.exists()
