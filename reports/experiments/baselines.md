@@ -27,6 +27,7 @@ _No run of this group has logged its configuration yet (the experiment files are
 | oor | 3,000,000 - 3,000,199 | 200 | 0 | 13 | 187 | 1335 | 66.0 |
 | test | 2,000,000 - 2,000,999 | 1,000 | 0 | 29 | 971 | 1117 | 50.9 |
 | test_unfiltered | 2,000,000 - 2,000,199 | 200 | 0 | 5 | 200 | 1102 | 50.6 |
+| train | 0 - 49,999 | 50,000 | 0 | 1,051 | 48,949 | 1112 | 50.8 |
 | val | 1,000,000 - 1,000,199 | 200 | 0 | 3 | 197 | 1130 | 51.5 |
 
 Scripted driver parameters chosen on validation candidates: `a_lat` = 6.0, `lookahead_gain` = 0.3, `lookahead_min` = 8.0, `lookahead_max` = 40.0, `a_brake` = 8.0, `jump_speed` = 25.0, `brake_margin` = 1.5, `speed_scale` = 1.0.

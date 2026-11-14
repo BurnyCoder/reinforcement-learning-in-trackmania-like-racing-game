@@ -61,9 +61,7 @@ _Figure not yet available: its runs have no results yet._
 
 ### Exploit flags
 
-| Configuration | Set | Overspeed flags | Coasting energy-gain flags | Seeds | Tracks |
-|---|---|---|---|---|---|
-| Specialist (campaign-01) [pilot, seed 0] | Val | 0 | 1 | 1 | 197 |
+_No evaluation has raised an exploit flag._
 
 ## Learnings
 

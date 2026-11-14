@@ -109,6 +109,7 @@ Track counts: Validation: 197 tracks; Campaign (hand-made): 5 tracks.
 | oor | 3,000,000 - 3,000,199 | 200 | 0 | 13 | 187 | 1335 | 66.0 |
 | test | 2,000,000 - 2,000,999 | 1,000 | 0 | 29 | 971 | 1117 | 50.9 |
 | test_unfiltered | 2,000,000 - 2,000,199 | 200 | 0 | 5 | 200 | 1102 | 50.6 |
+| train | 0 - 49,999 | 50,000 | 0 | 1,051 | 48,949 | 1112 | 50.8 |
 | val | 1,000,000 - 1,000,199 | 200 | 0 | 3 | 197 | 1130 | 51.5 |
 
 ### Reads of the protected test sets
@@ -125,9 +126,7 @@ _No exploit list yet (`results/exploits.json` does not exist)._
 
 ### Evaluator flags
 
-| Configuration | Set | Overspeed flags | Coasting energy-gain flags | Seeds | Tracks |
-|---|---|---|---|---|---|
-| Specialist (campaign-01) [pilot, seed 0] | Val | 0 | 1 | 1 | 197 |
+_No evaluation has raised an exploit flag._
 
 ## Key terms
 
