@@ -64,6 +64,7 @@ Rows from other groups are shown for comparison. Track counts: Test (unseen gene
 | Generalist vs | Set | Seeds (generalist / other) | IQM generalist | IQM other | P(generalist > other) | Time ratio where both finish | Tracks both finish |
 |---|---|---|---|---|---|---|---|
 | Blind control | test | 1 / 1 | 1.464 | 1.291 | 0.874 | 0.927 | 650 |
+| PQN | test | 1 / 1 | 1.464 | 1.295 | 0.854 | 0.886 | 671 |
 | Scripted driver | test | 1 / 1 | 1.464 | 1.000 | 0.815 | 0.673 | 790 |
 | Random actions | test | 1 / 3 | 1.464 | 0.000 | 0.907 | — | 0 |
 | Untrained network | test | 1 / 10 | 1.464 | 0.000 | 0.907 | — | 0 |
@@ -85,6 +86,9 @@ Rows from other groups are shown for comparison. Track counts: Test (unseen gene
 | Generalist (PPO) [pilot, seed 0] | Train | 0 | 3 | 1 | 1000 |
 | Generalist (PPO) | OOR | 0 | 3 | 1 | 187 |
 | Generalist (PPO) | Test | 0 | 1 | 1 | 971 |
+| PQN | Test | 0 | 1 | 1 | 971 |
+| PQN | Own train | 0 | 1 | 1 | 1000 |
+| PQN | Train | 0 | 1 | 1 | 1000 |
 
 ### Training curves
 

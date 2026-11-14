@@ -40,6 +40,7 @@ _Not yet available: needs test results from two or more seeds of a configuration
 | Generalist vs | Set | Seeds (generalist / other) | IQM generalist | IQM other | P(generalist > other) | Time ratio where both finish | Tracks both finish |
 |---|---|---|---|---|---|---|---|
 | Blind control | test | 1 / 1 | 1.464 | 1.291 | 0.874 | 0.927 | 650 |
+| PQN | test | 1 / 1 | 1.464 | 1.295 | 0.854 | 0.886 | 671 |
 | Scripted driver | test | 1 / 1 | 1.464 | 1.000 | 0.815 | 0.673 | 790 |
 | Random actions | test | 1 / 3 | 1.464 | 0.000 | 0.907 | — | 0 |
 | Untrained network | test | 1 / 10 | 1.464 | 0.000 | 0.907 | — | 0 |

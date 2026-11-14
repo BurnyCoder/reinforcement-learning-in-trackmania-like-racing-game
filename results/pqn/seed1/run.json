@@ -2,9 +2,9 @@
   "experiment": "pqn",
   "seed": 1,
   "track": null,
-  "status": "trained",
+  "status": "evaluated",
   "phase": "2-single-seed",
-  "updated": "2026-11-14T17:02:42.671651+00:00",
+  "updated": "2026-11-14T17:13:40.713457+00:00",
   "algo": "pqn",
   "description": "PQN baseline",
   "git_commit": "70a35809b494c89e7fa074064a9c8dc961ef0360",
@@ -73,5 +73,69 @@
   "global_step": 1000341504,
   "iterations": 1908,
   "wall_hours": 1.1029276348484887,
-  "last_session_hours": 1.1030048231946097
+  "last_session_hours": 1.1030048231946097,
+  "eval_summary": {
+    "val": {
+      "sws": 1.0338449630898812,
+      "finish_rate": 0.7817258883248731,
+      "speed_ratio_finished": 1.3225159592773157,
+      "n_tracks": 197,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    },
+    "train_sample": {
+      "sws": 1.0521944670961305,
+      "finish_rate": 0.797,
+      "speed_ratio_finished": 1.3201938106601383,
+      "n_tracks": 1000,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 1
+    },
+    "train_own": {
+      "sws": 1.0521944670961305,
+      "finish_rate": 0.797,
+      "speed_ratio_finished": 1.3201938106601383,
+      "n_tracks": 1000,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 1
+    },
+    "campaign": {
+      "sws": 1.390989910549765,
+      "finish_rate": 1.0,
+      "speed_ratio_finished": 1.390989910549765,
+      "n_tracks": 5,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    },
+    "test": {
+      "sws": 1.0540525893637758,
+      "finish_rate": 0.7981462409886715,
+      "speed_ratio_finished": 1.3206258893835177,
+      "n_tracks": 971,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 1
+    },
+    "oor": {
+      "sws": 0.7251250465978017,
+      "finish_rate": 0.5508021390374331,
+      "speed_ratio_finished": 1.3164891622697958,
+      "n_tracks": 187,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    },
+    "test_unfiltered": {
+      "sws": 1.10491973210704,
+      "finish_rate": 0.83,
+      "speed_ratio_finished": 1.3312285929000485,
+      "n_tracks": 200,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    }
+  },
+  "onnx_check": {
+    "agreement": 1.0,
+    "max_abs_logit_diff": 0.0,
+    "n": 512
+  },
+  "onnx_file": "assets/models/pqn-seed1.onnx"
 }

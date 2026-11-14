@@ -60,3 +60,6 @@
 {"time": "2026-11-14T16:06:41.934139+00:00", "split": "test", "policy": "generalist/seed0", "tracks": 971}
 {"time": "2026-11-14T16:36:37.022878+00:00", "split": "oor", "policy": "export:unseen-track-demo", "tracks": 1}
 {"time": "2026-11-14T16:40:40.791036+00:00", "split": "oor", "policy": "generalist/seed0", "tracks": 187}
+{"time": "2026-11-14T17:08:33.687699+00:00", "split": "test", "policy": "pqn/seed1", "tracks": 971}
+{"time": "2026-11-14T17:09:47.326362+00:00", "split": "oor", "policy": "pqn/seed1", "tracks": 187}
+{"time": "2026-11-14T17:11:17.059497+00:00", "split": "test_unfiltered", "policy": "pqn/seed1", "tracks": 200}

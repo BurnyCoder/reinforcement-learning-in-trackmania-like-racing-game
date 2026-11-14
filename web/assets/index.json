@@ -90,6 +90,14 @@
       "stride": 3,
       "description": "Blind control - the observation keeps only the nearest centreline point",
       "run": "blind/seed1"
+    },
+    {
+      "name": "pqn-seed1",
+      "file": "assets/models/pqn-seed1.onnx",
+      "K": 20,
+      "stride": 3,
+      "description": "PQN baseline",
+      "run": "pqn/seed1"
     }
   ],
   "ghosts": {
@@ -97,6 +105,7 @@
       "assets/ghosts/campaign-01/blind-seed1.json",
       "assets/ghosts/campaign-01/generalist-seed0.json",
       "assets/ghosts/campaign-01/generalist-seed1.json",
+      "assets/ghosts/campaign-01/pqn-seed1.json",
       "assets/ghosts/campaign-01/random-seed0.json",
       "assets/ghosts/campaign-01/specialist-campaign-01-seed0.json",
       "assets/ghosts/campaign-01/untrained-seed0-sampled.json",
@@ -106,6 +115,7 @@
       "assets/ghosts/campaign-02/blind-seed1.json",
       "assets/ghosts/campaign-02/generalist-seed0.json",
       "assets/ghosts/campaign-02/generalist-seed1.json",
+      "assets/ghosts/campaign-02/pqn-seed1.json",
       "assets/ghosts/campaign-02/random-seed0.json",
       "assets/ghosts/campaign-02/untrained-seed0-sampled.json",
       "assets/ghosts/campaign-02/untrained-seed0.json"
@@ -114,6 +124,7 @@
       "assets/ghosts/campaign-03/blind-seed1.json",
       "assets/ghosts/campaign-03/generalist-seed0.json",
       "assets/ghosts/campaign-03/generalist-seed1.json",
+      "assets/ghosts/campaign-03/pqn-seed1.json",
       "assets/ghosts/campaign-03/random-seed0.json",
       "assets/ghosts/campaign-03/untrained-seed0-sampled.json",
       "assets/ghosts/campaign-03/untrained-seed0.json"
@@ -122,6 +133,7 @@
       "assets/ghosts/campaign-04/blind-seed1.json",
       "assets/ghosts/campaign-04/generalist-seed0.json",
       "assets/ghosts/campaign-04/generalist-seed1.json",
+      "assets/ghosts/campaign-04/pqn-seed1.json",
       "assets/ghosts/campaign-04/random-seed0.json",
       "assets/ghosts/campaign-04/untrained-seed0-sampled.json",
       "assets/ghosts/campaign-04/untrained-seed0.json"
@@ -130,6 +142,7 @@
       "assets/ghosts/campaign-05/blind-seed1.json",
       "assets/ghosts/campaign-05/generalist-seed0.json",
       "assets/ghosts/campaign-05/generalist-seed1.json",
+      "assets/ghosts/campaign-05/pqn-seed1.json",
       "assets/ghosts/campaign-05/random-seed0.json",
       "assets/ghosts/campaign-05/untrained-seed0-sampled.json",
       "assets/ghosts/campaign-05/untrained-seed0.json"
