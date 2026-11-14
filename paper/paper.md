@@ -23,6 +23,7 @@ On the tracks it finished, it needed 0.67 times the scripted driver's time (32.7
 Its finish rate was 8.1 percentage points more than the blind control (73.3 %, 1 seed); 1.6 percentage points more than the pqn (79.8 %, 1 seed); 81.5 percentage points more than the untrained network (0.0 %, 10 seeds); 81.5 percentage points more than the random actions (0.0 %, 3 seeds).
 The preregistered hypotheses H1-H3 are not tested yet: they need test results from 10 generalist seeds and 5 seeds each of the blind control and the single-track ablation (1 generalist seeds so far).
 On campaign track campaign-01 the generalist (zero-shot) was 2.8 % slower than the specialist trained on that track.
+On campaign track campaign-02 the generalist (zero-shot) was 5.5 % slower than the specialist trained on that track.
 
 # Introduction
 
@@ -37,7 +38,7 @@ This paper asks four questions, fixed in the preregistration ([`reports/preregis
 
 **What is new** is a combination, limited to what our searches found ([`reports/literature-review.md`](https://github.com/BurnyCoder/reinforcement-learning-in-trackmania-like-racing-game/blob/main/reports/literature-review.md), section 14): the same car code runs in a playable browser game and, as a tested batched port, in training; the generalist is tested on held-out generated 3D tracks with hills, banking and jumps, with several seeds against a scripted driver, a blind control and a training-set-size ablation; and exploits of the physics engine are reported as findings rather than removed.
 
-**Status of this version.** 21 of 116 runs in the preregistered run matrix are evaluated. The confirmatory tests of H1-H3 need all preregistered seeds and are not complete; every number from fewer seeds or from the validation set is labelled preliminary.
+**Status of this version.** 22 of 116 runs in the preregistered run matrix are evaluated. The confirmatory tests of H1-H3 need all preregistered seeds and are not complete; every number from fewer seeds or from the validation set is labelled preliminary.
 
 # Background and related work
 
@@ -103,11 +104,11 @@ Runs follow the preregistered order: (1) the first two models (seed 0), which mu
 |---|---|---|---|---|---|---|
 | baselines | 0 | 0 | 0 | 0 | 15 | 15 |
 | 1-first-models | 0 | 0 | 0 | 0 | 2 | 2 |
-| 2-single-seed | 20 | 0 | 0 | 1 | 4 | 25 |
+| 2-single-seed | 20 | 0 | 0 | 0 | 5 | 25 |
 | 4-imitation-hybrids | 5 | 0 | 0 | 0 | 0 | 5 |
 | 5-hyperparameters | 4 | 0 | 0 | 0 | 0 | 4 |
 | 6-seed-sensitivity | 65 | 0 | 0 | 0 | 0 | 65 |
-| **all** | 94 | 0 | 0 | 1 | 21 | 116 |
+| **all** | 94 | 0 | 0 | 0 | 22 | 116 |
 
 # Results
 
@@ -132,6 +133,7 @@ Runs follow the preregistered order: (1) the first two models (seed 0), which mu
 | PQN | Baseline algorithm | 1 | 1.054 [1.020, 1.086] | 79.8 % | 0.725 [0.631, 0.820] | 55.1 % | 1.391 [1.270, 1.517] | 100.0 % |
 | Specialist (campaign-01) [pilot, seed 0] | Specialist | 1 | — | — | — | — | 0.306 [0.000, 0.918] | 20.0 % |
 | Specialist (campaign-01) | Specialist | 1 | 0.286 [0.250, 0.323] | 19.8 % | — | — | 0.577 [0.000, 1.188] | 40.0 % |
+| Specialist (campaign-02) | Specialist | 1 | 0.312 [0.274, 0.351] | 21.0 % | — | — | 0.312 [0.000, 0.937] | 20.0 % |
 
 Track counts: Test (unseen generated): 971 tracks; Validation: 197 tracks; Training sample: 1,000 tracks; Own training tracks: 1,000 tracks; Out-of-range test: 187 tracks; Campaign (hand-made): 5 tracks; Unfiltered test: 200 tracks.
 
@@ -181,6 +183,7 @@ Cross-checks (exploratory, Agarwal et al. 2021):
 | campaign-02 | 36.43 | Scripted driver | reference | 1/1 | 36.43 | s0: 36.43 |
 | campaign-02 | 36.43 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 24.45 | s0: 24.45 |
 | campaign-02 | 36.43 | Generalist (PPO) | zero-shot | 1/1 | 24.60 | s1: 24.60 |
+| campaign-02 | 36.43 | Specialist (campaign-02) | own track | 1/1 | 23.32 | s1: 23.32 |
 | campaign-03 | 48.50 | CEM planner | reference | 1/1 | 36.23 | s0: 36.23 |
 | campaign-03 | 48.50 | Scripted driver | reference | 1/1 | 48.52 | s0: 48.52 |
 | campaign-03 | 48.50 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 35.15 | s0: 35.15 |
@@ -227,6 +230,7 @@ _No exploit list yet (`results/exploits.json` does not exist)._
 | PQN | Test | 0 | 1 | 1 | 971 |
 | PQN | Own train | 0 | 1 | 1 | 1000 |
 | PQN | Train | 0 | 1 | 1 | 1000 |
+| Specialist (campaign-02) | Test | 0 | 3 | 1 | 971 |
 
 ## Training curves of the generalist
 
@@ -241,6 +245,7 @@ The results so far, in plain words:
 - Its finish rate was 8.1 percentage points more than the blind control (73.3 %, 1 seed); 1.6 percentage points more than the pqn (79.8 %, 1 seed); 81.5 percentage points more than the untrained network (0.0 %, 10 seeds); 81.5 percentage points more than the random actions (0.0 %, 3 seeds).
 - The preregistered hypotheses H1-H3 are not tested yet: they need test results from 10 generalist seeds and 5 seeds each of the blind control and the single-track ablation (1 generalist seeds so far).
 - On campaign track campaign-01 the generalist (zero-shot) was 2.8 % slower than the specialist trained on that track.
+- On campaign track campaign-02 the generalist (zero-shot) was 5.5 % slower than the specialist trained on that track.
 
 A written interpretation will be added once the confirmatory runs are complete.
 
