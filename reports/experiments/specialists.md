@@ -21,7 +21,7 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 | `specialist-campaign-05/seed1` | evaluated | 2-single-seed | 200,278,016 | 0.31 | v1 | b8ad75761b | test, campaign |
 | `specialist-finetune-campaign-01/seed1` | evaluated | 2-single-seed | 200,278,016 | 0.26 | v1 | 1a990052bb | test, campaign |
 | `specialist-finetune-campaign-02/seed1` | evaluated | 2-single-seed | 200,278,016 | 0.25 | v1 | 30ea48b44d | test, campaign |
-| `specialist-finetune-campaign-03/seed1` | trained | 2-single-seed | 200,278,016 | 0.27 | v1 | f534e2ecfd | — |
+| `specialist-finetune-campaign-03/seed1` | evaluated | 2-single-seed | 200,278,016 | 0.27 | v1 | f534e2ecfd | test, campaign |
 | `specialist-finetune-campaign-04/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
 | `specialist-finetune-campaign-05/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
 | `specialist-campaign-01/seed2` | not started | 6-seed-sensitivity | — | — | v1 | — | — |
@@ -73,6 +73,7 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 | Specialist (campaign-05) | Specialist | 1 | 0.687 [0.640, 0.735] | 45.2 % | — | — | — | — | — | — | — | — | 0.648 [0.000, 1.332] | 40.0 % | — | — |
 | Fine-tuned specialist (campaign-01) | Specialist | 1 | 0.478 [0.435, 0.523] | 31.8 % | — | — | — | — | — | — | — | — | 0.586 [0.000, 1.196] | 40.0 % | — | — |
 | Fine-tuned specialist (campaign-02) | Specialist | 1 | 0.446 [0.403, 0.490] | 29.7 % | — | — | — | — | — | — | — | — | 0.892 [0.278, 1.507] | 60.0 % | — | — |
+| Fine-tuned specialist (campaign-03) | Specialist | 1 | 0.636 [0.589, 0.684] | 42.2 % | — | — | — | — | — | — | — | — | 0.971 [0.292, 1.651] | 60.0 % | — | — |
 
 Rows from other groups are shown for comparison. Track counts: Test (unseen generated): 971 tracks; Validation: 197 tracks; Training sample: 1,000 tracks; Own training tracks: 1,000 tracks; Out-of-range test: 187 tracks; Campaign (hand-made): 5 tracks; Unfiltered test: 200 tracks.
 
@@ -98,6 +99,7 @@ Rows from other groups are shown for comparison. Track counts: Test (unseen gene
 | campaign-03 | 48.50 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 35.15 | s0: 35.15 |
 | campaign-03 | 48.50 | Generalist (PPO) | zero-shot | 1/1 | 34.56 | s1: 34.56 |
 | campaign-03 | 48.50 | Specialist (campaign-03) | own track | 1/1 | 33.46 | s1: 33.46 |
+| campaign-03 | 48.50 | Fine-tuned specialist (campaign-03) | own track | 1/1 | 33.24 | s1: 33.24 |
 | campaign-04 | 42.52 | CEM planner | reference | 1/1 | 22.38 | s0: 22.38 |
 | campaign-04 | 42.52 | Scripted driver | reference | 1/1 | 42.52 | s0: 42.52 |
 | campaign-04 | 42.52 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 21.27 | s0: 21.27 |
