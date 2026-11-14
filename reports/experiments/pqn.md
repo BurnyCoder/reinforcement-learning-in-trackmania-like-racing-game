@@ -14,13 +14,15 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 
 | Run | Status | Phase | Agent steps | Wall hours | Physics | Commit | Evaluated on |
 |---|---|---|---|---|---|---|---|
-| `pqn/seed1` | planned | 2-single-seed | — | — | v1 | — | — |
+| `pqn/seed1` | trained | 2-single-seed | 1,000,341,504 | 1.10 | v1 | 70a35809b4 | — |
 | `pqn/seed2` | not started | 6-seed-sensitivity | — | — | v1 | — | — |
 | `pqn/seed3` | not started | 6-seed-sensitivity | — | — | v1 | — | — |
 
 ## Configuration (logged in each run.json)
 
-_No run of this group has logged its configuration yet (the experiment files are in `configs/experiments/`)._
+| Run | total_steps | num_envs | num_steps | lr | gamma | gae_lambda | ent_coef | clip_coef | hidden | action_mode | weight_decay | loaded_tracks | window_k | blind | time_cost | fall_penalty | random_start_prob | max_steps | hint_weight | scripted_starts | training tracks |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `pqn/seed1` | 1000000000 | 16384 | 32 | 0.00025 | 0.99 | 0.95 | 0.01 | 0.2 | [256, 256] | factored | 0.0 | 4096 | 20 | False | 0.0 | 0.0 | 0.5 | 1500 | 0.0 | False | 48949 |
 
 ## Results
 
@@ -31,6 +33,12 @@ _No run of this group has logged its configuration yet (the experiment files are
 | Generalist (PPO) | Main method | 1 | 1.214 [1.177, 1.250] | 81.5 % | 1.236 [1.153, 1.315] | 82.7 % | 1.250 [1.214, 1.283] | 83.9 % | 1.250 [1.214, 1.283] | 83.9 % | 0.875 [0.769, 0.982] | 57.8 % | 1.590 [1.451, 1.783] | 100.0 % | 1.231 [1.147, 1.311] | 82.0 % |
 
 Rows from other groups are shown for comparison. Track counts: Test (unseen generated): 971 tracks; Validation: 197 tracks; Training sample: 1,000 tracks; Own training tracks: 1,000 tracks; Out-of-range test: 187 tracks; Campaign (hand-made): 5 tracks; Unfiltered test: 200 tracks.
+
+### Training curves
+
+![Training curves of PQN; one line per seed (seeds 1). Return and finish rate are over training episodes (standing and random starts); validation SWS is the evaluator's score on the validation tracks.](../figures/curves_pqn.png)
+
+*Training curves of PQN; one line per seed (seeds 1). Return and finish rate are over training episodes (standing and random starts); validation SWS is the evaluator's score on the validation tracks.*
 
 ## Learnings
 
