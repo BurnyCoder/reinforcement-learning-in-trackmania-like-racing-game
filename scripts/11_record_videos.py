@@ -3,6 +3,8 @@
 Usage (Windows; the game served locally):
   uv run python -m http.server 8123 --directory web
   uv run python scripts/11_record_videos.py [--clips docs/videos/clips.yaml]
+  # Hugging Face card clips (one per model without a README clip; MP4 only, README untouched):
+  uv run python scripts/11_record_videos.py --clips docs/videos/cards/clips.yaml --out docs/videos/cards --no-readme --no-gif
 
 Global context: the clips are listed in docs/videos/clips.yaml. Each names a model from
 web/assets/index.json and either a fixed track or a selection rule over the model's official
@@ -14,7 +16,8 @@ https://playwright.dev/python/docs/videos); ffmpeg trims it and writes an H.264 
 palette-optimised GIF (https://ffmpeg.org/ffmpeg-filters.html#palettegen). The browser's lap or fall
 time is compared with the official one, and the README section between the VIDEOS markers is rewritten
 with one full-width block per clip (GitHub READMEs do not play videos stored in the repository, so
-each GIF links to its MP4; a table would shrink the clips to thumbnails on phones).
+each GIF links to its MP4; a table would shrink the clips to thumbnails on phones). ``videos.json`` in the
+output folder keeps each clip's files and caption, which the Hugging Face cards reuse (report/cards.py).
 """
 import argparse
 import csv
@@ -45,6 +48,8 @@ ap.add_argument("--gif-width", type=int, default=400)
 ap.add_argument("--gif-fps", type=int, default=8)
 ap.add_argument("--captions-only", action="store_true", help="rewrite the README section from the last recording (videos.json)")
 ap.add_argument("--record", type=int, nargs="*", default=None, help="record only these clips (1-based); reuse the others from videos.json")
+ap.add_argument("--no-readme", action="store_true", help="do not rewrite the README video section (clips for the Hugging Face cards)")
+ap.add_argument("--no-gif", action="store_true", help="write only the MP4 (the Hugging Face cards play MP4 in a <video> tag)")
 a = ap.parse_args()
 out_dir = Path(a.out)
 out_dir.mkdir(parents=True, exist_ok=True)
@@ -153,7 +158,7 @@ if len(todo) < len(clips):  # reuse the other clips and the browser times measur
     last = {(v["model"], v["track"]): v for v in json.loads((out_dir / "videos.json").read_text(encoding="utf-8"))}
     for k, c in enumerate(clips, 1):
         if k not in todo:
-            c.update({f: last[(c["model"], c["track"])][f] for f in ("game_s", "game_finished", "mp4", "gif")})
+            c.update({f: last[(c["model"], c["track"])].get(f) for f in ("game_s", "game_finished", "mp4", "gif")})
 with sync_playwright() if todo else _nullcontext() as p:
     browser = p.chromium.launch(headless=not a.headed, args=["--ignore-gpu-blocklist", "--enable-gpu", "--use-angle=d3d11"]) if p else None
     tmp = Path(tempfile.mkdtemp())
@@ -170,16 +175,15 @@ with sync_playwright() if todo else _nullcontext() as p:
                         "-preset", "slow", "-movflags", "+faststart", "-an", f"{stem}.mp4"], check=True)
         gif_filter = (f"fps={a.gif_fps},scale={a.gif_width}:-1:flags=lanczos,split[s0][s1];"
                       "[s0]palettegen=max_colors=128:stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=4")
-        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", *trim, "-vf", gif_filter, f"{stem}.gif"], check=True)
+        if not a.no_gif:
+            subprocess.run(["ffmpeg", "-y", "-loglevel", "error", *trim, "-vf", gif_filter, f"{stem}.gif"], check=True)
         c.update(game_s=round(final["time"], 2), game_finished=bool(final["finished"]),
-                 mp4=f"{stem.relative_to(ROOT).as_posix()}.mp4", gif=f"{stem.relative_to(ROOT).as_posix()}.gif")
+                 mp4=f"{stem.relative_to(ROOT).as_posix()}.mp4", gif=None if a.no_gif else f"{stem.relative_to(ROOT).as_posix()}.gif")
         print(f"{c['title']}: {c['model']} on {c['track']}: browser {c['game_s']:.2f} s ({'finished' if c['game_finished'] else 'out'}), "
               f"official {c['row']['end']} at {c['official_s']:.2f} s", flush=True)
     if browser:
         browser.close()
     shutil.rmtree(tmp, ignore_errors=True)
-(out_dir / "videos.json").write_text(json.dumps([{k: v for k, v in c.items() if k != "row"} | {"official": c["row"]} for c in clips],
-                                               indent=2), encoding="utf-8")
 
 
 def compare_text(c: dict) -> str:
@@ -235,16 +239,18 @@ for k, c in enumerate(clips, 1):
     if c.get("group") and c["group"] != group:  # section heading when a new group starts (positive, negative, controls)
         group = c["group"]
         blocks.append(f"### {group}")
-    lines = [f"#### {k}. {c['title']}", "", f"[![{c['title']}: {c['model']} on {c['track']}]({c['gif']})]({c['mp4']})", "",
-             f"- **What you see:** {c['explain'].strip()}",
-             f"- **Model:** {model_text(c['run'])}.",
-             f"- **Map:** {map_text(c['track'], c['run'], c['split'])}.",
-             f"- **Evaluation:** {eval_text(c)}."]
+    # The caption's parts, kept in videos.json for the Hugging Face cards (report/cards.py) as well as the README.
+    c["caption"] = {"What you see": c["explain"].strip(), "Model": f"{model_text(c['run'])}.",
+                    "Map": f"{map_text(c['track'], c['run'], c['split'])}.", "Evaluation": f"{eval_text(c)}."}
     if c["why"]:
-        lines.append(f"- **Why this clip:** chosen by a fixed rule as {c['why']} in its official evaluation.")
+        c["caption"]["Why this clip"] = f"chosen by a fixed rule as {c['why']} in its official evaluation."
     if c.get("compare"):  # many-run comparison (scripts/14_random_vs_sampled.py): where this single run falls
-        lines.append(f"- **Over many runs:** {compare_text(c)}")
+        c["caption"]["Over many runs"] = compare_text(c)
+    lines = [f"#### {k}. {c['title']}", "", f"[![{c['title']}: {c['model']} on {c['track']}]({c['gif']})]({c['mp4']})", "",
+             *[f"- **{part}:** {text}" for part, text in c["caption"].items()]]
     blocks.append("\n".join(lines))
+(out_dir / "videos.json").write_text(json.dumps([{k: v for k, v in c.items() if k != "row"} | {"official": c["row"]} for c in clips],
+                                               indent=2), encoding="utf-8")
 section = ("<!-- VIDEOS:START -->\n## Videos\n\n"
            "Each clip replays an official evaluation run in the browser game: the car states the evaluator recorded while scoring "
            "the run, shown by the game's renderer (\"Watch replay\"). Each clip is chosen by a fixed rule from the official "
@@ -253,9 +259,11 @@ section = ("<!-- VIDEOS:START -->\n## Videos\n\n"
            "official 32-bit GPU run. Generated by `scripts/11_record_videos.py` from `docs/videos/clips.yaml` and "
            "`results/<run>/eval_*.csv`.\n\n"
            + "\n\n".join(blocks) + "\n<!-- VIDEOS:END -->")
-readme = ROOT / "README.md"
-text = readme.read_text(encoding="utf-8")
-assert "<!-- VIDEOS:START -->" in text, "README has no VIDEOS markers"
-text = re.sub(r"<!-- VIDEOS:START -->.*?<!-- VIDEOS:END -->", lambda _: section, text, flags=re.S)
-readme.write_text(text, encoding="utf-8", newline="\n")
-print("README video section updated")
+if not a.no_readme:
+    readme = ROOT / "README.md"
+    text = readme.read_text(encoding="utf-8")
+    assert "<!-- VIDEOS:START -->" in text, "README has no VIDEOS markers"
+    text = re.sub(r"<!-- VIDEOS:START -->.*?<!-- VIDEOS:END -->", lambda _: section, text, flags=re.S)
+    readme.write_text(text, encoding="utf-8", newline="\n")
+    print("README video section updated")
+print(f"{out_dir / 'videos.json'} written ({len(clips)} clips)")

@@ -64,6 +64,8 @@ This paper asks four questions, fixed in the preregistration ([`reports/preregis
 
 # Method
 
+{{ fig_system }}
+
 ## Game and physics
 
 The browser game (three.js and the unmodified, vendored cannon-es 0.20.0) and the training simulator share one car model and one track format ([`docs/formats.md`]({{ repo_url }}/blob/main/docs/formats.md)). Physics runs at a fixed tick of {{ dt if dt else "(not set)" }} s; the agent, like a keyboard player, acts once every {{ ticks_per_action if ticks_per_action else "(not set)" }} ticks. The training simulator is a line-by-line batched PyTorch port of `RaycastVehicle`, `WheelInfo`, `Body.integrate`, the step order of `World.internalStep` and cannon's ray-against-triangle test ([`docs/physics.md`]({{ repo_url }}/blob/main/docs/physics.md)). Its tests compare it with the original running in Node.js: one tick from random states must agree to 1e-9 in 64-bit floats, and driven runs must stay close (Appendix C). Known quirks of the original (unlimited straight-line braking grip, single-ray wheels, no rolling resistance when coasting) are kept and mirrored, and listed as candidate exploits.
@@ -78,9 +80,13 @@ Tracks are ribbons in the sky: a centreline with banking, width, gaps for jumps 
 
 Five hand-made campaign tracks serve the game, the specialists and a hand-made out-of-distribution test. Every read of the test and out-of-range sets is logged.
 
+{{ fig_protocol }}
+
 ## Agent
 
-The observation holds the car-frame velocity and spin, the up vector, wheel contacts, steering angle, previous action, offset and heading error to the centreline, and upcoming centreline points in the car frame with width and gap flags. The action is two 3-way choices (steer left/none/right; gas/coast/brake). The reward is metres of centreline progress per step and nothing else. Training episodes mix standing starts with random starts along the centreline. The agent never sees the scripted driver's actions, states or times outside phase 4. PPO uses separate actor and critic networks, a KL-adaptive learning rate, observation normalisation, bootstrapping on time limits and summed log-probabilities over the two heads (settings in Appendix A).
+The observation (Figure: network architecture) holds, all in the car's frame, the velocity and spin, the direction of gravity (pitch and roll), the steering angle, which wheels touch the road, the previous action, and the next centreline points with the road's left direction at each (heading and banking) and a flag for gaps to jump. The action is two 3-way choices (steer left/none/right; gas/coast/brake). The reward is metres of centreline progress per step and nothing else. Training episodes mix standing starts with random starts along the centreline. The agent never sees the scripted driver's actions, states or times outside phase 4. PPO uses separate actor and critic networks, a KL-adaptive learning rate, observation normalisation, bootstrapping on time limits and summed log-probabilities over the two heads (settings in Appendix A).
+
+{{ fig_architecture }}
 
 ## Metric
 
@@ -103,6 +109,8 @@ All three hypotheses are tested once, on the test set and the first physics vers
 Runs follow the preregistered order: (1) the first two models (seed 0), which must pass a learning gate on validation tracks before the recipe is frozen; (2) one seed of every experiment; (3) patched physics, only if an exploit is used; (4) imitation and hybrids; (5) hyperparameter sensitivity; (6) seed sensitivity. Current status of every run in the matrix:
 
 {{ status_table }}
+
+{{ fig_status }}
 
 # Results
 

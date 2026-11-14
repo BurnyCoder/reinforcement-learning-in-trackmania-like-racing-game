@@ -226,7 +226,7 @@ def test_build_with_no_results(tmp_path):
     assert "No model has been evaluated yet" in summary and "Not yet available" in summary
     assert set(out["hypotheses"].values()) == {"not yet tested"}
     assert "results are not yet available" in (tmp_path / "out" / "paper" / "paper.md").read_text(encoding="utf-8").lower()
-    assert out["figures"] == []
+    assert all(f.startswith("diagram_") for f in out["figures"])  # only the method diagrams, which need no results
 
 
 def test_pdf_step_never_raises(tmp_path, monkeypatch):
@@ -235,3 +235,21 @@ def test_pdf_step_never_raises(tmp_path, monkeypatch):
     md.write_text("# x\n", encoding="utf-8")
     monkeypatch.setattr(pdf, "find_pandoc", lambda: None)
     assert build_pdf(md, tmp_path) is None
+
+
+def test_model_card_plays_the_run_clips_from_its_repo(built):
+    """A run with recorded clips gets a Videos section whose <video> tags point at the MP4s that publish.publish_model
+    uploads to the model repository's videos/ folder (report/cards.py run_clips, video_section)."""
+    from racingmania.report.cards import run_clips
+    from racingmania.utils.paths import REPO_ROOT
+    results, _, _ = built
+    clips = run_clips(REPO_ROOT, "generalist/seed0")
+    if not clips:
+        pytest.skip("no recorded clip of generalist/seed0")
+    card = build.model_card("generalist/seed0", results_dir=results, repo_id="someone/racingmania-generalist-seed0")
+    assert "## Videos" in card
+    for c in clips:
+        name = Path(c["mp4"]).name
+        assert f'<video src="https://huggingface.co/someone/racingmania-generalist-seed0/resolve/main/videos/{name}"' in card
+        assert f"### {c['title']}" in card
+    assert "## Videos" not in build.model_card("no-such-run/seed1", results_dir=results)

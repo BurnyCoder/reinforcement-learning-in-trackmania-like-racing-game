@@ -28,6 +28,7 @@ from . import taxonomy as tx
 
 log = get_logger(__name__)
 REPO_URL = "https://github.com/BurnyCoder/reinforcement-learning-in-trackmania-like-racing-game"
+HF_RESULTS_REPO = "BurnyCoder/racingmania-results"  # the results dataset (publish.publish_results_dataset)
 MARK_START, MARK_END = "<!-- RESULTS:START -->", "<!-- RESULTS:END -->"
 
 # Methodology of each experiment group: design only (what is trained, on what, compared with what).
@@ -328,6 +329,8 @@ def paper_context(res, an, figs) -> dict:
         "cross_check_table": T.cross_check_table(an), "seed_table": T.seed_table(an), "single_multi_table": T.single_multi_table(an),
         "size_table": T.size_table(an), "specialist_table": T.specialist_table(an), "exploits_table": T.exploits_table(res),
         "flags_table": T.flags_table(an), "track_sets_table": T.track_sets_table(res), "learning_gate": learning_gate(an),
+        "fig_architecture": rel(figs.get("diagram_architecture")), "fig_system": rel(figs.get("diagram_system")),
+        "fig_protocol": rel(figs.get("diagram_protocol")), "fig_status": rel(figs.get("diagram_run_status"), "80%"),
         "fig_methods": rel(figs.get("sws_by_method")), "fig_size": rel(figs.get("training_set_size"), "70%"),
         "fig_features": rel(figs.get("finish_by_feature")), "fig_specialists": rel(figs.get("specialists_campaign")),
         "fig_seeds": rel(figs.get("seed_spread"), "80%"),
