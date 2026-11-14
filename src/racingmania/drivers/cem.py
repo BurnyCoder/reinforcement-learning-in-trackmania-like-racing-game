@@ -27,7 +27,7 @@ log = get_logger(__name__)
 @dataclass(frozen=True)
 class CEMParams:
     population: int = 256
-    horizon: int = 30  # agent steps (1.5 s)
+    horizon: int = 90  # agent steps (4.5 s); chosen on validation tracks (scripts/tune_cem.py, results/baselines/cem_horizon_tuning.txt)
     iterations: int = 3
     elite_frac: float = 0.1
     smoothing: float = 0.7  # weight of the new elite frequencies in the refit
