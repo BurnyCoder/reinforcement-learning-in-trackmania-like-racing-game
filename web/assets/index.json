@@ -24,6 +24,12 @@
       "name": "campaign-05",
       "title": "Grand Tour",
       "kind": "campaign"
+    },
+    {
+      "name": "test-2000386",
+      "title": "Unseen test track 2000386",
+      "kind": "unseen",
+      "note": "Held-out test seed 2000386, never used in training: the median-scoring track among the 397 test tracks with a jump that generalist/seed0 finished in its official evaluation."
     }
   ],
   "models": [

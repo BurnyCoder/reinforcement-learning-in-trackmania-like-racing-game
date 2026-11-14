@@ -66,7 +66,7 @@ def headline(an) -> list[str]:
     else:
         have = an.hypotheses[0]["seeds"].get("generalist", 0) if an.hypotheses else 0
         out.append(f"The preregistered hypotheses H1-H3 are not tested yet: they need test results from 10 generalist seeds "
-                   f"and 5 seeds each of the blind control and the single-track ablation ({have} generalist seeds so far).")
+                   f"and 5 seeds each of the blind control and the single-track ablation ({have} generalist seed{'' if have == 1 else 's'} so far).")
     for t in an.specialists:
         p = t.get("generalist_slower_pct")
         if p == p and p is not None:

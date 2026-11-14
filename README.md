@@ -8,9 +8,17 @@ RacingMania is a small racing game in the time-attack genre popularised by Track
 
 The research question is whether one policy, trained with PPO ([Schulman et al. 2017](https://arxiv.org/abs/1707.06347)) on tens of thousands of procedurally generated tracks, can drive tracks it has never seen, and how it compares with a classical scripted driver and with specialists trained on a single track. The hypotheses, metric and analysis were [preregistered](reports/preregistration.md) before any model was trained.
 
-**How it works, in one paragraph.** The game runs the car physics of [cannon-es](https://github.com/pmndrs/cannon-es) (`RaycastVehicle`, a port of Bullet's raycast vehicle) unchanged in the browser. For training, the same per-tick computation is ported line by line to batched PyTorch, so thousands of cars, each on a different track, run in parallel on one GPU. Tests run the original code in Node.js and require the port to match it: one tick from 6,000 random states agrees to 7e-15 in 64-bit floats. A seeded generator builds tracks from straights, arcs, hills, banking and jumps; a track is kept only if a scripted pure-pursuit driver can finish it, and that driver's time is the reference for the score. The agent sees its own motion and the next 114 m of road in its own frame, presses the same keys a player has (left/none/right × gas/coast/brake, 20 times a second), and is rewarded only for metres of progress along the road.
+**How it works, in one paragraph.** The game runs the car physics of [cannon-es](https://github.com/pmndrs/cannon-es) (`RaycastVehicle`, whose code follows Bullet's `btRaycastVehicle`) unchanged in the browser. For training, the same per-tick computation is ported line by line to batched PyTorch, so thousands of cars, each on a different track, run in parallel on one GPU. Tests run the original code in Node.js and require the port to match it: one tick from 6,000 random states agrees to 7e-15 in 64-bit floats. A seeded generator builds tracks from straights, arcs, hills, banking and jumps; a track is kept only if a scripted pure-pursuit driver can finish it, and that driver's time is the reference for the score. The agent sees its own motion and the next 114 m of road in its own frame, presses the same keys a player has (left/none/right × gas/coast/brake, 20 times a second), and is rewarded only for metres of progress along the road.
 
-**Status (2026-11-14): all code is written; the first two models (a specialist on one track and a generalist on many tracks) are next. No result exists yet.** The results section below is generated from result files and fills in as runs finish.
+**Status (2026-11-14): phase 1 is done and phase 2 is running.** Both first models (a specialist on one track and a generalist on the generated training pool) learned with the preregistered starting recipe and passed their learning gates, so the recipe was frozen unchanged; phase 2 trains one seed of every experiment (blind control, PQN, specialists, training-set sizes, ablations). The numbers are in the [results](#results) section, which is generated from the result files; every single-seed number is preliminary, and the hypotheses are tested only when all seeds exist.
+
+**Findings so far (preliminary, one or two seeds):**
+- The generalist finishes most held-out test tracks it never saw and, on the tracks it finishes, is clearly faster than the scripted driver; its scores on unseen tracks and on its own training tracks are about the same. It also finishes all five hand-made campaign tracks, which were never used in training, about as fast as the specialist trained on one of them.
+- Its failures are falls off the road, mostly right after tight corners, not at jumps ([`scripts/09_failure_analysis.py`](scripts/09_failure_analysis.py), `results/generalist/seed*/failures_*.json`). On out-of-range tracks with tighter turns than any in training it almost always falls, while longer jumps than in training transfer well.
+- The specialist does not transfer: off its own track it mostly falls.
+- No agent has exploited a physics quirk so far. Every exploit flag so far came from a run that crashed and failed; the replays fit a cannon-es suspension quirk that adds a little energy when a wheel touches a surface at a steep angle ([`docs/physics.md`](docs/physics.md)). One earlier false alarm led to a better energy detector that also counts rotation.
+- A CEM planner (model-predictive control in the simulator) finishes nearly every track it was run on, but the trained generalist is faster wherever both finish, so CEM is reported as a planning reference, not as an upper bound.
+- Measurement lessons, each recorded as a dated amendment: official evaluations now compile the simulator afresh for each set (float32 rounding had made scores depend on evaluation order), and a few percent of tracks are decided by such rounding noise. Details: [`reports/notes/first-models.md`](reports/notes/first-models.md).
 
 | | |
 |---|---|
@@ -26,17 +34,18 @@ The research question is whether one policy, trained with PPO ([Schulman et al. 
 ![RacingMania in the browser](docs/images/game.png)
 
 <!-- VIDEOS:START -->
-Each model's best finish, driven live in the browser game by the exported policy (click a clip for the full-resolution MP4). Generated by `scripts/11_record_videos.py` from `results/<run>/eval_campaign.csv`.
+Laps driven live in the browser game by the exported policies (click a clip for the full-resolution MP4). The times are those of the official evaluation, which the browser reproduces. Generated by `scripts/11_record_videos.py` from `results/<run>/eval_*.csv`.
 
-| specialist-campaign-01-seed0 on campaign-01 | generalist-seed0 on campaign-04 |
+| Clip | What it shows |
 |---|---|
-| [![specialist-campaign-01-seed0 on campaign-01](docs/videos/specialist-campaign-01-seed0_campaign-01.gif)](docs/videos/specialist-campaign-01-seed0_campaign-01.mp4) | [![generalist-seed0 on campaign-04](docs/videos/generalist-seed0_campaign-04.gif)](docs/videos/generalist-seed0_campaign-04.mp4) |
-| Specialist PPO agent trained on a single campaign track. Best lap: 19.71 s on campaign-01, against 30.17 s for the scripted driver (1.53× its speed). | Generalist PPO agent trained on the whole generated training pool. Best lap: 21.27 s on campaign-04, against 42.52 s for the scripted driver (2.00× its speed). |
+| [![specialist-campaign-01-seed0: best lap, on its training track (First Flight)](docs/videos/specialist-campaign-01-seed0_campaign-01.gif)](docs/videos/specialist-campaign-01-seed0_campaign-01.mp4) | **specialist-campaign-01-seed0: best lap, on its training track (First Flight).** Specialist PPO agent trained on a single campaign track. 19.71 s, against 30.17 s for the scripted driver (1.53× its speed). |
+| [![generalist-seed0: best lap, on a hand-made track it never saw in training (Technical)](docs/videos/generalist-seed0_campaign-04.gif)](docs/videos/generalist-seed0_campaign-04.mp4) | **generalist-seed0: best lap, on a hand-made track it never saw in training (Technical).** Generalist PPO agent trained on the whole generated training pool. 21.27 s, against 42.52 s for the scripted driver (2.00× its speed). |
+| [![generalist-seed0 on a held-out generated track it never saw in training (Unseen test track 2000386)](docs/videos/generalist-seed0_test-2000386.gif)](docs/videos/generalist-seed0_test-2000386.mp4) | **generalist-seed0 on a held-out generated track it never saw in training (Unseen test track 2000386).** Generalist PPO agent trained on the whole generated training pool. 33.01 s, against 49.36 s for the scripted driver (1.50× its speed). Held-out test seed 2000386, never used in training: the median-scoring track among the 397 test tracks with a jump that generalist/seed0 finished in its official evaluation. The browser lap took 33.07 s. |
 <!-- VIDEOS:END -->
 
 ## What is new here
 
-Prior work trained agents for TrackMania against the real game in real time ([Linesight](https://github.com/Linesight-RL/linesight), [TMRL](https://github.com/trackmania-rl/tmrl)) or for Gran Turismo on PlayStations ([Fuchs et al. 2021](https://arxiv.org/abs/2008.07971), [GT Sophy](https://doi.org/10.1038/s41586-021-04357-7)), almost always one track at a time. Evidence that one policy drives unseen tracks is thin for cars; the closest study is for drones ([Green et al. 2026](https://arxiv.org/abs/2606.27348), a preprint). This project combines, as far as our searches found for the first time: a playable game and a training simulator that share one tested physics implementation; a 3D car with suspension, hills, banking and jumps on keyboard-style actions; a preregistered test on 1,000 unseen tracks with ten seeds, a scripted driver, a blind control and a training-set-size ablation; and systematic reporting of physics exploits the agents find instead of removing them. Details and limits of this claim are in the [literature review, section 14](reports/literature-review.md#14-gaps-and-what-is-new-here).
+Prior work trained agents for TrackMania against the real game, sped up through TMInterface ([Linesight](https://github.com/Linesight-RL/linesight)) or in real time ([TMRL](https://github.com/trackmania-rl/tmrl)), or for Gran Turismo on PlayStations ([Fuchs et al. 2021](https://arxiv.org/abs/2008.07971), [GT Sophy](https://doi.org/10.1038/s41586-021-04357-7)), on one or a handful of tracks. Evidence that one policy drives unseen tracks is thin for cars; the closest study is for drones ([Green et al. 2026](https://arxiv.org/abs/2606.27348), a preprint). This project combines, as far as our searches found for the first time: a playable game and a training simulator that share one tested physics implementation; a 3D car with suspension, hills, banking and jumps on keyboard-style actions; a preregistered test on 1,000 held-out test seeds (scored on the tracks the scripted driver certifies) with ten seeds, a scripted driver, a blind control and a training-set-size ablation; and systematic reporting of physics exploits the agents find instead of removing them. Details and limits of this claim are in the [literature review, section 14](reports/literature-review.md#14-gaps-and-what-is-new-here).
 
 ## Results
 
@@ -78,7 +87,7 @@ _Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-14;
 - **Car.** A chassis box (500 kg, 4.7 × 1.1 × 2.0 m) on four spring-damper suspension rays; tyre forces are cannon-es's side-friction and rolling-friction impulses limited by a friction circle. The engine force fades to zero at the top speed (45 m/s), braking is an impulse per tick, and steering is rate-limited and loses authority with speed. All numbers live in [`web/assets/vehicle.json`](web/assets/vehicle.json), read by both the game and the port.
 - **Tick.** 100 physics ticks per second; one action is held for 5 ticks. One tick is gravity → velocity damping → `RaycastVehicle.updateVehicle` → semi-implicit Euler integration, exactly as in cannon-es ([`docs/physics.md`](docs/physics.md)).
 - **Rules.** Checkpoints in order; a run is *out* when the car falls 3 m below the road, stays airborne for 5 s, or makes no 0.5 m of progress in 2 s. Players respawn at the last checkpoint with the clock running; for the agent an out ends the episode.
-- **Known quirks** of cannon-es (unlimited straight-line braking grip, no rolling resistance, one ray per wheel) are left in on purpose and reported if agents exploit them, the way TrackMania players use "uberbugs" ([TAS Exchange FAQ](https://tmtas.exchange/faq)) and OpenAI's hide-and-seek agents learned box surfing ([Baker et al. 2020](https://arxiv.org/abs/1909.07528)).
+- **Known quirks** of cannon-es (unlimited straight-line braking grip, no rolling resistance, one ray per wheel, and a wheel touching a surface at a steep angle pushing up to 10× harder without damping) are left in on purpose and reported if agents exploit them ([`docs/physics.md`](docs/physics.md)), the way TrackMania players use "uberbugs" ([TAS Exchange FAQ](https://tmtas.exchange/faq)) and OpenAI's hide-and-seek agents learned box surfing ([Baker et al. 2020](https://arxiv.org/abs/1909.07528)).
 
 ### Tracks
 
@@ -90,17 +99,18 @@ A track is a ribbon in the sense of [Perantoni & Limebeer 2015](https://doi.org/
 | Validation | 1,000,000–1,000,199 | every development decision |
 | Test | 2,000,000–2,000,999 | reported scores only; each read is logged |
 | Out-of-range test | 3,000,000–3,000,199 | one factor beyond the training range |
-| Campaign | 5 hand-made | the game and the specialist experiment |
+| Unfiltered test | 2,000,000–2,000,199, without certification | secondary check that the certification filter does not flatter the score |
+| Campaign | 5 hand-made | the game, the specialist experiment, and a hand-made set no generalist trains on |
 
 A candidate track enters a set only if the scripted driver finishes it at 0.9, 1.0 and 1.1 × its target speeds; the time at 1.0 is the track's reference time.
 
 ### Agent
 
-PPO adapted from CleanRL's GPU script ([CleanRL](https://github.com/vwxyzjn/cleanrl), [Huang et al. 2022](https://iclr-blog-track.github.io/2022/03/25/ppo-implementation-details/)), with separate 2 × 256 tanh actor and critic networks, two 3-way categorical action heads, observation normalisation, bootstrapping on time limits ([Rudin et al. 2021](https://arxiv.org/abs/2109.11978)), a KL-adaptive learning rate, 16,384 parallel cars and 32-step rollouts. Episodes start at the official start or at random points along the track ([Song et al. 2021](https://arxiv.org/abs/2103.08624)). The observation (160 numbers) is the car's velocity, spin, attitude, steering angle, wheel contacts, previous action, and 20 upcoming centreline points with their left vectors and gap flags, all in the car's frame.
+PPO adapted from CleanRL's GPU script ([CleanRL](https://github.com/vwxyzjn/cleanrl), [Huang et al. 2022](https://iclr-blog-track.github.io/2022/03/25/ppo-implementation-details/)), with separate 2 × 256 tanh actor and critic networks, two 3-way categorical action heads, observation normalisation, bootstrapping on time limits ([Rudin et al. 2021](https://arxiv.org/abs/2109.11978)), a KL-adaptive learning rate, 16,384 parallel cars and 32-step rollouts; a generalist trains for 1 billion agent steps with 4,096 tracks on the GPU at a time, swapped for a new random set every 20 iterations, and a specialist for 200 million steps on its one track. Episodes start at the official start or at random points along the track ([Song et al. 2021](https://arxiv.org/abs/2103.08624)). The reward is 0.1 per metre of progress along the road and nothing else. The observation (160 numbers) is the car's velocity, spin, attitude, steering angle, wheel contacts, previous action, and 20 upcoming centreline points with their left vectors and gap flags, all in the car's frame.
 
 ### Evaluation
 
-The primary metric is the **success-weighted speed** on the 1,000 test tracks: per track, (reference time ÷ agent time) if the agent finishes within 3 × the reference time, else 0, averaged over tracks. It adapts SPL ([Anderson et al. 2018](https://arxiv.org/abs/1807.06757)) from path length to time. Baselines: random actions, an untrained network, the scripted driver (1.0 by construction) and a CEM planner as a near-optimal reference. Controls: a blind agent without the look-ahead and agents trained on 1–10,000 tracks. Hypotheses and tests are in the [preregistration](reports/preregistration.md).
+The primary metric is the **success-weighted speed** (SWS) on the certified tracks of the 1,000 test seeds: per track, (reference time ÷ agent time) if the agent finishes within 3 × the reference time, else 0, averaged over tracks. It adapts SPL ([Anderson et al. 2018](https://arxiv.org/abs/1807.06757)) from path length to time. Every run is scored once, from the standing start with its most probable action, at the final checkpoint (never the best one): generalist-type runs on validation, their own training tracks, campaign, test, out-of-range and unfiltered test tracks; specialists on the campaign and test tracks ([run matrix](configs/run_matrix.yaml)). Baselines: random actions, an untrained network, the scripted driver (1.0 by construction) and a CEM planner as a planning reference (its 4.5 s horizon was chosen on validation tracks; it is not a near-optimal bound). Controls: a blind agent without the look-ahead and agents trained on 1–10,000 tracks. The evaluator also flags possible physics exploits (speed above 1.2 × top speed, energy gained while coasting), and each flag is checked by replaying the run ([`scripts/10_diagnose_flag.py`](scripts/10_diagnose_flag.py)). Hypotheses and tests are in the [preregistration](reports/preregistration.md); later changes are dated amendments there and in the [plan](reports/plan.md).
 
 ## Architecture
 
@@ -171,7 +181,7 @@ Online: <https://burnycoder.github.io/reinforcement-learning-in-trackmania-like-
 uv run python -m http.server 8123 --directory web
 ```
 
-Then open <http://localhost:8123/>. Arrows or WASD drive (up = gas, down = brake/reverse), Enter or R restarts, Backspace respawns at the last checkpoint, Esc returns to the menu.
+Then open <http://localhost:8123/>. Arrows or WASD drive (up = gas, down = brake/reverse), Enter or R restarts, Backspace respawns at the last checkpoint, Esc returns to the menu. Besides the five campaign tracks, the menu has one held-out test track (added by [`scripts/12_export_unseen_track.py`](scripts/12_export_unseen_track.py)) on which you can race the generalist on a track it never saw; "Watch AI" and "Race vs AI" run the exported policies live in the browser.
 
 ## Reproduce
 
@@ -188,7 +198,7 @@ uv run python scripts/01_generate_tracks.py
 ```
 
 ```bash
-uv run python scripts/04_baselines.py --sets val campaign test oor --cem
+uv run python scripts/04_baselines.py --sets val train_sample campaign test oor test_unfiltered --cem
 ```
 
 ```bash
@@ -199,15 +209,18 @@ uv run python scripts/05_run_matrix.py
 uv run python scripts/07_make_report.py
 ```
 
-Single runs: `uv run python scripts/02_train.py --experiment generalist --seed 1`, then `uv run python scripts/03_evaluate.py --experiment generalist --seed 1 --sets val train_sample campaign test oor`. Live dashboard during training: `uv run tensorboard --logdir <RACINGMANIA_DATA_DIR>/tensorboard`.
+Single runs: `uv run python scripts/02_train.py --experiment generalist --seed 1`, then `uv run python scripts/03_evaluate.py --experiment generalist --seed 1 --sets val train_sample train_own campaign test oor test_unfiltered`. Live dashboard during training: `uv run tensorboard --logdir <RACINGMANIA_DATA_DIR>/tensorboard`.
 
 Diagnostics: `scripts/09_failure_analysis.py --run generalist/seed0 --sets val` writes where a run's failures happen (sharpest turn and jumps in the 60 m before each fall, against random places) to `results/<run>/failures_<set>.json`; `scripts/10_diagnose_flag.py --experiment generalist --seed 0 --set train_sample --track train-198` replays an exploit-flagged track step by step with its translational, gravitational and rotational energy; `scripts/tune_cem.py 30 60 90` compares CEM planning horizons on validation tracks.
 
+Videos: `scripts/12_export_unseen_track.py --run generalist/seed0 --split test` adds a held-out test track (chosen by a fixed rule: the median score among the run's finished test tracks with a jump) to the game menu, and `scripts/11_record_videos.py --model specialist-campaign-01-seed0 --model generalist-seed0 --lap generalist-seed0:test-2000386` records the laps with Playwright and ffmpeg (game served on port 8123) and rewrites the video section above.
+
 ## Features
 
-- Playable browser game: five campaign tracks, medals, splits, your best ghost, AI ghosts, race against a live AI driver.
+- Playable browser game: five campaign tracks and a held-out test track, medals, splits, your best ghost, AI ghosts, race against a live AI driver.
 - One physics implementation for game and training, with tick-by-tick parity tests against the original.
-- GPU simulator: about 640,000 agent steps per second with `torch.compile` in WSL2 (16,384 cars, RTX 5070 Laptop).
+- GPU simulator with `torch.compile` in WSL2 (16,384 cars in parallel): a 1-billion-step generalist run took about 1.3 hours of training on an RTX 5070 Laptop GPU (each run's wall time is in `results/<run>/run.json`; `scripts/bench_sim.py` measures the simulator alone).
+- Exploit detectors with step-by-step replays, failure-position analysis, and generated videos of the agents' laps.
 - Seeded track generator with certification by driving and disjoint train/validation/test seed ranges.
 - PPO, PQN, behaviour cloning, DAgger and hybrid variants; scripted, random, untrained and CEM baselines.
 - Resumable training, timestamped logs, TensorBoard dashboard, one-command reports and paper.

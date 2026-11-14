@@ -33,7 +33,16 @@ def state(page):
     return page.evaluate("window.racingmania.state")
 
 
+def use_bare_index(page):
+    """Serve an index with only the five campaign tracks and no models or ghosts, so a test of the game
+    itself does not depend on which trained models and extra tracks have been published to web/assets."""
+    index = json.loads((WEB / "assets" / "index.json").read_text())
+    index = {**index, "tracks": [t for t in index["tracks"] if t.get("kind") == "campaign"], "models": [], "ghosts": {}}
+    page.route("**/assets/index.json", lambda route: route.fulfill(json=index))
+
+
 def test_page_loads_cleanly_and_lists_tracks(page, site_url, console):
+    use_bare_index(page)
     open_menu(page, site_url)
     page.wait_for_timeout(1000)  # let the background track loads and a few frames run
     names = page.eval_on_selector_all("#track-list [data-track]", "els => els.map(e => e.dataset.track)")
@@ -65,6 +74,7 @@ def test_holding_gas_speeds_up_and_moves_the_car(page, site_url, console):
 
 def test_page_works_under_a_sub_path(page, serve, console):
     root_url = serve(ROOT)  # repository root served: the game lives at /web/, as on GitHub Pages
+    use_bare_index(page)
     open_menu(page, root_url + "/web/")
     assert page.locator("#track-list [data-track]").count() == 5
     start(page, "campaign-02", "race")  # the track file is fetched relative to the sub-path
@@ -76,6 +86,7 @@ def test_medal_targets_follow_the_reference_time(page, site_url, console):
     track = json.loads((WEB / "assets" / "tracks" / "campaign-01.json").read_text())
     track["reference"] = {"ticks": 3000, "time": 30.0, "actions": []}  # a certified reference run of 30 s
     page.route("**/assets/tracks/campaign-01.json", lambda route: route.fulfill(json=track))
+    use_bare_index(page)
     open_menu(page, site_url)
     targets = page.locator("#track-detail .targets").inner_text()
     for text in ("Gold", "00:30.00", "Silver", "00:34.50", "Bronze", "00:40.50"):
@@ -83,6 +94,21 @@ def test_medal_targets_follow_the_reference_time(page, site_url, console):
     assert "Author" not in targets  # no AI ghost listed
     start(page, "campaign-01", "race")
     assert page.locator("#hud-medals li").count() == 3
+    assert console == []
+
+
+def test_unseen_tracks_in_the_index_are_listed_and_playable(page, site_url, console):
+    """Held-out tracks added by scripts/12_export_unseen_track.py appear in the menu and load like any track."""
+    index = json.loads((WEB / "assets" / "index.json").read_text())
+    unseen = [t["name"] for t in index["tracks"] if t.get("kind") == "unseen"]
+    if not unseen:
+        pytest.skip("no unseen track exported")
+    open_menu(page, site_url)
+    names = page.eval_on_selector_all("#track-list [data-track]", "els => els.map(e => e.dataset.track)")
+    assert set(unseen) <= set(names)
+    start(page, unseen[0], "race")
+    page.wait_for_timeout(500)
+    assert state(page)["mode"] == "race"
     assert console == []
 
 
