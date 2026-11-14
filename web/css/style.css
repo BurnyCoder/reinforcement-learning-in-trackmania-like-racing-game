@@ -83,7 +83,9 @@ button kbd { border-color: rgba(0, 0, 0, 0.25); }
 .model { display: flex; gap: 0.6em; align-items: center; margin: 0.6em 0; }
 .model select { font: inherit; color: var(--text); background: var(--panel-solid); border: 1px solid var(--line); border-radius: 6px; padding: 0.3em; }
 .actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
-footer.keys { margin-top: auto; }
+/* Long ghost and track lists scroll inside the menu instead of running under the footer. */
+#track-list, #track-detail { max-height: 100%; overflow-y: auto; }
+footer.keys { margin-top: auto; pointer-events: none; } /* key hints only: never blocks a click */
 .keys { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; color: var(--muted); font-size: 0.85rem; }
 
 /* ---- HUD ---- */

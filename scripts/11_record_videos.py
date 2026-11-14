@@ -1,26 +1,24 @@
-"""Record each model's best lap in the browser game as MP4 and GIF, and write the README video section.
+"""Record the README video clips in the browser game and write the README video section.
 
-Usage (Windows, game served locally):
+Usage (Windows; the game served locally):
   uv run python -m http.server 8123 --directory web
-  uv run python scripts/11_record_videos.py --model specialist-campaign-01-seed0 --model generalist-seed0 \
-      --lap generalist-seed0:test-2000386
+  uv run python scripts/11_record_videos.py [--clips docs/videos/clips.yaml]
 
-Global context: ``--model`` records the model's best lap: its finished campaign track with the highest
-score (scripted driver's reference time ÷ the model's time) in its official evaluation,
-``results/<run>/eval_campaign.csv``. ``--lap MODEL:TRACK`` records a given track, e.g. a held-out test
-track added to the menu by scripts/12_export_unseen_track.py (its official time is read from
-``eval_test.csv``, and the menu entry's note, which states how the track was chosen, goes into the
-caption). Each lap is recorded in the game's "Watch AI" mode, i.e. the
+Global context: the clips are listed in docs/videos/clips.yaml. Each names a model from
+web/assets/index.json and either a fixed track or a selection rule over the model's official
+evaluation (``results/<run>/eval_<set>.csv``; rules in ``racingmania.eval.clips``), so the README shows
+labelled best, typical and failure cases. Each clip is recorded in the game's "Watch AI" mode, i.e. the
 exported ONNX policy driving the browser's own cannon-es physics (docs/formats.md, "Policy model"),
 the same run a visitor sees on GitHub Pages. Playwright records the page (``record_video_dir``,
-https://playwright.dev/python/docs/videos); ffmpeg trims the recording to the lap plus the finish
-screen and writes an H.264 MP4 and a palette-optimised GIF
-(https://ffmpeg.org/ffmpeg-filters.html#palettegen). The game's lap time is checked against the
-official one, and the README section between the VIDEOS markers is rewritten from these numbers
-(GitHub READMEs do not play videos stored in the repository, so each GIF links to its MP4).
+https://playwright.dev/python/docs/videos); ffmpeg trims it and writes an H.264 MP4 and a
+palette-optimised GIF (https://ffmpeg.org/ffmpeg-filters.html#palettegen). The browser's lap or fall
+time is compared with the official one, and the README section between the VIDEOS markers is rewritten
+with one full-width block per clip (GitHub READMEs do not play videos stored in the repository, so
+each GIF links to its MP4; a table would shrink the clips to thumbnails on phones).
 """
 import argparse
 import csv
+from contextlib import nullcontext as _nullcontext
 import json
 import re
 import shutil
@@ -29,111 +27,182 @@ import tempfile
 import time
 from pathlib import Path
 
+import yaml
 from playwright.sync_api import sync_playwright
 
+from racingmania.eval.clips import select_track
+from racingmania.report.features import geometry_features
+
 ROOT = Path(__file__).resolve().parents[1]
+RESULTS = ROOT / "results"
 DT = 0.01  # physics tick (s), web/assets/vehicle.json
 ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
 ap.add_argument("--url", default="http://127.0.0.1:8123/")
-ap.add_argument("--model", action="append", default=[], help="model name in web/assets/index.json: record its best campaign lap")
-ap.add_argument("--lap", action="append", default=[], help="MODEL:TRACK: record this track")
+ap.add_argument("--clips", default=str(ROOT / "docs" / "videos" / "clips.yaml"))
 ap.add_argument("--out", default=str(ROOT / "docs" / "videos"))
 ap.add_argument("--headed", action="store_true", help="show the browser window instead of rendering headless")
-ap.add_argument("--gif-width", type=int, default=420)
-ap.add_argument("--gif-fps", type=int, default=10)
+ap.add_argument("--gif-width", type=int, default=400)
+ap.add_argument("--gif-fps", type=int, default=8)
+ap.add_argument("--captions-only", action="store_true", help="rewrite the README section from the last recording (videos.json)")
 a = ap.parse_args()
 out_dir = Path(a.out)
 out_dir.mkdir(parents=True, exist_ok=True)
 W, H = 1280, 720
 index = json.loads((ROOT / "web" / "assets" / "index.json").read_text(encoding="utf-8"))
-models = {m["name"]: m for m in index["models"]}
 menu = {t["name"]: t for t in index["tracks"]}
+SET_NAMES = {"campaign": "hand-made campaign track", "test": "held-out generated test track", "val": "generated validation track"}
 
 
-def lap_info(model: str, track: str | None = None) -> dict:
-    """Official result of ``model`` on ``track`` (default: its highest-scoring finished campaign track)."""
-    run = models[model]["run"]
-    split = "campaign" if track is None or track.startswith("campaign") else track.rsplit("-", 1)[0]
-    rows = [r for r in csv.DictReader(open(ROOT / "results" / run / f"eval_{split}.csv", encoding="utf-8")) if r["finished"] == "1"]
-    r = max(rows, key=lambda r: float(r["score"])) if track is None else next(r for r in rows if r["track"] == track)
-    entry = menu.get(r["track"], {})
-    seen = r["track"] in run  # a specialist's run id names its training track; generalists never train on campaign or test tracks
-    where = "on its training track" if seen else ("on a hand-made track it never saw in training" if r["track"].startswith("campaign")
-                                                  else "on a held-out generated track it never saw in training")
-    title = (f"{model}: best lap, " if track is None else f"{model} ") + f"{where} ({entry.get('title', r['track'])})"
-    return {"model": model, "run": run, "track": r["track"], "official_s": int(r["ticks"]) * DT, "reference_s": int(r["ref_ticks"]) * DT,
-            "title": title, "description": models[model].get("description", ""), "note": entry.get("note", "")}
+def model_text(run: str) -> str:
+    """One sentence on what the model is and how it was trained, from its run.json."""
+    info = json.loads((RESULTS / run / "run.json").read_text(encoding="utf-8"))
+    if run.startswith("baselines/scripted/"):
+        tuned = json.loads((RESULTS / "tracks" / "scripted_tuning.json").read_text(encoding="utf-8")).get("chosen", {})
+        return (f"`{run}`: the scripted driver, a hand-written controller (pure-pursuit steering and a curvature-based speed profile, "
+                f"see [The scripted driver](#the-scripted-driver)) with its 2 parameters tuned on validation tracks before any training"
+                + (f" (a_lat = {tuned['a_lat']} m/s², look-ahead gain = {tuned['lookahead_gain']} s)" if tuned else "")
+                + "; nothing is learned, and its time on each track is the reference that scores 1.0")
+    if run.startswith("baselines/untrained/"):
+        return (f"`{run}`: the same network as the trained agents (2 × 256 units) with random initial weights "
+                f"(seed {info['seed']}) and no training; a control")
+    trained_on = "1 track" if info.get("n_train_tracks") == 1 else f"{info['n_train_tracks']:,} generated training tracks"
+    if info.get("track"):
+        trained_on = f"{info['track']} only"
+    steps = info["global_step"]
+    amount = f"{round(steps / 1e9, 1):g} billion" if steps >= 1e9 else f"{steps / 1e6:,.0f} million"  # budgets end at the first rollout past them
+    return (f"`{run}`: {info['algo'].upper()}, trained by reinforcement learning for {amount} agent steps on {trained_on} "
+            f"(seed {info['seed']}, {info.get('wall_hours', 0):.1f} h on one GPU)")
 
 
-def record(new_page, model: str, track: str) -> tuple[Path, float, float, dict]:
-    """Drive one Watch-AI lap; returns (raw video, lap start s, clip end s, final game state)."""
+def map_text(track: str, run: str, split: str) -> str:
+    """One sentence on the track: name, kind, length, jumps, banking, and whether the model trained on it."""
+    t = json.loads((ROOT / "web" / "assets" / "tracks" / f"{track}.json").read_text(encoding="utf-8"))
+    f = geometry_features(t["center"], t["left"], t["gap"])
+    seen = track in run  # a specialist's run id names its training track; generalists never train on campaign or test tracks
+    jumps = "no jumps" if f["jumps"] == 0 else f"{f['jumps']} jump{'' if f['jumps'] == 1 else 's'}"
+    if run.startswith("baselines/scripted/"):
+        relation = "the scripted driver is not trained; it drove this track once before, to certify it and set its reference time"
+    elif run.startswith("baselines/untrained/"):
+        relation = "this network was never trained on any track"
+    else:
+        relation = "the track this model was trained on" if seen else "this model never saw it during training"
+    return (f"{menu.get(track, {}).get('title', track)} (`{track}`), a {SET_NAMES[split]}, {f['length_m']:,.0f} m long with "
+            f"{jumps} and up to {f['max_bank_deg']:.0f}° of banking; {relation}")
+
+
+def clip_info(c: dict) -> dict:
+    """Resolve a clip from clips.yaml: track (fixed or by rule), official result and caption parts."""
+    run = c["run"]
+    rule_run = c.get("rule_run", run)  # whose official evaluation the selection rule reads
+    who = f"`{rule_run}`" if c.get("rule_run") else "it"
+    track, why = (c["track"], "") if c.get("track") else select_track(RESULTS, rule_run, c["split"], c["rule"], who)
+    if c.get("rule_run"):
+        why = f"the same track as the {rule_run} clip: {why}"
+    c = {**c, "model": c["replay"], "mode": "replay", "ghost": f"assets/ghosts/{track}/{c['replay']}.json"}
+    row = next(r for r in csv.DictReader(open(RESULTS / run / f"eval_{c['split']}.csv", encoding="utf-8")) if r["track"] == track)
+    return {**c, "until": c.get("until", "finish"), "run": run, "track": track, "why": why, "row": row,
+            "official_s": int(row["ticks"]) * DT, "reference_s": int(row["ref_ticks"]) * DT}
+
+
+def record(new_page, model: str, track: str, until: str, mode: str = "watch", ghost: str | None = None) -> tuple[Path, float, float, dict]:
+    """Drive one Watch-AI run, or (mode "replay") play the recorded run ``ghost``; returns (raw video, run start s,
+    clip end s, game state at the finish or where an unfinished run ended)."""
     ctx, page, t0 = new_page()
     page.goto(a.url)
     page.wait_for_selector("#track-list [data-track]")
     page.click(f'#track-list [data-track="{track}"]')
-    page.wait_for_selector("#model-select")
-    page.select_option("#model-select", model)
-    page.click('button[data-mode="watch"]')
+    if mode == "watch":
+        page.wait_for_selector("#model-select")
+        page.select_option("#model-select", model)
+    else:  # "Watch replay" plays the first ticked AI ghost: tick this clip's one (AI ghosts start unticked)
+        page.wait_for_selector(f'input[data-ghost="{ghost}"]', state="attached")
+        page.eval_on_selector(f'input[data-ghost="{ghost}"]', "el => { if (!el.checked) el.click(); }")  # the key-hint footer can cover it
+    page.eval_on_selector(f'button[data-mode="{mode}"]', "el => el.click()")
     page.wait_for_selector("#hud", state="visible")
     start = time.time() - t0
-    page.wait_for_function("window.racingmania.state.finished === true", timeout=180_000, polling=100)
-    page.wait_for_timeout(3000)  # keep the finish screen with the lap time and splits in the clip
+    cond = "window.racingmania.state.finished === true" if until == "finish" else "window.racingmania.state.respawns >= 1"
+    page.wait_for_function(cond, timeout=180_000, polling=50)
+    if until == "out":
+        final = page.evaluate("window.racingmania.state")  # read where the run ended: a replay's clock stops there
+    page.wait_for_timeout(3000 if until == "finish" else 1500)  # finish screen, or the end-of-run notice
+    if until == "finish":  # after the finish screen the race clock has reached the finish and the time is frozen
+        final = page.evaluate("window.racingmania.state")
     end = time.time() - t0
-    final = page.evaluate("window.racingmania.state")
     video = Path(page.video.path())
     ctx.close()  # finalises the video file
     return video, start, end, final
 
 
-laps = [lap_info(m) for m in a.model] + [lap_info(*l.split(':')) for l in a.lap]
-with sync_playwright() as p:
-    browser = p.chromium.launch(headless=not a.headed, args=["--ignore-gpu-blocklist", "--enable-gpu", "--use-angle=d3d11"])
+clips = [clip_info(c) for c in yaml.safe_load(Path(a.clips).read_text(encoding="utf-8"))["clips"]]
+if a.captions_only:  # reuse the recorded clips and the browser times measured then
+    last = {(v["model"], v["track"]): v for v in json.loads((out_dir / "videos.json").read_text(encoding="utf-8"))}
+    for c in clips:
+        c.update({k: last[(c["model"], c["track"])][k] for k in ("game_s", "game_finished", "mp4", "gif")})
+with sync_playwright() if not a.captions_only else _nullcontext() as p:
+    browser = p.chromium.launch(headless=not a.headed, args=["--ignore-gpu-blocklist", "--enable-gpu", "--use-angle=d3d11"]) if p else None
     tmp = Path(tempfile.mkdtemp())
 
     def new_page():
         ctx = browser.new_context(viewport={"width": W, "height": H}, record_video_dir=str(tmp), record_video_size={"width": W, "height": H})
         return ctx, ctx.new_page(), time.time()
 
-    for lap in laps:
-        raw, start, end, final = record(new_page, lap["model"], lap["track"])
-        stem = out_dir / f"{lap['model']}_{lap['track']}"
+    for c in clips if p else []:
+        raw, start, end, final = record(new_page, c["model"], c["track"], c["until"], c["mode"], c["ghost"])
+        stem = out_dir / f"{c['model']}_{c['track']}"
         trim = ["-ss", f"{max(0.0, start - 0.5):.2f}", "-to", f"{end:.2f}", "-i", str(raw)]
         subprocess.run(["ffmpeg", "-y", "-loglevel", "error", *trim, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "26",
                         "-preset", "slow", "-movflags", "+faststart", "-an", f"{stem}.mp4"], check=True)
         gif_filter = (f"fps={a.gif_fps},scale={a.gif_width}:-1:flags=lanczos,split[s0][s1];"
                       "[s0]palettegen=max_colors=128:stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=4")
         subprocess.run(["ffmpeg", "-y", "-loglevel", "error", *trim, "-vf", gif_filter, f"{stem}.gif"], check=True)
-        lap.update(game_s=round(final["time"], 2), finished=bool(final["finished"]), respawns=final["respawns"],
-                   mp4=f"{stem.relative_to(ROOT).as_posix()}.mp4", gif=f"{stem.relative_to(ROOT).as_posix()}.gif")
-        print(f"{lap['model']} on {lap['track']}: game {lap['game_s']:.2f} s, official {lap['official_s']:.2f} s, "
-              f"scripted driver {lap['reference_s']:.2f} s; GIF {Path(lap['gif']).name}", flush=True)
-    browser.close()
+        c.update(game_s=round(final["time"], 2), game_finished=bool(final["finished"]),
+                 mp4=f"{stem.relative_to(ROOT).as_posix()}.mp4", gif=f"{stem.relative_to(ROOT).as_posix()}.gif")
+        print(f"{c['title']}: {c['model']} on {c['track']}: browser {c['game_s']:.2f} s ({'finished' if c['game_finished'] else 'out'}), "
+              f"official {c['row']['end']} at {c['official_s']:.2f} s", flush=True)
+    if browser:
+        browser.close()
     shutil.rmtree(tmp, ignore_errors=True)
-(out_dir / "videos.json").write_text(json.dumps(laps, indent=2), encoding="utf-8")
-
-# README section: one row per lap, GIF linked to its MP4, description with the numbers above.
-def caption(l: dict) -> str:
-    text = (f"**{l['title']}.** {l['description']}. {l['official_s']:.2f} s, against {l['reference_s']:.2f} s for the scripted driver "
-            f"({l['reference_s'] / l['official_s']:.2f}× its speed).")
-    if l["note"]:
-        text += f" {l['note']}"
-    if abs(l["game_s"] - l["official_s"]) >= 0.005:  # the browser should reproduce the official lap; say so if it did not
-        text += f" The browser lap took {l['game_s']:.2f} s."
-    return text
+(out_dir / "videos.json").write_text(json.dumps([{k: v for k, v in c.items() if k != "row"} | {"official": c["row"]} for c in clips],
+                                               indent=2), encoding="utf-8")
 
 
-rows_md = "\n".join(f"| [![{l['title']}]({l['gif']})]({l['mp4']}) | {caption(l)} |" for l in laps)
-section = ("<!-- VIDEOS:START -->\n"
-           "Laps driven live in the browser game by the exported policies (click a clip for the full-resolution MP4). The times are "
-           "those of the official evaluation, which the browser reproduces. Generated by `scripts/11_record_videos.py` from "
+def eval_text(c: dict) -> str:
+    """The official result, the scripted driver's reference and what the browser showed."""
+    r = c["row"]
+    src = f"official evaluation in `results/{c['run']}/eval_{c['split']}.csv` (standing start, most probable action, final checkpoint)"
+    if r["finished"] == "1" and c["run"].startswith("baselines/scripted/"):
+        res = (f"finished in {c['official_s']:.2f} s (the track's reference time, from the scripted driver's separate "
+               f"certification run, is {c['reference_s']:.2f} s)")
+    elif r["finished"] == "1":
+        res = (f"finished in {c['official_s']:.2f} s; the scripted driver needs {c['reference_s']:.2f} s, so this is "
+               f"{c['reference_s'] / c['official_s']:.2f}× its speed")
+    else:
+        res = (f"did not finish: {r['end']} after {c['official_s']:.2f} s and {float(r['progress']):,.0f} m "
+               f"(the scripted driver finishes in {c['reference_s']:.2f} s)")
+    check = "" if abs(c["game_s"] - c["official_s"]) < 0.005 else f" (in the browser the replay ended at {c['game_s']:.2f} s)"
+    return f"{src}: {res}. The clip replays this run{check}"
+
+
+blocks = []
+for k, c in enumerate(clips, 1):
+    lines = [f"### {k}. {c['title']}", "", f"[![{c['title']}: {c['model']} on {c['track']}]({c['gif']})]({c['mp4']})", "",
+             f"- **Model:** {model_text(c['run'])}.",
+             f"- **Map:** {map_text(c['track'], c['run'], c['split'])}.",
+             f"- **Evaluation:** {eval_text(c)}."]
+    if c["why"]:
+        lines.append(f"- **Why this clip:** chosen by a fixed rule as {c['why']} in its official evaluation.")
+    blocks.append("\n".join(lines))
+section = ("<!-- VIDEOS:START -->\n## Videos\n\n"
+           "Each clip replays an official evaluation run in the browser game: the car states the evaluator recorded while scoring "
+           "the run, shown by the game's renderer (\"Watch replay\"). Each clip is chosen by a fixed rule from the official "
+           "evaluation and labelled with its result; click a clip for the full-resolution MP4. In the game the trained policies also "
+           "drive live (\"Watch AI\", \"Race vs AI\"), where the browser's 64-bit physics can make a long lap differ slightly from the "
+           "official 32-bit GPU run. Generated by `scripts/11_record_videos.py` from `docs/videos/clips.yaml` and "
            "`results/<run>/eval_*.csv`.\n\n"
-           f"| Clip | What it shows |\n|---|---|\n{rows_md}\n<!-- VIDEOS:END -->")
+           + "\n\n".join(blocks) + "\n<!-- VIDEOS:END -->")
 readme = ROOT / "README.md"
 text = readme.read_text(encoding="utf-8")
-if "<!-- VIDEOS:START -->" in text:
-    text = re.sub(r"<!-- VIDEOS:START -->.*?<!-- VIDEOS:END -->", lambda _: section, text, flags=re.S)
-else:  # first run: place the section right after the game screenshot near the top
-    anchor = "![RacingMania in the browser](docs/images/game.png)\n"
-    text = text.replace(anchor, anchor + "\n" + section + "\n", 1)
+assert "<!-- VIDEOS:START -->" in text, "README has no VIDEOS markers"
+text = re.sub(r"<!-- VIDEOS:START -->.*?<!-- VIDEOS:END -->", lambda _: section, text, flags=re.S)
 readme.write_text(text, encoding="utf-8", newline="\n")
 print("README video section updated")

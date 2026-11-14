@@ -40,12 +40,13 @@ export class PlayerCar extends CarRun {
 
 export class RaceSession {
   // policy: a loaded Policy for the AI modes (null otherwise); ghosts: [{ label, kind, states, time }].
-  constructor({ cfg, track, mode, policy = null, ghosts = [], best = null }) {
+  constructor({ cfg, track, mode, policy = null, replay = null, ghosts = [], best = null }) {
     this.cfg = cfg;
     this.track = track;
     this.mode = mode;
-    this.player = mode === 'watch' ? null : new PlayerCar(cfg, track);
-    this.ai = policy && mode !== 'race' ? new AiCar(cfg, track, policy) : null;
+    this.player = mode === 'watch' || mode === 'replay' ? null : new PlayerCar(cfg, track);
+    // The second car: a live AI driver, or in "replay" mode a recorded run (replay.js) with the same interface.
+    this.ai = replay ?? (policy && mode !== 'race' ? new AiCar(cfg, track, policy) : null);
     this.focus = this.player ?? this.ai; // the car the camera and HUD follow
     this.ghosts = ghosts;
     this.best = best; // stored best run of this track, for split deltas
@@ -63,7 +64,7 @@ export class RaceSession {
   // The race continues while some car is still driving at the race clock (the AI may have finished
   // ahead of the clock, which must still reach its finish tick).
   get running() {
-    const aiDriving = this.ai && !this.ai.failed && !(this.ai.finished && this.ai.finishTicks <= this.clock);
+    const aiDriving = this.ai && !this.ai.failed && !this.ai.stopped && !(this.ai.finished && this.ai.finishTicks <= this.clock);
     return Boolean((this.player && !this.player.finished) || aiDriving);
   }
 

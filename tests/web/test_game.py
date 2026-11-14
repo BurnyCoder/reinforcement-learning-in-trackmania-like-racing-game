@@ -112,6 +112,50 @@ def test_unseen_tracks_in_the_index_are_listed_and_playable(page, site_url, cons
     assert console == []
 
 
+def test_watch_replay_follows_a_recorded_run(page, site_url, console):
+    """"Watch replay" plays a recorded AI run (web/js/replay.js): the car follows the ghost's poses and the clock runs."""
+    index = json.loads((WEB / "assets" / "index.json").read_text())
+    track = next((t for t, g in index.get("ghosts", {}).items() if g), None)
+    if track is None:
+        pytest.skip("no AI ghost exported")
+    ghost = json.loads((WEB / index["ghosts"][track][0]).read_text())  # the replay plays the track's first AI ghost
+    open_menu(page, site_url)
+    page.click(f'#track-list [data-track="{track}"]')
+    page.wait_for_selector('button[data-mode="replay"]')
+    page.click('button[data-mode="replay"]')
+    page.wait_for_selector("#hud", state="visible")
+    page.wait_for_timeout(2000)
+    s = state(page)
+    assert s["mode"] == "replay" and s["time"] > 1.0, s
+    step = min(int(s["time"] / 0.05), len(ghost["states"]) - 1)  # ghost entry at the race clock (one per agent step)
+    gx, gy, gz = ghost["states"][step][:3]
+    assert ((s["position"][0] - gx) ** 2 + (s["position"][2] - gz) ** 2) ** 0.5 < 5.0, (s["position"], ghost["states"][step][:3])
+    assert console == []
+
+
+def test_author_medal_ignores_unfinished_ghosts(page, site_url, console):
+    """The Author target is the fastest finished AI ghost; a recorded fall or stall (finished: false) never counts."""
+    index = json.loads((WEB / "assets" / "index.json").read_text())
+    for track, paths in index.get("ghosts", {}).items():
+        ghosts = [json.loads((WEB / p).read_text()) for p in paths]
+        if any(g.get("finished") is False for g in ghosts):
+            break
+    else:
+        pytest.skip("no unfinished ghost exported")
+    finished = [g["time"] for g in ghosts if g.get("finished", True)]
+    open_menu(page, site_url)
+    page.click(f'#track-list [data-track="{track}"]')
+    page.wait_for_selector("#track-detail .targets")
+    page.wait_for_timeout(500)
+    targets = page.locator("#track-detail .targets").inner_text()
+    if finished:
+        t = min(finished)
+        assert f"{int(t // 60):02d}:{t % 60:05.2f}" in targets, (track, targets)
+    unfinished = [g["time"] for g in ghosts if g.get("finished") is False]
+    assert all(f"{int(t // 60):02d}:{t % 60:05.2f}" not in targets.split("Gold")[0] for t in unfinished), (track, targets)
+    assert console == []
+
+
 def make_constant_policy(path, K):
     """A stand-in for an exported policy with the docs/formats.md interface that always chooses
     steer = none and pedal = gas. Every input feeds the output (times zero), so ONNX Runtime checks

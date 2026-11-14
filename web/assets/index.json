@@ -26,10 +26,22 @@
       "kind": "campaign"
     },
     {
+      "name": "test-2000747",
+      "title": "Unseen test track 2000747",
+      "kind": "unseen",
+      "note": "Held-out test seed 2000747, never used in training; chosen as the highest-scoring finished track of the 779 test tracks it finished in the official evaluation of generalist/seed0."
+    },
+    {
       "name": "test-2000386",
       "title": "Unseen test track 2000386",
       "kind": "unseen",
-      "note": "Held-out test seed 2000386, never used in training: the median-scoring track among the 397 test tracks with a jump that generalist/seed0 finished in its official evaluation."
+      "note": "Held-out test seed 2000386, never used in training; chosen as the median-scoring finished track among those with at least one jump (397 test tracks with a jump that it finished) in the official evaluation of generalist/seed0."
+    },
+    {
+      "name": "test-2000430",
+      "title": "Unseen test track 2000430",
+      "kind": "unseen",
+      "note": "Held-out test seed 2000430, never used in training; chosen as the fall whose position is closest to the middle of its track among its 190 falls on test tracks in the official evaluation of generalist/seed0."
     }
   ],
   "models": [
@@ -58,6 +70,14 @@
       "run": "generalist/seed1"
     },
     {
+      "name": "untrained-seed0",
+      "file": "assets/models/untrained-seed0.onnx",
+      "K": 20,
+      "stride": 3,
+      "description": "Untrained network: the standard PPO actor with random initial weights and no training (control)",
+      "run": "baselines/untrained/seed0"
+    },
+    {
       "name": "blind-seed1",
       "file": "assets/models/blind-seed1.onnx",
       "K": 20,
@@ -71,27 +91,44 @@
       "assets/ghosts/campaign-01/blind-seed1.json",
       "assets/ghosts/campaign-01/generalist-seed0.json",
       "assets/ghosts/campaign-01/generalist-seed1.json",
-      "assets/ghosts/campaign-01/specialist-campaign-01-seed0.json"
+      "assets/ghosts/campaign-01/specialist-campaign-01-seed0.json",
+      "assets/ghosts/campaign-01/untrained-seed0.json"
     ],
     "campaign-02": [
       "assets/ghosts/campaign-02/blind-seed1.json",
       "assets/ghosts/campaign-02/generalist-seed0.json",
-      "assets/ghosts/campaign-02/generalist-seed1.json"
+      "assets/ghosts/campaign-02/generalist-seed1.json",
+      "assets/ghosts/campaign-02/untrained-seed0.json"
     ],
     "campaign-03": [
       "assets/ghosts/campaign-03/blind-seed1.json",
       "assets/ghosts/campaign-03/generalist-seed0.json",
-      "assets/ghosts/campaign-03/generalist-seed1.json"
+      "assets/ghosts/campaign-03/generalist-seed1.json",
+      "assets/ghosts/campaign-03/untrained-seed0.json"
     ],
     "campaign-04": [
       "assets/ghosts/campaign-04/blind-seed1.json",
       "assets/ghosts/campaign-04/generalist-seed0.json",
-      "assets/ghosts/campaign-04/generalist-seed1.json"
+      "assets/ghosts/campaign-04/generalist-seed1.json",
+      "assets/ghosts/campaign-04/untrained-seed0.json"
     ],
     "campaign-05": [
       "assets/ghosts/campaign-05/blind-seed1.json",
       "assets/ghosts/campaign-05/generalist-seed0.json",
-      "assets/ghosts/campaign-05/generalist-seed1.json"
+      "assets/ghosts/campaign-05/generalist-seed1.json",
+      "assets/ghosts/campaign-05/untrained-seed0.json"
+    ],
+    "test-2000747": [
+      "assets/ghosts/test-2000747/generalist-seed0.json",
+      "assets/ghosts/test-2000747/scripted-driver.json"
+    ],
+    "test-2000386": [
+      "assets/ghosts/test-2000386/generalist-seed0.json",
+      "assets/ghosts/test-2000386/scripted-driver.json"
+    ],
+    "test-2000430": [
+      "assets/ghosts/test-2000430/generalist-seed0.json",
+      "assets/ghosts/test-2000430/scripted-driver.json"
     ]
   }
 }
