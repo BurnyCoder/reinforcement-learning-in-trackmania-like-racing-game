@@ -141,9 +141,14 @@ One ONNX graph per trained model contains the observation function, the frozen o
 
 | File | Content |
 |---|---|
-| `run.json` | Status (`planned`, `training`, `trained`, `evaluated`), config, seed, git commit, physics version, hardware, step budget, wall-clock time |
+| `run.json` | Status (`planned`, `training`, `trained`, `evaluated`), config, seed, git commit, physics version, hardware, step budget, wall-clock time. Run-matrix entries with no `run.json` are reported as `not started`, or `postponed` while `configs/run_matrix.yaml` has a `paused` block (`{date, note}`; the run queue does not start while it is present) |
 | `train_metrics.csv` | One row per logging interval: agent steps, mean episode return, finish rate, score on validation tracks, losses |
 | `eval_<set>.csv` | One row per track: track seed or name, finished, ticks, reference ticks, score, flags from the exploit detectors |
 | `replays/<track>.json` | State trajectories for the game's ghosts: `states[0]` is the start state and `states[k]` the state after `k` agent steps, each `[x, y, z, qx, qy, qz, qw, steer]` |
 
 Checkpoints and TensorBoard logs are large and live under `RACINGMANIA_DATA_DIR`, mirrored to Hugging Face.
+
+## Video clips (`docs/videos/`)
+
+`scripts/11_record_videos.py` records clips listed in a clips file (`docs/videos/clips.yaml` for the README, `docs/videos/cards/clips.yaml` for the Hugging Face model cards) and writes `videos.json` next to them: one entry per clip with its title, `replay` (the ghost), `run`, `split`, `track`, the official result (`official`: the run's row of `eval_<split>.csv`), the browser's time (`game_s`, `game_finished`), the files (`mp4`, and `gif` for README clips) and `caption` (`What you see`, `Model`, `Map`, `Evaluation`, and `Why this clip` or `Over many runs` where they apply). The README's video section and the Hugging Face cards are written from these entries (`report/cards.py`: model cards play a run's clips from the model repository's `videos/` folder; the results dataset card plays the README clips).
+

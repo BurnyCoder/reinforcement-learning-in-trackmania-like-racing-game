@@ -129,20 +129,33 @@ def publish_results_dataset(message: str):
     log.info("huggingface: dataset %s updated", repo)
 
 
-def publish_all(message: str, rid: str | None = None, status: str | None = None):
-    """Regenerate every report artifact, then push to GitHub and Hugging Face."""
-    from .report.build import build_all, model_card
+def publish_all(message: str, rid: str | None = None, status: str | None = None, all_models: bool = False):
+    """Regenerate every report artifact, then push to GitHub and Hugging Face (with ``all_models``, refresh the model
+    repository of every evaluated trained run, e.g. after their cards gained videos)."""
+    from .report.build import build_all
     build_all()
     publish_github(message)
     publish_results_dataset(message)
     if rid:
-        res = RESULTS_DIR / rid
-        ckpt = data_dir() / "checkpoints" / rid
-        files = {"final.pt": ckpt / "final.pt", "policy.onnx": res / "policy.onnx", "run.json": res / "run.json",
-                 "train_metrics.csv": res / "train_metrics.csv", "val_metrics.csv": res / "val_metrics.csv"}
-        files.update({f"eval/{p.name}": p for p in res.glob("eval_*.csv")})
-        files.update(clip_files(rid))
-        publish_model(rid, status or "update", model_card(rid, repo_id=model_repo_id(rid)), files)
+        publish_run_model(rid, status or "update")
+    if all_models:
+        for rj in sorted(RESULTS_DIR.glob("*/seed*/run.json")):  # trained runs (baselines and demos sit one level deeper)
+            r = rj.parent.relative_to(RESULTS_DIR).as_posix()
+            if r != rid and json.loads(rj.read_text(encoding="utf-8")).get("status") == "evaluated" \
+                    and (data_dir() / "checkpoints" / r / "final.pt").exists():
+                publish_run_model(r, "evaluated")
+
+
+def publish_run_model(rid: str, status: str):
+    """Upload run ``rid``'s checkpoint, policy, results, clips and card to its model repository."""
+    from .report.build import model_card
+    res = RESULTS_DIR / rid
+    ckpt = data_dir() / "checkpoints" / rid
+    files = {"final.pt": ckpt / "final.pt", "policy.onnx": res / "policy.onnx", "run.json": res / "run.json",
+             "train_metrics.csv": res / "train_metrics.csv", "val_metrics.csv": res / "val_metrics.csv"}
+    files.update({f"eval/{p.name}": p for p in res.glob("eval_*.csv")})
+    files.update(clip_files(rid))
+    publish_model(rid, status, model_card(rid, repo_id=model_repo_id(rid)), files)
 
 
 def clip_files(rid: str) -> dict[str, Path]:

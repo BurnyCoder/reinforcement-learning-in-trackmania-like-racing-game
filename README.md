@@ -143,10 +143,16 @@ The research question is whether one policy, trained with PPO ([Schulman et al. 
 
 **How it works, in one paragraph.** The game runs the car physics of [cannon-es](https://github.com/pmndrs/cannon-es) (`RaycastVehicle`, whose code follows Bullet's `btRaycastVehicle`) unchanged in the browser. For training, the same per-tick computation is ported line by line to batched PyTorch, so thousands of cars, each on a different track, run in parallel on one GPU. Tests run the original code in Node.js and require the port to match it: one tick from 6,000 random states agrees to 7e-15 in 64-bit floats. A seeded generator builds tracks from straights, arcs, hills, banking and jumps; a track is kept only if a scripted pure-pursuit driver can finish it, and that driver's time is the reference for the score. The agent sees its own motion and the next 114 m of road in its own frame, presses the same keys a player has (left/none/right × gas/coast/brake, 20 times a second), and is rewarded only for metres of progress along the road. Its policy is a small neural network (two hidden layers of 256 tanh units) trained with PPO; the network, reward and training settings are spelled out in [Agent](#agent-network-architecture-reward-and-ppo-settings).
 
-**Status (2026-11-14): phase 1 is done and phase 2 is running.** Both first models (a specialist on one track and a generalist on the generated training pool) learned with the preregistered starting recipe and passed their learning gates, so the recipe was frozen unchanged; phase 2 trains one seed of every experiment (blind control, PQN, specialists, training-set sizes, ablations). The numbers are in the [results](#results) section, which is generated from the result files; every single-seed number is preliminary, and the hypotheses are tested only when all seeds exist.
+![System overview: seeded, certified tracks feed a batched PyTorch port of the game's car physics, where PPO trains thousands of cars in parallel; the evaluator scores the final checkpoint against the scripted driver; one script turns the result files into every table, figure and report; the browser game runs the same physics and the exported policy](reports/figures/diagram_system.png)
+
+**Status (2026-11-14): training is paused; the remaining runs are postponed to a later date.** Phase 1 is done: both first models (a specialist on one track and a generalist on the generated training pool) learned with the preregistered starting recipe and passed their learning gates, so the recipe was frozen unchanged. Phase 2 (one seed of every experiment) is partly done: the generalist, blind control, PQN, the five specialists, the five specialists fine-tuned from the generalist and the single-track ablation are evaluated; the other training-set sizes and the input, action and reward ablations are not. Phase 3 has no runs, because no agent used a physics exploit. Phases 4 (imitation and hybrids), 5 (hyperparameter sensitivity) and 6 (seed sensitivity, where H1-H3 are formally tested) have not started. The [results](#results) section and the chart below are generated from the result files; every number in them is from one or two seeds and is preliminary. How to resume: [Reproduce](#reproduce).
+
+![Run matrix status by phase: runs evaluated and postponed](reports/figures/diagram_run_status.png)
 
 **Findings so far (preliminary, one or two seeds):**
-- Hypotheses, read preliminarily from one seed per configuration (not the preregistered tests): H1 (beats the scripted driver on unseen tracks) and H3 (uses the look-ahead) point the predicted way, with intervals clear of their thresholds; H2 (track diversity is what generalises) cannot be estimated until the single-track ablation has run. These intervals reflect only which test tracks were sampled. Seed sensitivity, hyperparameter sensitivity, imitation and hybrids, and the rest of phase 2 are not done yet. Numbers: [Results](#results).
+- Hypotheses, read preliminarily from one seed per configuration (not the preregistered tests): H1 (beats the scripted driver on unseen tracks), H2 (track diversity is what generalises) and H3 (uses the look-ahead) all point the predicted way, with intervals clear of their thresholds. These intervals reflect only which test tracks were sampled, not seed-to-seed variation. Seed sensitivity, hyperparameter sensitivity, imitation and hybrids, and the rest of phase 2 are not done. Numbers: [Results](#results).
+- Trained on a single generated track instead of the whole pool, the same recipe drives that one track fast but finishes only about a third of the unseen test tracks, against about four in five for the generalist (one seed each).
+- Specialists fine-tuned from the generalist on one campaign track become specialists: they finish far fewer unseen test tracks than the generalist they started from (one seed per track).
 - The generalist finishes most held-out test tracks it never saw and, on the tracks it finishes, is clearly faster than the scripted driver; its scores on unseen tracks and on its own training tracks are about the same. It also finishes all five hand-made campaign tracks, which were never used in training, about as fast as the specialist trained on one of them.
 - Its failures are falls off the road, mostly right after tight corners, not at jumps ([`scripts/09_failure_analysis.py`](scripts/09_failure_analysis.py), `results/generalist/seed*/failures_*.json`). On out-of-range tracks with tighter turns than any in training it almost always falls, while longer jumps than in training transfer well.
 - The specialist does not transfer: off its own track it mostly falls.
@@ -158,8 +164,9 @@ The research question is whether one policy, trained with PPO ([Schulman et al. 
 |---|---|
 | Play the game | <https://burnycoder.github.io/reinforcement-learning-in-trackmania-like-racing-game/> (or locally, see [Play](#play)) |
 | Results explorer | <https://burnycoder.github.io/reinforcement-learning-in-trackmania-like-racing-game/results.html> |
-| Models and results on Hugging Face | [RacingMania RL collection](https://huggingface.co/collections/BurnyCoder/racingmania-rl-6af81116a617ddc332308929), [results dataset](https://huggingface.co/datasets/BurnyCoder/racingmania-results) |
+| Models and results on Hugging Face | [RacingMania RL collection](https://huggingface.co/collections/BurnyCoder/racingmania-rl-6af81116a617ddc332308929), [results dataset](https://huggingface.co/datasets/BurnyCoder/racingmania-results); each model card plays videos of that model's official evaluation runs |
 | Plan | [`reports/plan.md`](reports/plan.md) |
+| Notes for contributors and coding agents | [`AGENTS.md`](AGENTS.md) |
 | Preregistration | [`reports/preregistration.md`](reports/preregistration.md) |
 | Literature review (fact-checked, 286 claims) | [`reports/literature-review.md`](reports/literature-review.md), [`reports/source-ledger.md`](reports/source-ledger.md) |
 | Physics specification | [`docs/physics.md`](docs/physics.md) |
@@ -257,6 +264,8 @@ A track is a ribbon in the sense of [Perantoni & Limebeer 2015](https://doi.org/
 
 A candidate track enters a set only if the scripted driver finishes it at 0.9, 1.0 and 1.1 × its target speeds; the time at 1.0 is the track's reference time.
 
+![Track sets and evaluation protocol: seed ranges, generated and certified track counts, what each set is used for, and the primary metric](reports/figures/diagram_protocol.png)
+
 ### Agent: network architecture, reward and PPO settings
 
 The learning algorithm is PPO ([Schulman et al. 2017](https://arxiv.org/abs/1707.06347)), adapted from CleanRL's GPU script ([CleanRL](https://github.com/vwxyzjn/cleanrl), [Huang et al. 2022](https://iclr-blog-track.github.io/2022/03/25/ppo-implementation-details/)). Code: [`src/racingmania/rl/networks.py`](src/racingmania/rl/networks.py), [`src/racingmania/rl/ppo.py`](src/racingmania/rl/ppo.py), [`src/racingmania/env/obs.py`](src/racingmania/env/obs.py), [`src/racingmania/env/vec_env.py`](src/racingmania/env/vec_env.py).
@@ -268,18 +277,9 @@ The learning algorithm is PPO ([Schulman et al. 2017](https://arxiv.org/abs/1707
 - **Size and initialisation:** 108,550 + 107,265 = 215,815 parameters. Weights are orthogonal with gain √2 in the hidden layers, 0.01 in the actor's output layer (so the untrained policy starts close to uniform) and 1.0 in the critic's output layer (CleanRL's `layer_init`).
 - **Input normalisation:** a running mean and variance of the observations, updated during training and clipped to ±10 standard deviations, frozen for evaluation and export. The browser game runs one ONNX graph that contains the observation code, this normaliser and the actor.
 
-```mermaid
-flowchart LR
-  S["Game state: car, track ahead"] --> O["Observation, 160 numbers, car frame"]
-  O --> N["Running normaliser, clip ±10"]
-  N --> A["Actor MLP: 160 → 256 tanh → 256 tanh → 6"]
-  N --> C["Critic MLP: 160 → 256 tanh → 256 tanh → 1"]
-  A --> H1["Steer: softmax over left, none, right"]
-  A --> H2["Pedal: softmax over gas, coast, brake"]
-  H1 --> K["Keys held for 0.05 s (5 physics ticks)"]
-  H2 --> K
-  C --> V["Value V(s), used only in training"]
-```
+![Network architecture: the 160-number observation, the running normaliser, separate actor and critic MLPs (160 → 256 → 256 tanh), the actor's two 3-way categorical heads and the critic's value, with parameter counts; the parts in the browser's ONNX graph are outlined in green](reports/figures/diagram_architecture.png)
+
+The diagram is drawn by [`src/racingmania/report/diagrams.py`](src/racingmania/report/diagrams.py) from the sizes in [`env/obs.py`](src/racingmania/env/obs.py) and [`rl/ppo.py`](src/racingmania/rl/ppo.py), so it changes with the code.
 
 **Observation (160 numbers, all in the car's own frame):** velocity (3) and spin (3); the direction of gravity (3), which gives pitch and roll; steering angle (1); which wheels touch the road (4); the previous action, one-hot (6); and the next 20 centreline points, one every 6 m, so 114 m of road ahead (60), the road's left direction at each of them, which encodes heading and banking (60), and whether each is a gap to jump (20).
 
@@ -346,7 +346,7 @@ flowchart LR
 4. `04_baselines.py` scores the training-free baselines the same way.
 5. `06_export_web.py` exports the policy to ONNX (checked against PyTorch), copies the AI's runs as ghosts, and registers both in the game.
 6. `07_make_report.py` regenerates every table, figure, report, the paper, this README's results block and the results website from the result files.
-7. `05_run_matrix.py` runs all of the above for every run of the [run matrix](configs/run_matrix.yaml), publishing to GitHub and Hugging Face before training, after training and after evaluation.
+7. `05_run_matrix.py` runs all of the above for every run of the [run matrix](configs/run_matrix.yaml), publishing to GitHub and Hugging Face before training, after training and after evaluation (paused since 2026-11-14; see [Reproduce](#reproduce)).
 
 ## Install
 
@@ -412,6 +412,8 @@ uv run python scripts/05_run_matrix.py
 uv run python scripts/07_make_report.py
 ```
 
+**Resuming the paused training.** Training was paused on 2026-11-14 (`paused` block in [`configs/run_matrix.yaml`](configs/run_matrix.yaml)); while that block is present the queue does not start, and the report lists the runs without results as postponed. To resume, delete the block and run `uv run python scripts/05_run_matrix.py --phases 2-single-seed 4-imitation-hybrids 5-hyperparameters 6-seed-sensitivity` (Windows; GPU work runs in WSL). The queue skips evaluated runs, resumes interrupted ones from their checkpoints, and publishes before training, after training and after evaluation. Phase 4 first needs its focused literature search and a preregistration amendment fixing the imitation and hybrid variants ([`reports/plan.md`](reports/plan.md)).
+
 Single runs: `uv run python scripts/02_train.py --experiment generalist --seed 1`, then `uv run python scripts/03_evaluate.py --experiment generalist --seed 1 --sets val train_sample train_own campaign test oor test_unfiltered`. Live dashboard during training: `uv run tensorboard --logdir <RACINGMANIA_DATA_DIR>/tensorboard`.
 
 Diagnostics: `scripts/09_failure_analysis.py --run generalist/seed0 --sets val` writes where a run's failures happen (sharpest turn and jumps in the 60 m before each fall, against random places) to `results/<run>/failures_<set>.json`; `scripts/10_diagnose_flag.py --experiment generalist --seed 0 --set train_sample --track train-198` replays an exploit-flagged track step by step with its translational, gravitational and rotational energy; `scripts/tune_cem.py 30 60 90` compares CEM planning horizons on validation tracks.
@@ -420,13 +422,14 @@ Videos: `scripts/12_export_unseen_track.py --run generalist/seed0 --split test -
 
 ## Features
 
-- Playable browser game: five campaign tracks and five held-out tracks, medals, splits, your best ghost, AI ghosts, race against a live AI driver, and replays of the official evaluation runs.
+- Playable browser game: five campaign tracks and five held-out tracks, a 3-2-1 start countdown, medals, splits, your best ghost, an AI drivers table sorted by time (every network and recorded run with its medal and ghost toggle), race against a live AI driver, and replays of the official evaluation runs.
 - One physics implementation for game and training, with tick-by-tick parity tests against the original.
 - GPU simulator with `torch.compile` in WSL2 (16,384 cars in parallel): a 1-billion-step generalist run took about 1.3 hours of training on an RTX 5070 Laptop GPU (each run's wall time is in `results/<run>/run.json`; `scripts/bench_sim.py` measures the simulator alone).
 - Exploit detectors with step-by-step replays, failure-position analysis, and generated videos of the agents' laps.
 - Seeded track generator with certification by driving and disjoint train/validation/test seed ranges.
 - PPO, PQN, behaviour cloning, DAgger and hybrid variants; scripted, random, untrained and CEM baselines.
-- Resumable training, timestamped logs, TensorBoard dashboard, one-command reports and paper.
+- Resumable training, timestamped logs, TensorBoard dashboard, one-command reports, paper-style diagrams (architecture, system, protocol, run status) and paper.
+- Hugging Face model cards with videos of each model's official evaluation runs, published automatically with the models.
 
 ## Technologies
 

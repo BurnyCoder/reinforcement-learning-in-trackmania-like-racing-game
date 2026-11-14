@@ -51,7 +51,7 @@ ap.add_argument("--record", type=int, nargs="*", default=None, help="record only
 ap.add_argument("--no-readme", action="store_true", help="do not rewrite the README video section (clips for the Hugging Face cards)")
 ap.add_argument("--no-gif", action="store_true", help="write only the MP4 (the Hugging Face cards play MP4 in a <video> tag)")
 a = ap.parse_args()
-out_dir = Path(a.out)
+out_dir = Path(a.out).resolve()  # absolute, so file paths can be stored relative to the repository root
 out_dir.mkdir(parents=True, exist_ok=True)
 W, H = 1280, 720
 index = json.loads((ROOT / "web" / "assets" / "index.json").read_text(encoding="utf-8"))
