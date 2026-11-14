@@ -55,6 +55,8 @@ class Analysis:
     summaries: dict = field(default_factory=dict)  # key -> set -> summary dict
     primary_set: str | None = None  # "test" once any test result exists, else "val"
     hypotheses: list = field(default_factory=list)
+    outstanding: list = field(default_factory=list)  # phases not finished yet, one sentence each
+    h2_related: dict | None = None  # exploratory specialist-vs-generalist numbers while H2 cannot be estimated
     cross_checks: list = field(default_factory=list)
     seed_sensitivity: list = field(default_factory=list)
     single_vs_multi: list = field(default_factory=list)
@@ -198,7 +200,68 @@ def hypotheses(res, an: Analysis) -> list[dict]:
         h["p_holm"] = float(pa)
         h["decision"] = _decide(h["tested"], h["hi"], h["threshold"], h["p_holm"])
         h["preliminary"] = (not h["tested"]) and h["estimate"] == h["estimate"]
+        h["reading"] = _reading(h)
     return out
+
+
+GROUP_NAMES = {"generalist": "generalist", "blind": "blind control", "size-1": "single-track ablation (N = 1)"}
+
+
+def _reading(h: dict) -> str:
+    """Plain-language preliminary reading of a hypothesis that is not tested yet: where the interval from the
+    seeds available so far lies against the threshold. Not a decision: the preregistered test needs all seeds,
+    and with one seed per group the interval reflects only the sampling of tracks, not seed-to-seed variation."""
+    if h["tested"]:
+        return f"tested: {h['decision']}"
+    if h["estimate"] != h["estimate"]:
+        missing = [k for k, n in h["required"].items() if h["seeds"].get(k, 0) == 0]
+        return f"not estimable yet: the {' and the '.join(GROUP_NAMES.get(k, k) for k in missing)} has no test results yet"
+    n = min(h["seeds"].values())
+    basis = f"{_seed_words(n)} per group, track resampling only" if len(h["seeds"]) > 1 else f"{_seed_words(n)}, track resampling only"
+    if h["lo"] > h["threshold"]:
+        where = f"the interval lies above {h['threshold']}, consistent with {h['id']}"
+    elif h["hi"] < h["threshold"]:
+        where = f"the interval lies below {h['threshold']}, against {h['id']}"
+    else:
+        where = f"the interval includes {h['threshold']}, so no preliminary reading"
+    return f"preliminary ({basis}): {where}"
+
+
+def _seed_words(n: int) -> str:
+    return f"{n} seed" + ("" if n == 1 else "s")
+
+
+PHASE_LABELS = {"2-single-seed": "one seed of every experiment (phase 2)", "3-patched-physics": "patched physics (phase 3, only if an exploit is used)",
+                "4-imitation-hybrids": "imitation and hybrids (phase 4)", "5-hyperparameters": "hyperparameter sensitivity (phase 5)",
+                "6-seed-sensitivity": "seed sensitivity (phase 6)"}
+
+
+def outstanding(an) -> list[str]:
+    """What is not done yet, per phase of the run matrix, from the run statuses (for the README and paper)."""
+    out = []
+    for ph, label in PHASE_LABELS.items():
+        d = an.status_counts.get(ph)
+        if not d:
+            continue
+        total, done = sum(d.values()), d.get("evaluated", 0)
+        if done < total:
+            out.append(f"{label}: {done} of {total} runs evaluated")
+    return out
+
+
+def h2_related(res, an) -> dict | None:
+    """Exploratory evidence near H2 while its single-track ablation has not run: test finish rates of the
+    specialists (each trained on one hand-made campaign track, seed 1) against the generalist's. Not the
+    preregistered H2, which trains on one generated track from the pool."""
+    g = an.summary("generalist", CONFIRM_SET)
+    spec = [(c, an.summary(c["key"], CONFIRM_SET)) for c in an.configs
+            if c.get("experiment") == "specialist" and not c.get("pilot")]
+    spec = [(c, s) for c, s in spec if s]
+    if not g or not spec:
+        return None
+    fins = [s["finish"] for _, s in spec]
+    return {"generalist_finish": g["finish"], "generalist_sws": g["sws"], "n_specialists": len(spec),
+            "spec_finish_min": min(fins), "spec_finish_max": max(fins), "spec_sws_max": max(s["sws"] for _, s in spec)}
 
 
 def cross_checks(res, an: Analysis, s: str) -> list[dict]:
@@ -393,6 +456,8 @@ def analyze(res) -> Analysis:
     an.seed_sensitivity, an.single_vs_multi = seed_sensitivity(res, an)
     an.specialists = specialists(res, an)
     an.status_counts = status_counts(res)
+    an.outstanding = outstanding(an)
+    an.h2_related = h2_related(res, an)
     an.flags = [{"key": k, "label": an.config(k)["label"], "set": s, "overspeed": v["flags_overspeed"],
                  "energy_gain": v["flags_energy_gain"], "n_seeds": v["n_seeds"], "n_tracks": v["n_tracks"]}
                 for k, d in an.summaries.items() for s, v in d.items() if v["flags_overspeed"] or v["flags_energy_gain"]]

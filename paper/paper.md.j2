@@ -135,6 +135,12 @@ H1: the generalist's test SWS exceeds 1.0, the scripted driver's score. H2: SWS(
 
 {% if not hypotheses_tested %}
 Hypotheses marked "not yet tested" lack the preregistered seeds; any estimate shown for them is preliminary and is not a test.
+
+**Preliminary evaluation with the results so far.**
+
+{% for line in preliminary_hypotheses %}
+- {{ line }}
+{% endfor %}
 {% endif %}
 
 Cross-checks (exploratory, Agarwal et al. 2021):

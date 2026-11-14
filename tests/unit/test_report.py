@@ -193,6 +193,12 @@ def test_hypotheses_follow_preregistration(built):
     assert all(x["decision"] == "not yet tested" for x in h.values())  # 2 of 10 generalist seeds
     md = (out / "reports" / "summary.md").read_text(encoding="utf-8")
     assert re.search(r"\| H1 \|.*\(preliminary\)", md)
+    # Preliminary readings (not tests): the reading follows where the interval lies against the threshold.
+    for x in h.values():
+        side = ("above" if x["lo"] > x["threshold"] else "below" if x["hi"] < x["threshold"] else "includes")
+        assert x["reading"].startswith("preliminary (") and side in x["reading"]
+    readme = (out / "README.md").read_text(encoding="utf-8")
+    assert "Preliminary readings from the seeds available, not tests" in readme and "Not done yet:" in readme
 
 
 def test_model_card(built):
