@@ -14,8 +14,8 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 
 | Run | Status | Phase | Agent steps | Wall hours | Physics | Commit | Evaluated on |
 |---|---|---|---|---|---|---|---|
-| `specialist-campaign-01/seed1` | planned | 2-single-seed | — | — | v1 | — | — |
-| `specialist-campaign-02/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
+| `specialist-campaign-01/seed1` | evaluated | 2-single-seed | 200,278,016 | 0.25 | v1 | 11c90044c8 | test, campaign |
+| `specialist-campaign-02/seed1` | planned | 2-single-seed | — | — | v1 | — | — |
 | `specialist-campaign-03/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
 | `specialist-campaign-04/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
 | `specialist-campaign-05/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
@@ -47,7 +47,9 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 
 ## Configuration (logged in each run.json)
 
-_No run of this group has logged its configuration yet (the experiment files are in `configs/experiments/`)._
+| Run | total_steps | num_envs | num_steps | lr | gamma | gae_lambda | ent_coef | clip_coef | hidden | action_mode | weight_decay | loaded_tracks | window_k | blind | time_cost | fall_penalty | random_start_prob | max_steps | hint_weight | scripted_starts | training tracks |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `specialist-campaign-01/seed1` | 200000000 | 16384 | 32 | 0.001 | 0.99 | 0.95 | 0.01 | 0.2 | [256, 256] | factored | 0.0 | 1 | 20 | False | 0.0 | 0.0 | 0.5 | 1500 | 0.0 | False | 1 |
 
 ## Results
 
@@ -57,6 +59,7 @@ _No run of this group has logged its configuration yet (the experiment files are
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | Scripted driver | Reference | 1 | 0.998 [0.995, 1.000] | 99.8 % | 1.000 [1.000, 1.000] | 100.0 % | 0.999 [0.997, 1.000] | 99.9 % | — | — | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
 | Generalist (PPO) | Main method | 1 | 1.214 [1.177, 1.250] | 81.5 % | 1.236 [1.153, 1.315] | 82.7 % | 1.250 [1.214, 1.283] | 83.9 % | 1.250 [1.214, 1.283] | 83.9 % | 0.875 [0.769, 0.982] | 57.8 % | 1.590 [1.451, 1.783] | 100.0 % | 1.231 [1.147, 1.311] | 82.0 % |
+| Specialist (campaign-01) | Specialist | 1 | 0.286 [0.250, 0.323] | 19.8 % | — | — | — | — | — | — | — | — | 0.577 [0.000, 1.188] | 40.0 % | — | — |
 
 Rows from other groups are shown for comparison. Track counts: Test (unseen generated): 971 tracks; Validation: 197 tracks; Training sample: 1,000 tracks; Own training tracks: 1,000 tracks; Out-of-range test: 187 tracks; Campaign (hand-made): 5 tracks; Unfiltered test: 200 tracks.
 
@@ -69,6 +72,7 @@ Rows from other groups are shown for comparison. Track counts: Test (unseen gene
 | campaign-01 | 30.17 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 20.02 | s0: 20.02 |
 | campaign-01 | 30.17 | Generalist (PPO) | zero-shot | 1/1 | 20.29 | s1: 20.29 |
 | campaign-01 | 30.17 | Specialist (campaign-01) [pilot, seed 0] | own track | 1/1 | 19.71 | s0: 19.71 |
+| campaign-01 | 30.17 | Specialist (campaign-01) | own track | 1/1 | 19.74 | s1: 19.74 |
 | campaign-02 | 36.43 | CEM planner | reference | 1/1 | 25.25 | s0: 25.25 |
 | campaign-02 | 36.43 | Scripted driver | reference | 1/1 | 36.43 | s0: 36.43 |
 | campaign-02 | 36.43 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 24.45 | s0: 24.45 |
@@ -89,6 +93,12 @@ Rows from other groups are shown for comparison. Track counts: Test (unseen gene
 ![Finishing time on each campaign track: small marks are single seeds, large marks the mean over finishing seeds, x marks runs that did not finish (DNF); the black bar is the scripted driver's reference time. Specialists are scored on their own track; the generalist zero-shot.](../figures/specialists_campaign.png)
 
 *Finishing time on each campaign track: small marks are single seeds, large marks the mean over finishing seeds, x marks runs that did not finish (DNF); the black bar is the scripted driver's reference time. Specialists are scored on their own track; the generalist zero-shot.*
+
+### Training curves
+
+![Training curves of Specialist (campaign-01); one line per seed (seeds 1). Return and finish rate are over training episodes (standing and random starts); validation SWS is the evaluator's score on the validation tracks.](../figures/curves_specialist-campaign-01.png)
+
+*Training curves of Specialist (campaign-01); one line per seed (seeds 1). Return and finish rate are over training episodes (standing and random starts); validation SWS is the evaluator's score on the validation tracks.*
 
 ## Learnings
 
