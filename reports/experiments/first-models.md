@@ -49,19 +49,24 @@ Rows from other groups are shown for comparison. Track counts: Test (unseen gene
 
 | Campaign track | Scripted time (s) | Agent | Kind | Finished | Mean time (s) | Per seed (s) |
 |---|---|---|---|---|---|---|
+| campaign-01 | 30.17 | CEM planner | reference | 1/1 | 20.33 | s0: 20.33 |
 | campaign-01 | 30.17 | Scripted driver | reference | 1/1 | 30.16 | s0: 30.16 |
 | campaign-01 | 30.17 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 20.02 | s0: 20.02 |
 | campaign-01 | 30.17 | Generalist (PPO) | zero-shot | 1/1 | 20.29 | s1: 20.29 |
 | campaign-01 | 30.17 | Specialist (campaign-01) [pilot, seed 0] | own track | 1/1 | 19.71 | s0: 19.71 |
+| campaign-02 | 36.43 | CEM planner | reference | 1/1 | 25.25 | s0: 25.25 |
 | campaign-02 | 36.43 | Scripted driver | reference | 1/1 | 36.43 | s0: 36.43 |
 | campaign-02 | 36.43 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 24.45 | s0: 24.45 |
 | campaign-02 | 36.43 | Generalist (PPO) | zero-shot | 1/1 | 24.60 | s1: 24.60 |
+| campaign-03 | 48.50 | CEM planner | reference | 1/1 | 36.23 | s0: 36.23 |
 | campaign-03 | 48.50 | Scripted driver | reference | 1/1 | 48.52 | s0: 48.52 |
 | campaign-03 | 48.50 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 35.15 | s0: 35.15 |
 | campaign-03 | 48.50 | Generalist (PPO) | zero-shot | 1/1 | 34.56 | s1: 34.56 |
+| campaign-04 | 42.52 | CEM planner | reference | 1/1 | 22.38 | s0: 22.38 |
 | campaign-04 | 42.52 | Scripted driver | reference | 1/1 | 42.52 | s0: 42.52 |
 | campaign-04 | 42.52 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 21.27 | s0: 21.27 |
 | campaign-04 | 42.52 | Generalist (PPO) | zero-shot | 1/1 | 21.60 | s1: 21.60 |
+| campaign-05 | 56.07 | CEM planner | reference | 1/1 | 35.27 | s0: 35.27 |
 | campaign-05 | 56.07 | Scripted driver | reference | 1/1 | 56.03 | s0: 56.03 |
 | campaign-05 | 56.07 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 34.96 | s0: 34.96 |
 | campaign-05 | 56.07 | Generalist (PPO) | zero-shot | 1/1 | 34.86 | s1: 34.86 |
@@ -90,7 +95,7 @@ These notes record what was tried, what went wrong and why, and how it was fixed
 
 **Simplifications forced by the engine.** cannon-es has no per-surface grip, so the planned low-grip road shoulder was dropped; only wheel rays touch the track, so a tipped car falls through and is caught by the "3 m below the road" rule instead of a separate roll-over rule. cannon-es also has no rolling resistance or engine model, so a speed-dependent engine force and a small coasting brake were added to the shared action-to-wheel mapping (`docs/formats.md`), identically in the game and the port.
 
-**The eager simulator was launch-bound.** The first benchmark of the batched environment took about 280 ms per agent step at every batch size from 1,024 to 16,384 cars: the time went into launching thousands of tiny GPU kernels per tick, not into arithmetic. `torch.compile` in WSL2 fuses them; the compiled simulator is about ten times faster (`results/bench/`). Training therefore runs in WSL2, while publishing runs on Windows where the GitHub and Hugging Face logins are.
+**The eager simulator was launch-bound.** The first benchmark of the batched environment took about 280 ms per agent step at every batch size from 1,024 to 16,384 cars: the time went into launching thousands of tiny GPU kernels per tick, not into arithmetic. `torch.compile` in WSL2 fuses them; the compiled simulator was about ten times faster in that benchmark. Its result file was lost in the clean-up after the smoke runs, so `scripts/bench_sim.py` is to be re-run when the GPU is free; until then the measured speed of record is each run's wall time in `results/<run>/run.json`. Training therefore runs in WSL2, while publishing runs on Windows where the GitHub and Hugging Face logins are.
 
 **Track generation hung silently in WSL.** The first full pipeline smoke test made no progress for 36 minutes. Cause: the generator's worker processes (Python's "spawn" start method) re-imported the main script and PyTorch, about 600 MB each; 28 of them exceeded WSL2's 15 GB, the kernel killed workers, and the process pool replaced them forever. A second copy left over from an app restart doubled the load. Fix: the track geometry moved to a PyTorch-free module, the script got a `__main__` guard, and the pool uses 8 processes.
 

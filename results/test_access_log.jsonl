@@ -47,3 +47,5 @@
 {"time": "2026-11-14T13:59:14.618826+00:00", "split": "test", "policy": "generalist/seed1", "tracks": 971}
 {"time": "2026-11-14T14:00:39.845911+00:00", "split": "oor", "policy": "generalist/seed1", "tracks": 187}
 {"time": "2026-11-14T14:02:15.309290+00:00", "split": "test_unfiltered", "policy": "generalist/seed1", "tracks": 200}
+{"time": "2026-11-14T14:07:03.722155+00:00", "split": "test", "policy": "cem", "tracks": 25}
+{"time": "2026-11-14T15:06:17.168793+00:00", "split": "test", "policy": "export:unseen-track-demo", "tracks": 1}

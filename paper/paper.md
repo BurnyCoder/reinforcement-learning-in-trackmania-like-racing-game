@@ -36,7 +36,7 @@ This paper asks four questions, fixed in the preregistration ([`reports/preregis
 
 **What is new** is a combination, limited to what our searches found ([`reports/literature-review.md`](https://github.com/BurnyCoder/reinforcement-learning-in-trackmania-like-racing-game/blob/main/reports/literature-review.md), section 14): the same car code runs in a playable browser game and, as a tested batched port, in training; the generalist is tested on held-out generated 3D tracks with hills, banking and jumps, with several seeds against a scripted driver, a blind control and a training-set-size ablation; and exploits of the physics engine are reported as findings rather than removed.
 
-**Status of this version.** 17 of 115 runs in the preregistered run matrix are evaluated. The confirmatory tests of H1-H3 need all preregistered seeds and are not complete; every number from fewer seeds or from the validation set is labelled preliminary.
+**Status of this version.** 18 of 116 runs in the preregistered run matrix are evaluated. The confirmatory tests of H1-H3 need all preregistered seeds and are not complete; every number from fewer seeds or from the validation set is labelled preliminary.
 
 # Background and related work
 
@@ -50,7 +50,7 @@ This paper asks four questions, fixed in the preregistration ([`reports/preregis
 
 **Evaluation.** We follow [Henderson et al. 2018](https://arxiv.org/abs/1709.06560), [Colas et al. 2019](https://arxiv.org/abs/1904.06979) (Welch's t-test on per-seed scores), [Agarwal et al. 2021](https://arxiv.org/abs/2108.13264) (interquartile mean, probability of improvement, bootstrap intervals) and [Patterson et al. 2024](https://arxiv.org/abs/2304.01315). SWS adapts SPL ([Anderson et al. 2018](https://arxiv.org/abs/1807.06757)) from path length to time.
 
-**Car physics.** The car is the raycast vehicle of [cannon-es](https://github.com/pmndrs/cannon-es) (MIT), a JavaScript port of Bullet's `btRaycastVehicle`: one rigid chassis and four suspension rays that apply spring, damper, side-friction and engine impulses. We found no permissively licensed TrackMania clone and no public batched GPU port of a raycast vehicle.
+**Car physics.** The car is the raycast vehicle of [cannon-es](https://github.com/pmndrs/cannon-es) (MIT), whose code follows Bullet's `btRaycastVehicle`: one rigid chassis and four suspension rays that apply spring, damper, side-friction and engine impulses. We found no permissively licensed TrackMania clone and no public batched GPU port of a raycast vehicle.
 
 # Method
 
@@ -100,13 +100,13 @@ Runs follow the preregistered order: (1) the first two models (seed 0), which mu
 
 | Phase | not started | planned | training | trained | evaluated | total |
 |---|---|---|---|---|---|---|
-| baselines | 0 | 0 | 0 | 0 | 14 | 14 |
+| baselines | 0 | 0 | 0 | 0 | 15 | 15 |
 | 1-first-models | 0 | 0 | 0 | 0 | 2 | 2 |
-| 2-single-seed | 23 | 1 | 0 | 0 | 1 | 25 |
+| 2-single-seed | 23 | 0 | 0 | 1 | 1 | 25 |
 | 4-imitation-hybrids | 5 | 0 | 0 | 0 | 0 | 5 |
 | 5-hyperparameters | 4 | 0 | 0 | 0 | 0 | 4 |
 | 6-seed-sensitivity | 65 | 0 | 0 | 0 | 0 | 65 |
-| **all** | 97 | 1 | 0 | 0 | 17 | 115 |
+| **all** | 97 | 0 | 0 | 1 | 18 | 116 |
 
 # Results
 
@@ -121,6 +121,7 @@ Runs follow the preregistered order: (1) the first two models (seed 0), which mu
 
 | Configuration | Role | Seeds | Test SWS [95 % CI] | Test finished | OOR SWS [95 % CI] | OOR finished | Campaign SWS [95 % CI] | Campaign finished |
 |---|---|---|---|---|---|---|---|---|
+| CEM planner | Reference | 1 | — | — | — | — | 1.551 [1.409, 1.726] | 100.0 % |
 | Scripted driver | Reference | 1 | 0.998 [0.995, 1.000] | 99.8 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
 | Random actions | Control | 3 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
 | Untrained network | Control | 10 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
@@ -164,19 +165,24 @@ Cross-checks (exploratory, Agarwal et al. 2021):
 
 | Campaign track | Scripted time (s) | Agent | Kind | Finished | Mean time (s) | Per seed (s) |
 |---|---|---|---|---|---|---|
+| campaign-01 | 30.17 | CEM planner | reference | 1/1 | 20.33 | s0: 20.33 |
 | campaign-01 | 30.17 | Scripted driver | reference | 1/1 | 30.16 | s0: 30.16 |
 | campaign-01 | 30.17 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 20.02 | s0: 20.02 |
 | campaign-01 | 30.17 | Generalist (PPO) | zero-shot | 1/1 | 20.29 | s1: 20.29 |
 | campaign-01 | 30.17 | Specialist (campaign-01) [pilot, seed 0] | own track | 1/1 | 19.71 | s0: 19.71 |
+| campaign-02 | 36.43 | CEM planner | reference | 1/1 | 25.25 | s0: 25.25 |
 | campaign-02 | 36.43 | Scripted driver | reference | 1/1 | 36.43 | s0: 36.43 |
 | campaign-02 | 36.43 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 24.45 | s0: 24.45 |
 | campaign-02 | 36.43 | Generalist (PPO) | zero-shot | 1/1 | 24.60 | s1: 24.60 |
+| campaign-03 | 48.50 | CEM planner | reference | 1/1 | 36.23 | s0: 36.23 |
 | campaign-03 | 48.50 | Scripted driver | reference | 1/1 | 48.52 | s0: 48.52 |
 | campaign-03 | 48.50 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 35.15 | s0: 35.15 |
 | campaign-03 | 48.50 | Generalist (PPO) | zero-shot | 1/1 | 34.56 | s1: 34.56 |
+| campaign-04 | 42.52 | CEM planner | reference | 1/1 | 22.38 | s0: 22.38 |
 | campaign-04 | 42.52 | Scripted driver | reference | 1/1 | 42.52 | s0: 42.52 |
 | campaign-04 | 42.52 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 21.27 | s0: 21.27 |
 | campaign-04 | 42.52 | Generalist (PPO) | zero-shot | 1/1 | 21.60 | s1: 21.60 |
+| campaign-05 | 56.07 | CEM planner | reference | 1/1 | 35.27 | s0: 35.27 |
 | campaign-05 | 56.07 | Scripted driver | reference | 1/1 | 56.03 | s0: 56.03 |
 | campaign-05 | 56.07 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 34.96 | s0: 34.96 |
 | campaign-05 | 56.07 | Generalist (PPO) | zero-shot | 1/1 | 34.86 | s1: 34.86 |

@@ -14,6 +14,7 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 
 | Run | Status | Phase | Agent steps | Wall hours | Physics | Commit | Evaluated on |
 |---|---|---|---|---|---|---|---|
+| `baselines/cem/seed0` | evaluated | baselines | — | — | v1 | — | campaign, test25 |
 | `baselines/random/seed0` | evaluated | baselines | — | — | v1 | — | test, val, train_sample, oor, campaign, test_unfiltered |
 | `baselines/random/seed1` | evaluated | baselines | — | — | v1 | — | test, val, train_sample, oor, campaign, test_unfiltered |
 | `baselines/random/seed2` | evaluated | baselines | — | — | v1 | — | test, val, train_sample, oor, campaign, test_unfiltered |
@@ -51,6 +52,7 @@ Scripted driver parameters chosen on validation candidates: `a_lat` = 6.0, `look
 
 | Configuration | Role | Seeds | Test SWS [95 % CI] | Test finished | Val SWS [95 % CI] | Val finished | Train SWS [95 % CI] | Train finished | Own train SWS [95 % CI] | Own train finished | OOR SWS [95 % CI] | OOR finished | Campaign SWS [95 % CI] | Campaign finished | Unfiltered SWS [95 % CI] | Unfiltered finished |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| CEM planner | Reference | 1 | — | — | — | — | — | — | — | — | — | — | 1.551 [1.409, 1.726] | 100.0 % | — | — |
 | Scripted driver | Reference | 1 | 0.998 [0.995, 1.000] | 99.8 % | 1.000 [1.000, 1.000] | 100.0 % | 0.999 [0.997, 1.000] | 99.9 % | — | — | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
 | Random actions | Control | 3 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | — | — | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
 | Untrained network | Control | 10 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | — | — | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
