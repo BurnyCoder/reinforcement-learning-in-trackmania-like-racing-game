@@ -1,86 +1,108 @@
 # README video clips, recorded by scripts/11_record_videos.py with the browser game's "Watch replay" mode.
-# Every clip replays an official evaluation run: the car states the Python evaluator recorded while scoring
-# the run (a ghost in web/assets/ghosts/<track>/<replay>.json), so the clip is exactly the run its label
-# describes, failures included. Each clip names the ghost (replay), the run whose official evaluation it
-# comes from (run), the set (split), and either a fixed track or a selection rule over that evaluation
-# (racingmania.eval.clips: best, median_jump, mid_fail; rule_run: read the rule from another run's evaluation;
-# variant: only out-of-range tracks of that variant),
-# so the README shows labelled best, typical and failure cases rather than hand-picked ones.
-# until: finish (default) records to the finish line; out stops where an unfinished run ended.
+# Every clip replays an official evaluation run (or, under results/demos/, a labelled demonstration run): the car
+# states the Python evaluator recorded (a ghost in web/assets/ghosts/<track>/<replay>.json), so the clip is
+# exactly the run its label describes, failures included.
+# Fields: replay (the ghost), run (whose evaluation it comes from), split (the set), and either track (fixed) or
+# rule (racingmania.eval.clips: best, median_jump, mid_fail; rule_run: read the rule from another run's
+# evaluation; variant: only out-of-range tracks of that variant), so the README shows labelled best, typical and
+# failure cases rather than hand-picked ones. until: finish (default) records to the finish line; out stops where
+# an unfinished run ended. explain: what the clip shows, in plain language (no result numbers: those are generated
+# from the result files). compare / compare_as: a many-run comparison file (scripts/14_random_vs_sampled.py).
 clips:
-  - title: Best specialist lap
-    replay: specialist-campaign-01-seed0
-    run: specialist-campaign-01/seed0
-    split: campaign
-    rule: best
-  - title: Best generalist lap on a hand-made track it never saw in training
-    replay: generalist-seed0
-    run: generalist/seed0
-    split: campaign
-    rule: best
-  - title: "Best generalist lap on a held-out generated track it never saw in training: it generalized"
-    replay: generalist-seed0
-    run: generalist/seed0
-    split: test
-    rule: best
-  - title: Scripted driver on the same held-out track, for comparison
-    replay: scripted-driver
-    run: baselines/scripted/seed0
-    split: test
-    rule: best
-    rule_run: generalist/seed0   # the same track as the clip before
-  - title: Typical generalist lap on a held-out generated track it never saw in training
-    replay: generalist-seed0
-    run: generalist/seed0
-    split: test
-    rule: median_jump
-  - title: "Generalization failure on a held-out track: the generalist falls off halfway round"
-    replay: generalist-seed0
-    run: generalist/seed0
-    split: test
-    rule: mid_fail
-    until: out
-  - title: "Generalization failure beyond the training range: a corner tighter than any training track"
-    replay: generalist-seed0
-    run: generalist/seed0
-    split: oor
-    variant: tight_turns        # out-of-range tracks with tighter turns than training, where it fails most often
-    rule: mid_fail
-    until: out
-  - title: Untrained network (control) on the specialist's track
-    replay: untrained-seed0
-    run: baselines/untrained/seed0
-    split: campaign
-    track: campaign-01
-    until: out
-    note: >-
-      Like every evaluated driver, the network takes its most probable action at each step instead of sampling one. With
-      random initial weights its output layer starts close to zero (standard deviation 0.01, the CleanRL convention), so it
-      picks almost the same keys every step, here steering right while coasting, and never presses gas. Sampled instead of
-      taken greedily, the same network would press keys almost uniformly at random, which is how PPO starts exploring.
-  - title: "Untrained network with sampled actions: almost uniformly random keys, as PPO starts exploring"
-    replay: untrained-seed0-sampled
-    run: demos/untrained-sampled/seed0     # scripts/13_sampled_untrained_demo.py; not part of the scored evaluation
-    split: campaign
-    track: campaign-01
-    until: out
-    compare: demos/random-vs-sampled/campaign-01.json   # scripts/14_random_vs_sampled.py
-    compare_as: untrained_sampled
-    note: >-
-      The same network and weights as the clip before. The official evaluation takes the most probable action; here the
-      keys of every step are drawn from the network's own probabilities, which are close to one in three for each steering
-      and each pedal choice, so they are almost uniformly random, as at the start of PPO training. The car jitters between
-      gas, coast and brake and drifts a few dozen metres before it is out for lack of progress. This is a demonstration
-      run, not part of the scored evaluation.
-  - title: Random actions (control) on the specialist's track
-    replay: random-seed0
-    run: baselines/random/seed0
-    split: campaign
-    track: campaign-01
-    until: out
-    compare: demos/random-vs-sampled/campaign-01.json
-    compare_as: random_actions
-    note: >-
-      This control presses a uniformly random key combination every agent step (0.05 s). Gas, coast and brake, which
-      reverses at a standstill, each come up a third of the time and cancel out, so the car makes almost no progress and is
-      out under the "no 0.5 m of progress in 2 s" rule.
+- title: Best specialist lap
+  replay: specialist-campaign-01-seed0
+  run: specialist-campaign-01/seed0
+  split: campaign
+  rule: best
+  explain: 'The specialist has driven only this one track during training, so it knows every corner. Watch it accelerate hard
+    from the start, hold high speed on the straights, keep its speed through the bends by staying close to the edge, and take
+    the jump without slowing down. It is the fastest of all drivers evaluated so far on this track, but it learned the track
+    by heart rather than learning to drive: on tracks it has not seen it mostly falls off (see the results).'
+- title: Best generalist lap on a hand-made track it never saw in training
+  replay: generalist-seed0
+  run: generalist/seed0
+  split: campaign
+  rule: best
+  explain: The generalist learned on tens of thousands of generated tracks and never on these hand-made ones, which were designed
+    separately. It still reads the road ahead and picks a speed for each bend, and laps this track in about half the scripted
+    driver's time. On the specialist's own track it is only slightly slower than the specialist (see the results).
+- title: 'Best generalist lap on a held-out generated track it never saw in training: it generalized'
+  replay: generalist-seed0
+  run: generalist/seed0
+  split: test
+  rule: best
+  explain: 'This is generalization: a track from the held-out test seeds, which the generalist never trained on, driven from
+    the standing start to the finish. Watch it slow down for each bend, hug the inside edge through it and accelerate out
+    again, using only what it sees of the road ahead. Compare it with the next clip, the scripted driver on the same track.'
+- title: Scripted driver on the same held-out track, for comparison
+  replay: scripted-driver
+  run: baselines/scripted/seed0
+  split: test
+  rule: best
+  rule_run: generalist/seed0
+  explain: 'The same track as the clip before, driven by the hand-written scripted driver. It drives the track cleanly, but
+    it is cautious: in the bends it slows to well under half the generalist''s speed, and it never reaches the speeds the
+    generalist holds on the straights, so it needs almost twice as long (speeds measured from both recorded runs). Its time
+    on each track is the yardstick of the score: 1.0 means as fast as this driver.'
+- title: Typical generalist lap on a held-out generated track it never saw in training
+  replay: generalist-seed0
+  run: generalist/seed0
+  split: test
+  rule: median_jump
+  explain: 'Not the best lap but a typical one: the median of the generalist''s finished test tracks that have a jump. It
+    shows what most of its successful laps on unseen tracks look like: a clean run with a jump, clearly faster than the scripted
+    driver but less spectacular than the best lap.'
+- title: 'Generalization failure on a held-out track: the generalist falls off halfway round'
+  replay: generalist-seed0
+  run: generalist/seed0
+  split: test
+  rule: mid_fail
+  until: out
+  explain: 'Generalization does not always work. About one unseen track in five ends like this: the generalist enters a bend
+    too fast, cannot hold the line and leaves the road on the outside. Most of its falls come right after tight corners rather
+    than at jumps (failure analysis in `results/generalist/seed*/failures_*.json`): it trades safety for speed.'
+- title: 'Generalization failure beyond the training range: a corner tighter than any training track'
+  replay: generalist-seed0
+  run: generalist/seed0
+  split: oor
+  variant: tight_turns
+  rule: mid_fail
+  until: out
+  explain: 'This track was generated with tighter corners than any track the generalist trained on. It approaches the corner
+    at a speed that would suit the wider corners it knows and flies off the outside. Learning from many tracks lets it drive
+    new combinations of familiar features, but not features outside what it has seen: on tracks like this it almost always
+    falls, while longer jumps than in training, for example, are handled well (see the results).'
+- title: Untrained network (control) on the specialist's track
+  replay: untrained-seed0
+  run: baselines/untrained/seed0
+  split: campaign
+  track: campaign-01
+  until: out
+  explain: Like every evaluated driver, the network takes its most probable action at each step instead of sampling one. With
+    random initial weights its output layer starts close to zero (standard deviation 0.01, the CleanRL convention), so it
+    picks almost the same keys every step, here steering right while coasting, and never presses gas. Sampled instead of taken
+    greedily, the same network would press keys almost uniformly at random, which is how PPO starts exploring.
+- title: 'Untrained network with sampled actions: almost uniformly random keys, as PPO starts exploring'
+  replay: untrained-seed0-sampled
+  run: demos/untrained-sampled/seed0
+  split: campaign
+  track: campaign-01
+  until: out
+  compare: demos/random-vs-sampled/campaign-01.json
+  compare_as: untrained_sampled
+  explain: The same network and weights as the clip before. The official evaluation takes the most probable action; here the
+    keys of every step are drawn from the network's own probabilities, which are close to one in three for each steering and
+    each pedal choice, so they are almost uniformly random, as at the start of PPO training. The car jitters between gas,
+    coast and brake and drifts a few dozen metres before it is out for lack of progress. This is a demonstration run, not
+    part of the scored evaluation.
+- title: Random actions (control) on the specialist's track
+  replay: random-seed0
+  run: baselines/random/seed0
+  split: campaign
+  track: campaign-01
+  until: out
+  compare: demos/random-vs-sampled/campaign-01.json
+  compare_as: random_actions
+  explain: This control presses a uniformly random key combination every agent step (0.05 s). Gas, coast and brake, which
+    reverses at a standstill, each come up a third of the time and cancel out, so the car makes almost no progress and is
+    out under the "no 0.5 m of progress in 2 s" rule.

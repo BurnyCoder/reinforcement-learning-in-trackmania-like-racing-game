@@ -231,13 +231,12 @@ def eval_text(c: dict) -> str:
 blocks = []
 for k, c in enumerate(clips, 1):
     lines = [f"### {k}. {c['title']}", "", f"[![{c['title']}: {c['model']} on {c['track']}]({c['gif']})]({c['mp4']})", "",
+             f"- **What you see:** {c['explain'].strip()}",
              f"- **Model:** {model_text(c['run'])}.",
              f"- **Map:** {map_text(c['track'], c['run'], c['split'])}.",
              f"- **Evaluation:** {eval_text(c)}."]
     if c["why"]:
         lines.append(f"- **Why this clip:** chosen by a fixed rule as {c['why']} in its official evaluation.")
-    if c.get("note"):  # hand-written explanation from clips.yaml (no result numbers: those come from the files above)
-        lines.append(f"- **Note:** {c['note'].strip()}")
     if c.get("compare"):  # many-run comparison (scripts/14_random_vs_sampled.py): where this single run falls
         lines.append(f"- **Over many runs:** {compare_text(c)}")
     blocks.append("\n".join(lines))
