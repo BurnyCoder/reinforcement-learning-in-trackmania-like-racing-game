@@ -23,7 +23,7 @@ from ..utils.logging import get_logger
 from ..utils.paths import RESULTS_DIR, WEB_ASSETS
 from .campaign import CAMPAIGN_PLANS, campaign_track
 from .generator import SPLITS, generate_light
-from .store import batch_from_pool, pack, pool_path, save_pool
+from .store import batch_from_pool, merge_pools, pack, pool_path, save_pool
 from .validate import certify, tune_scripted
 
 log = get_logger(__name__)
@@ -62,7 +62,7 @@ def load_tuned() -> ScriptedParams:
 
 
 def build_split(split: str, params: ScriptedParams, device="cuda", processes: int = 8, limit: int | None = None,
-                keep_failed: bool = False):
+                keep_failed: bool = False, chunk: int = 4096):
     """Generate, certify and save one set. ``keep_failed`` keeps uncertified tracks (unfiltered test set)."""
     cfg = load_vehicle_config()
     lo, hi = SPLITS["test" if split == "test_unfiltered" else split]
@@ -70,19 +70,26 @@ def build_split(split: str, params: ScriptedParams, device="cuda", processes: in
         hi = lo + 200
     if limit:
         hi = min(hi, lo + limit)
-    cands, geo_rejects = generate_many(range(lo, hi), processes)
-    tb = batch_from_pool(pack(cands), device=device)
-    passed, ref, _ = certify(cfg, tb, params, device=device)
-    keep = np.ones(len(cands), bool) if keep_failed else passed
-    chosen = [c for c, k in zip(cands, keep) if k]
-    pool = pack(chosen, ref_ticks=[int(r) for r, k in zip(ref, keep) if k])
+    # Generate and certify in chunks so that a 50,000-track set never sits in memory as Python objects.
+    packs, lengths, geo_rejects, cert_rejects = [], [], 0, 0
+    for c_lo in range(lo, hi, chunk):
+        cands, rej = generate_many(range(c_lo, min(hi, c_lo + chunk)), processes)
+        geo_rejects += rej
+        passed, ref, _ = certify(cfg, batch_from_pool(pack(cands), device=device), params, device=device)
+        cert_rejects += int((~passed).sum())
+        keep = np.ones(len(cands), bool) if keep_failed else passed
+        chosen = [c for c, k in zip(cands, keep) if k]
+        packs.append(pack(chosen, ref_ticks=[int(r) for r, k in zip(ref, keep) if k]))
+        lengths += [c["length"] for c in chosen]
+        log.info("%s: seeds %d-%d done, %d kept so far", split, c_lo, min(hi, c_lo + chunk) - 1, len(lengths))
+    pool = merge_pools(packs)
     meta = {"split": split, "seed_range": [lo, hi], "generated": hi - lo, "geometric_rejects": geo_rejects,
-            "certification_rejects": int((~passed).sum()), "kept": len(chosen), "scripted": asdict(params)}
+            "certification_rejects": cert_rejects, "kept": len(lengths), "scripted": asdict(params)}
     save_pool(pool, pool_path(split), meta)
     (tracks_summary_dir() / f"{split}_summary.json").write_text(json.dumps(
-        {**meta, "mean_length_m": float(np.mean([c["length"] for c in chosen])),
+        {**meta, "mean_length_m": float(np.mean(lengths)),
          "mean_ref_time_s": float(np.mean([r for r in pool["ref_ticks"] if r > 0]) * cfg.dt)}, indent=2))
-    log.info("%s: kept %d of %d seeds", split, len(chosen), hi - lo)
+    log.info("%s: kept %d of %d seeds", split, len(lengths), hi - lo)
     return meta
 
 
