@@ -39,7 +39,7 @@ def headline(an) -> list[str]:
         r = g["time_ratio_finished"]
         if r == r:
             out.append(f"On the tracks it finished, it needed {r:.2f} times the scripted driver's time "
-                       f"({abs(r - 1) * 100:.1f} % {'slower' if r > 1 else 'faster'} on average).")
+                       f"({abs(r - 1) * 100:.1f} % {'more' if r > 1 else 'less'} time on average).")
         comps = []
         for other in ("blind", "size-1", "pqn", "baseline-untrained", "baseline-random"):
             o = an.summary(other, s)
