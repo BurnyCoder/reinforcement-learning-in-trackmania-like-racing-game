@@ -2,9 +2,9 @@
   "experiment": "specialist-finetune",
   "seed": 1,
   "track": "campaign-05",
-  "status": "trained",
+  "status": "evaluated",
   "phase": "2-single-seed",
-  "updated": "2026-11-14T21:03:39.270635+00:00",
+  "updated": "2026-11-14T21:08:05.042348+00:00",
   "algo": "ppo",
   "description": "Specialist fine-tuned from the seed-1 generalist",
   "git_commit": "01ec251c45cee81d3f6dde5cea78f8ac85e02769",
@@ -69,5 +69,29 @@
   "global_step": 200278016,
   "iterations": 382,
   "wall_hours": 0.25754888263013626,
-  "last_session_hours": 0.2576539141601986
+  "last_session_hours": 0.2576539141601986,
+  "eval_summary": {
+    "campaign": {
+      "sws": 1.0574698501252406,
+      "finish_rate": 0.6,
+      "speed_ratio_finished": 1.7624497502087344,
+      "n_tracks": 5,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    },
+    "test": {
+      "sws": 0.8417460500478534,
+      "finish_rate": 0.548918640576725,
+      "speed_ratio_finished": 1.5334623163160703,
+      "n_tracks": 971,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    }
+  },
+  "onnx_check": {
+    "agreement": 1.0,
+    "max_abs_logit_diff": 1.9550323486328125e-05,
+    "n": 512
+  },
+  "onnx_file": "assets/models/specialist-finetune-campaign-05-seed1.onnx"
 }

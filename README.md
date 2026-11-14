@@ -174,7 +174,7 @@ Prior work trained agents for TrackMania against the real game, sped up through 
 ## Results
 
 <!-- RESULTS:START -->
-_Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-14; 29 of 116 planned runs evaluated. Full tables: [`reports/summary.md`](reports/summary.md)._
+_Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-14; 30 of 116 planned runs evaluated. Full tables: [`reports/summary.md`](reports/summary.md)._
 
 - The Generalist (PPO) (1 seed) finished 81.5 % of the 971 unseen test tracks (95 % CI 79.0 % to 83.8 %), with a success-weighted speed (SWS) of 1.214 [1.177, 1.250]; an SWS of 1.0 would mean finishing every track as fast as the scripted driver.
 - On the tracks it finished, it needed 0.67 times the scripted driver's time (32.7 % less time on average).
@@ -184,7 +184,7 @@ _Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-14;
 - H2: Track diversity is what generalises (50,000 tracks vs 1 track). Not estimable yet: the single-track ablation (N = 1) has no test results yet.
 - H3: The agent uses the look-ahead (generalist vs blind control). SWS difference, paired on the same tracks, 0.204 [0.164, 0.245]; preliminary (1 seed per group, track resampling only): the interval lies above 0.1, consistent with H3.
 - Exploratory and not H2 itself: specialists trained on one hand-made track each finished 5.3 % to 45.2 % of the unseen test tracks (5 runs, seed 1), against 81.5 % for the generalist.
-- With one seed per configuration these intervals reflect only which tracks were sampled; seed-to-seed and checkpoint-to-checkpoint variation are not in them yet, so they can be too narrow. Not done yet: one seed of every experiment (phase 2): 12 of 25 runs evaluated; imitation and hybrids (phase 4): 0 of 5 runs evaluated; hyperparameter sensitivity (phase 5): 0 of 4 runs evaluated; seed sensitivity (phase 6): 0 of 65 runs evaluated.
+- With one seed per configuration these intervals reflect only which tracks were sampled; seed-to-seed and checkpoint-to-checkpoint variation are not in them yet, so they can be too narrow. Not done yet: one seed of every experiment (phase 2): 13 of 25 runs evaluated; imitation and hybrids (phase 4): 0 of 5 runs evaluated; hyperparameter sensitivity (phase 5): 0 of 4 runs evaluated; seed sensitivity (phase 6): 0 of 65 runs evaluated.
 - On campaign track campaign-01 the generalist (zero-shot) was 2.8 % slower than the specialist trained on that track.
 - On campaign track campaign-02 the generalist (zero-shot) was 5.5 % slower than the specialist trained on that track.
 - On campaign track campaign-03 the generalist (zero-shot) was 3.3 % slower than the specialist trained on that track.
@@ -213,6 +213,7 @@ _Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-14;
 | Fine-tuned specialist (campaign-02) | Specialist | 1 | 0.446 [0.403, 0.490] | 29.7 % | — | — | 0.892 [0.278, 1.507] | 60.0 % | — | — | — | — |
 | Fine-tuned specialist (campaign-03) | Specialist | 1 | 0.636 [0.589, 0.684] | 42.2 % | — | — | 0.971 [0.292, 1.651] | 60.0 % | — | — | — | — |
 | Fine-tuned specialist (campaign-04) | Specialist | 1 | 0.265 [0.229, 0.301] | 17.9 % | — | — | 0.424 [0.000, 1.271] | 20.0 % | — | — | — | — |
+| Fine-tuned specialist (campaign-05) | Specialist | 1 | 0.842 [0.794, 0.890] | 54.9 % | — | — | 1.057 [0.307, 1.808] | 60.0 % | — | — | — | — |
 
 **Preregistered hypotheses:**
 
