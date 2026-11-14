@@ -21,9 +21,9 @@
       "flags_energy_gain": 0
     },
     "train_sample": {
-      "sws": 0.9999961746471443,
-      "finish_rate": 1.0,
-      "speed_ratio_finished": 0.9999961746471443,
+      "sws": 0.9989415270625379,
+      "finish_rate": 0.999,
+      "speed_ratio_finished": 0.9999414685310689,
       "n_tracks": 1000,
       "flags_overspeed": 0,
       "flags_energy_gain": 0
@@ -35,5 +35,5 @@
     "torch": "2.15.0+cu132",
     "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU"
   },
-  "updated": "2026-11-14T09:12:43.777202+00:00"
+  "updated": "2026-11-14T10:45:32.573484+00:00"
 }

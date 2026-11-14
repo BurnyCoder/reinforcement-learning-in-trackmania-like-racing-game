@@ -51,7 +51,7 @@ Scripted driver parameters chosen on validation candidates: `a_lat` = 6.0, `look
 
 | Configuration | Role | Seeds | Val SWS [95 % CI] | Val finished | Train SWS [95 % CI] | Train finished | Campaign SWS [95 % CI] | Campaign finished |
 |---|---|---|---|---|---|---|---|---|
-| Scripted driver | Reference | 1 | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
+| Scripted driver | Reference | 1 | 1.000 [1.000, 1.000] | 100.0 % | 0.999 [0.997, 1.000] | 99.9 % | 1.000 [1.000, 1.000] | 100.0 % |
 | Random actions | Control | 3 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
 | Untrained network | Control | 10 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
 

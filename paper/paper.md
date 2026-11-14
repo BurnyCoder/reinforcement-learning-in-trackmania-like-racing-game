@@ -126,7 +126,7 @@ Runs follow the preregistered order: (1) the first two models (seed 0), which mu
 | Scripted driver | Reference | 1 | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
 | Random actions | Control | 3 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
 | Untrained network | Control | 10 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
-| Generalist (PPO) [pilot, seed 0] | Main method | 1 | 1.242 [1.159, 1.319] | 82.7 % | 1.596 [1.445, 1.799] | 100.0 % |
+| Generalist (PPO) [pilot, seed 0] | Main method | 1 | 1.242 [1.159, 1.319] | 82.7 % | 1.596 [1.447, 1.799] | 100.0 % |
 | Specialist (campaign-01) [pilot, seed 0] | Specialist | 1 | 0.188 [0.123, 0.260] | 13.2 % | 0.306 [0.000, 0.918] | 20.0 % |
 
 Track counts: Validation: 197 tracks; Training sample: 1,000 tracks; Campaign (hand-made): 5 tracks.
@@ -165,11 +165,11 @@ _Figure not yet available: its runs have no results yet._
 | campaign-02 | 36.43 | Scripted driver | reference | 1/1 | 36.43 | s0: 36.43 |
 | campaign-02 | 36.43 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 24.45 | s0: 24.45 |
 | campaign-03 | 48.50 | Scripted driver | reference | 1/1 | 48.52 | s0: 48.52 |
-| campaign-03 | 48.50 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 35.24 | s0: 35.24 |
+| campaign-03 | 48.50 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 35.15 | s0: 35.15 |
 | campaign-04 | 42.52 | Scripted driver | reference | 1/1 | 42.52 | s0: 42.52 |
 | campaign-04 | 42.52 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 21.27 | s0: 21.27 |
 | campaign-05 | 56.07 | Scripted driver | reference | 1/1 | 56.03 | s0: 56.03 |
-| campaign-05 | 56.07 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 34.91 | s0: 34.91 |
+| campaign-05 | 56.07 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 34.96 | s0: 34.96 |
 
 ![Finishing time on each campaign track: small marks are single seeds, large marks the mean over finishing seeds, x marks runs that did not finish (DNF); the black bar is the scripted driver's reference time. Specialists are scored on their own track; the generalist zero-shot.](../reports/figures/specialists_campaign.svg){width=100%}
 
@@ -191,7 +191,7 @@ _No exploit list yet (`results/exploits.json` does not exist)._
 
 | Configuration | Set | Overspeed flags | Coasting energy-gain flags | Seeds | Tracks |
 |---|---|---|---|---|---|
-| Generalist (PPO) [pilot, seed 0] | Train | 0 | 2 | 1 | 1000 |
+| Generalist (PPO) [pilot, seed 0] | Train | 0 | 3 | 1 | 1000 |
 
 ## Training curves of the generalist
 

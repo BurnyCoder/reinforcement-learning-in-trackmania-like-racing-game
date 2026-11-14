@@ -4,7 +4,7 @@
   "track": "campaign-01",
   "status": "evaluated",
   "phase": "1-first-models",
-  "updated": "2026-11-14T09:02:25.029352+00:00",
+  "updated": "2026-11-14T11:08:53.816969+00:00",
   "algo": "ppo",
   "description": "Specialist PPO agent trained on a single campaign track",
   "git_commit": "d637109562f7f7e66a961ee21b33b911faf20d91",

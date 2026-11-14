@@ -37,10 +37,10 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 
 | Configuration | Role | Seeds | Val SWS [95 % CI] | Val finished | Train SWS [95 % CI] | Train finished | Campaign SWS [95 % CI] | Campaign finished |
 |---|---|---|---|---|---|---|---|---|
-| Scripted driver | Reference | 1 | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
+| Scripted driver | Reference | 1 | 1.000 [1.000, 1.000] | 100.0 % | 0.999 [0.997, 1.000] | 99.9 % | 1.000 [1.000, 1.000] | 100.0 % |
 | Random actions | Control | 3 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
 | Untrained network | Control | 10 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
-| Generalist (PPO) [pilot, seed 0] | Main method | 1 | 1.242 [1.159, 1.319] | 82.7 % | 1.218 [1.181, 1.253] | 81.6 % | 1.596 [1.445, 1.799] | 100.0 % |
+| Generalist (PPO) [pilot, seed 0] | Main method | 1 | 1.242 [1.159, 1.319] | 82.7 % | 1.234 [1.198, 1.269] | 82.6 % | 1.596 [1.447, 1.799] | 100.0 % |
 | Specialist (campaign-01) [pilot, seed 0] | Specialist | 1 | 0.188 [0.123, 0.260] | 13.2 % | — | — | 0.306 [0.000, 0.918] | 20.0 % |
 
 Rows from other groups are shown for comparison. Track counts: Validation: 197 tracks; Training sample: 1,000 tracks; Campaign (hand-made): 5 tracks.
@@ -55,11 +55,11 @@ Rows from other groups are shown for comparison. Track counts: Validation: 197 t
 | campaign-02 | 36.43 | Scripted driver | reference | 1/1 | 36.43 | s0: 36.43 |
 | campaign-02 | 36.43 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 24.45 | s0: 24.45 |
 | campaign-03 | 48.50 | Scripted driver | reference | 1/1 | 48.52 | s0: 48.52 |
-| campaign-03 | 48.50 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 35.24 | s0: 35.24 |
+| campaign-03 | 48.50 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 35.15 | s0: 35.15 |
 | campaign-04 | 42.52 | Scripted driver | reference | 1/1 | 42.52 | s0: 42.52 |
 | campaign-04 | 42.52 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 21.27 | s0: 21.27 |
 | campaign-05 | 56.07 | Scripted driver | reference | 1/1 | 56.03 | s0: 56.03 |
-| campaign-05 | 56.07 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 34.91 | s0: 34.91 |
+| campaign-05 | 56.07 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 34.96 | s0: 34.96 |
 
 ![Finishing time on each campaign track: small marks are single seeds, large marks the mean over finishing seeds, x marks runs that did not finish (DNF); the black bar is the scripted driver's reference time. Specialists are scored on their own track; the generalist zero-shot.](../figures/specialists_campaign.png)
 
@@ -104,3 +104,19 @@ These notes record what was tried, what went wrong and why, and how it was fixed
 **A false exploit flag, and a fix to the detector.** The specialist's validation evaluation raised one "energy gained while coasting" flag. Replaying that track step by step in the same batch showed a crash: the chassis spun up while losing linear speed, then turned the spin back into linear speed, which the detector counted as a gain because it left rotational kinetic energy out. Counting rotation, the car's energy fell in that step, and it never rose while coasting during the whole run. The detector now includes ½ωᵀIω/m, two unit tests cover it, and re-scoring the specialist gave the same scores and no flags (preregistration amendment of 2026-11-14).
 
 **Evaluation is deterministic per batch, not per track.** Replaying the flagged track on its own took a different path (out after 29.2 s instead of 29.88 s). The physics is batch-independent (a unit test checks it), but the policy's matrix products on the GPU round differently for different batch sizes, and a near-tied action can flip and send the car another way. Official evaluations always run the whole set of tracks together, which is bit-for-bit repeatable; the browser game's live AI runs one car in float64 JavaScript physics, so its lap can differ slightly from the official one.
+
+### Model 2: the first generalist (training pool, seed 0)
+
+**It passed its learning gate early.** At the first validation during training (about 108 million steps, 11 % of the budget) it already finished more than 80 % of the 197 validation tracks from a standing start. After that the validation score moved up and down by a few tracks between 10-minute checkpoints without a clear trend (`results/generalist/seed0/val_metrics.csv`). The preregistered rule evaluates the final checkpoint, not the best one; the final checkpoint also passes (`eval_val.csv`). Throughput was about 270,000–300,000 agent steps per second, so the 1-billion-step budget took about 1.2 hours.
+
+**No measurable gap between training and unseen tracks.** On the fixed 1,000-track sample of its own training pool it scores about the same as on the unseen validation tracks (`eval_train_sample.csv`, `eval_val.csv`), as Cobbe et al. found for training sets of this size. It also finishes all five hand-made campaign tracks, which it never saw, and on campaign track 1 it is only slightly slower than the specialist trained on that track alone (`eval_campaign.csv` in both run folders). Green et al. 2026 report a 14.5 % gap between their drone-racing generalist and its specialists; ours is one seed on one track, so this is a preliminary observation.
+
+**How it fails: too fast into tight corners.** Every validation failure is a fall off the road. Jumps are not the problem: tracks with one or two jumps are finished at least as often as tracks with none, and no fall happens within 60 m after a jump. Instead, the sharpest turn in the 60 m before a fall has a median radius of about 31 m, against about 88 m at random places on the same tracks; most falls follow a turn tighter than 40 m (scratch analysis on `eval_val.csv` and the validation pool; correlational evidence). When it finishes, it drives about 1.5 times as fast as the scripted driver. A likely cause is the discount factor: with γ = 0.99 at 20 decisions per second the agent looks about 5 seconds ahead, so the reward for speed now outweighs the discounted loss of falling. The preregistered γ = 0.995 run (phase 5) and the fall-penalty ablation (phase 2) test this directly.
+
+**A measurement artefact in the training metrics.** Every 20 iterations the trainer swaps in a new random set of 4,096 tracks and resets every car. The rollout right after a swap only sees episodes short enough to end within 1.6 s, mostly random starts close to the finish, so the training "finish rate" spikes to more than 90 % at those iterations. It also means a standing-start episode on a typical training track (about 51 s for the scripted driver) is usually cut by the next swap before it can finish: the generalist learns the far parts of tracks from random starts, and its training-time standing-start finish rate stays near zero even though it finishes most validation tracks. The validation numbers are the ones to read.
+
+**Evaluation order changed the results; fixed.** A replay of one exploit-flagged track did not reproduce. The cause was `torch.compile`: when a second set was evaluated in the same process, the simulator ran on a kernel recompiled for dynamic shapes, whose float32 rounding differs slightly. On the training sample that changed the end tick on 741 of 1,000 tracks and flipped finish versus fall on 58 of them, moving the score by about one percentage point. Every official evaluation now resets the compiler first, two fresh evaluations agree on every track, and all evaluations so far were re-scored (amendments of 2026-11-14). The 58 flips are also a useful number in themselves: about 6 % of tracks are decided by float-level noise for this policy, so per-track comparisons between two runs need care, and run-level differences of about one percentage point are within numerical noise.
+
+**An engine quirk, not an exploit.** With rotation counted, the energy detector still flags three training-sample tracks for the generalist. All three are crashes: after a violent impact the car bounces on one or two wheels and gains 2.5–7 J/kg in one step. Reading the cannon-es source explains it: when a wheel's ray meets a surface at a steep angle, the spring force is multiplied by up to 10 and the damping is switched off (`docs/physics.md`, known quirks). It appears only in runs that fail, so no agent gains time from it; it is listed as a candidate for the patched physics.
+
+**Baselines.** Random actions (3 seeds) and untrained networks (10 seeds) finish no track on any set, and the scripted driver scores 1.0 by construction (`results/baselines/`). When re-run in a different batch, the scripted driver failed one certified training track: certification at three speed scales does not make every reference run immune to float-level noise.

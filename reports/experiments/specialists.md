@@ -55,7 +55,7 @@ _No run of this group has logged its configuration yet (the experiment files are
 
 | Configuration | Role | Seeds | Val SWS [95 % CI] | Val finished | Train SWS [95 % CI] | Train finished | Campaign SWS [95 % CI] | Campaign finished |
 |---|---|---|---|---|---|---|---|---|
-| Scripted driver | Reference | 1 | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
+| Scripted driver | Reference | 1 | 1.000 [1.000, 1.000] | 100.0 % | 0.999 [0.997, 1.000] | 99.9 % | 1.000 [1.000, 1.000] | 100.0 % |
 
 Rows from other groups are shown for comparison. Track counts: Validation: 197 tracks; Training sample: 1,000 tracks; Campaign (hand-made): 5 tracks.
 
@@ -69,11 +69,11 @@ Rows from other groups are shown for comparison. Track counts: Validation: 197 t
 | campaign-02 | 36.43 | Scripted driver | reference | 1/1 | 36.43 | s0: 36.43 |
 | campaign-02 | 36.43 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 24.45 | s0: 24.45 |
 | campaign-03 | 48.50 | Scripted driver | reference | 1/1 | 48.52 | s0: 48.52 |
-| campaign-03 | 48.50 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 35.24 | s0: 35.24 |
+| campaign-03 | 48.50 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 35.15 | s0: 35.15 |
 | campaign-04 | 42.52 | Scripted driver | reference | 1/1 | 42.52 | s0: 42.52 |
 | campaign-04 | 42.52 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 21.27 | s0: 21.27 |
 | campaign-05 | 56.07 | Scripted driver | reference | 1/1 | 56.03 | s0: 56.03 |
-| campaign-05 | 56.07 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 34.91 | s0: 34.91 |
+| campaign-05 | 56.07 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 34.96 | s0: 34.96 |
 
 ![Finishing time on each campaign track: small marks are single seeds, large marks the mean over finishing seeds, x marks runs that did not finish (DNF); the black bar is the scripted driver's reference time. Specialists are scored on their own track; the generalist zero-shot.](../figures/specialists_campaign.png)
 
