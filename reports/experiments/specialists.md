@@ -55,11 +55,17 @@ _No run of this group has logged its configuration yet (the experiment files are
 
 _Not yet available: the runs behind this table have no results yet._
 
+Rows from other groups are shown for comparison. Track counts: Validation: 197 tracks; Campaign (hand-made): 5 tracks.
+
 ### Campaign tracks
 
-_Not yet available: the runs behind this table have no results yet._
+| Campaign track | Scripted time (s) | Agent | Kind | Finished | Mean time (s) | Per seed (s) |
+|---|---|---|---|---|---|---|
+| campaign-01 | 30.17 | Specialist (campaign-01) [pilot, seed 0] | own track | 1/1 | 19.71 | s0: 19.71 |
 
-_Figure not yet available: its runs have no results yet._
+![Finishing time on each campaign track: small marks are single seeds, large marks the mean over finishing seeds, x marks runs that did not finish (DNF); the black bar is the scripted driver's reference time. Specialists are scored on their own track; the generalist zero-shot.](../figures/specialists_campaign.png)
+
+*Finishing time on each campaign track: small marks are single seeds, large marks the mean over finishing seeds, x marks runs that did not finish (DNF); the black bar is the scripted driver's reference time. Specialists are scored on their own track; the generalist zero-shot.*
 
 ## Learnings
 

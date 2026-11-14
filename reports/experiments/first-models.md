@@ -14,7 +14,7 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 
 | Run | Status | Phase | Agent steps | Wall hours | Physics | Commit | Evaluated on |
 |---|---|---|---|---|---|---|---|
-| `specialist-campaign-01/seed0` | trained | 1-first-models | 200,278,016 | 0.31 | v1 | d637109562 | — |
+| `specialist-campaign-01/seed0` | evaluated | 1-first-models | 200,278,016 | 0.31 | v1 | d637109562 | val, campaign |
 | `generalist/seed0` | not started | 1-first-models | — | — | v1 | — | — |
 
 ## Configuration (logged in each run.json)
@@ -29,18 +29,26 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 
 | Model | Bar (preregistration, section 7) | Result | Gate |
 |---|---|---|---|
-| Specialist (campaign-01) [pilot, seed 0] | finishes its track and is at least as fast as the scripted driver | — | not yet evaluated |
+| Specialist (campaign-01) [pilot, seed 0] | finishes its track and is at least as fast as the scripted driver | finished: yes; time 19.71 s vs reference 30.17 s | **passed** |
 | Generalist (PPO) [pilot, seed 0] | finishes >= 80 % of validation tracks with SWS >= 0.8 | — | not yet evaluated |
 
 ### Scores
 
-_Not yet available: the runs behind this table have no results yet._
+| Configuration | Role | Seeds | Val SWS [95 % CI] | Val finished | Campaign SWS [95 % CI] | Campaign finished |
+|---|---|---|---|---|---|---|
+| Specialist (campaign-01) [pilot, seed 0] | Specialist | 1 | 0.188 [0.123, 0.260] | 13.2 % | 0.306 [0.000, 0.918] | 20.0 % |
+
+Rows from other groups are shown for comparison. Track counts: Validation: 197 tracks; Campaign (hand-made): 5 tracks.
 
 ### Campaign tracks
 
-_Not yet available: the runs behind this table have no results yet._
+| Campaign track | Scripted time (s) | Agent | Kind | Finished | Mean time (s) | Per seed (s) |
+|---|---|---|---|---|---|---|
+| campaign-01 | 30.17 | Specialist (campaign-01) [pilot, seed 0] | own track | 1/1 | 19.71 | s0: 19.71 |
 
-_Figure not yet available: its runs have no results yet._
+![Finishing time on each campaign track: small marks are single seeds, large marks the mean over finishing seeds, x marks runs that did not finish (DNF); the black bar is the scripted driver's reference time. Specialists are scored on their own track; the generalist zero-shot.](../figures/specialists_campaign.png)
+
+*Finishing time on each campaign track: small marks are single seeds, large marks the mean over finishing seeds, x marks runs that did not finish (DNF); the black bar is the scripted driver's reference time. Specialists are scored on their own track; the generalist zero-shot.*
 
 ### Training curves
 

@@ -33,6 +33,8 @@ _No run of this group has logged its configuration yet (the experiment files are
 
 _Not yet available: the runs behind this table have no results yet._
 
+Rows from other groups are shown for comparison. Track counts: Validation: 197 tracks; Campaign (hand-made): 5 tracks.
+
 ## Learnings
 
 _No hand-written notes yet (add `reports/notes/hyperparameters.md`)._

@@ -26,6 +26,19 @@
       "kind": "campaign"
     }
   ],
-  "models": [],
-  "ghosts": {}
+  "models": [
+    {
+      "name": "specialist-campaign-01-seed0",
+      "file": "assets/models/specialist-campaign-01-seed0.onnx",
+      "K": 20,
+      "stride": 3,
+      "description": "Specialist PPO agent trained on a single campaign track",
+      "run": "specialist-campaign-01/seed0"
+    }
+  ],
+  "ghosts": {
+    "campaign-01": [
+      "assets/ghosts/campaign-01/specialist-campaign-01-seed0.json"
+    ]
+  }
 }

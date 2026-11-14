@@ -18,7 +18,8 @@ margin:
 # Abstract
 
 Reinforcement-learning (RL) drivers in racing games are usually trained and tested on the same track, and the few published tests on unseen car tracks are negative or small. We built RacingMania, an original browser time-attack racer with hills, banked turns and jumps on the car physics of cannon-es, ported the same car physics line by line to batched PyTorch so that thousands of cars, each on its own procedurally generated track, train on one GPU, and preregistered three hypotheses: that a PPO policy trained on many generated tracks drives unseen tracks better than a scripted pure-pursuit driver (H1), that track diversity is what makes this possible (H2), and that the policy uses its view of the road ahead (H3). The primary metric is success-weighted speed (SWS), the mean over held-out tracks of finished × reference time / agent time.
-No model has been evaluated at the time of this build (0 of 101 planned runs evaluated); the results sections state that their results are not yet available.
+No trained agent has been evaluated yet.
+The preregistered hypotheses H1-H3 are not tested yet: they need test results from 10 generalist seeds and 5 seeds each of the blind control and the single-track ablation (0 generalist seeds so far).
 
 # Introduction
 
@@ -33,7 +34,7 @@ This paper asks four questions, fixed in the preregistration ([`reports/preregis
 
 **What is new** is a combination, limited to what our searches found ([`reports/literature-review.md`](https://github.com/BurnyCoder/reinforcement-learning-in-trackmania-like-racing-game/blob/main/reports/literature-review.md), section 14): the same car code runs in a playable browser game and, as a tested batched port, in training; the generalist is tested on held-out generated 3D tracks with hills, banking and jumps, with several seeds against a scripted driver, a blind control and a training-set-size ablation; and exploits of the physics engine are reported as findings rather than removed.
 
-**Status of this version.** 0 of 101 runs in the preregistered run matrix are evaluated. The confirmatory tests of H1-H3 need all preregistered seeds and are not complete; every number from fewer seeds or from the validation set is labelled preliminary.
+**Status of this version.** 1 of 101 runs in the preregistered run matrix are evaluated. The confirmatory tests of H1-H3 need all preregistered seeds and are not complete; every number from fewer seeds or from the validation set is labelled preliminary.
 
 # Background and related work
 
@@ -96,30 +97,33 @@ Runs follow the preregistered order: (1) the first two models (seed 0), which mu
 
 | Phase | not started | planned | training | trained | evaluated | total |
 |---|---|---|---|---|---|---|
-| 1-first-models | 1 | 0 | 0 | 1 | 0 | 2 |
+| 1-first-models | 1 | 0 | 0 | 0 | 1 | 2 |
 | 2-single-seed | 25 | 0 | 0 | 0 | 0 | 25 |
 | 4-imitation-hybrids | 5 | 0 | 0 | 0 | 0 | 5 |
 | 5-hyperparameters | 4 | 0 | 0 | 0 | 0 | 4 |
 | 6-seed-sensitivity | 65 | 0 | 0 | 0 | 0 | 65 |
-| **all** | 100 | 0 | 0 | 1 | 0 | 101 |
+| **all** | 100 | 0 | 0 | 0 | 1 | 101 |
 
 # Results
 
-**Results are not yet available.** No run has been evaluated; the tables below show which runs are planned.
+**All scores below are preliminary.** They are on the validation set, which is used for development decisions; the test set is read only after the recipe is frozen.
 
 ## Learning gate (first models)
 
 | Model | Bar (preregistration, section 7) | Result | Gate |
 |---|---|---|---|
-| Specialist (campaign-01) [pilot, seed 0] | finishes its track and is at least as fast as the scripted driver | — | not yet evaluated |
+| Specialist (campaign-01) [pilot, seed 0] | finishes its track and is at least as fast as the scripted driver | finished: yes; time 19.71 s vs reference 30.17 s | **passed** |
 | Generalist (PPO) [pilot, seed 0] | finishes >= 80 % of validation tracks with SWS >= 0.8 | — | not yet evaluated |
 
 ## Main evaluation
 
-_Not yet available: the runs behind this table have no results yet._
+| Configuration | Role | Seeds | Val SWS [95 % CI] | Val finished | Campaign SWS [95 % CI] | Campaign finished |
+|---|---|---|---|---|---|---|
+| Specialist (campaign-01) [pilot, seed 0] | Specialist | 1 | 0.188 [0.123, 0.260] | 13.2 % | 0.306 [0.000, 0.918] | 20.0 % |
 
+Track counts: Validation: 197 tracks; Campaign (hand-made): 5 tracks.
 
-_Figure not yet available: its runs have no results yet._
+![SWS and finish rate on the validation set (development set; preliminary) (197 tracks), mean over seeds with 95 % two-level bootstrap intervals (10,000 resamples of seeds and tracks); n = number of seeds. With one seed the interval reflects track sampling only.](../reports/figures/sws_by_method.svg){width=100%}
 
 ## Hypotheses
 
@@ -145,9 +149,11 @@ _Figure not yet available: its runs have no results yet._
 
 ## Specialists and the generalist on the campaign tracks
 
-_Not yet available: the runs behind this table have no results yet._
+| Campaign track | Scripted time (s) | Agent | Kind | Finished | Mean time (s) | Per seed (s) |
+|---|---|---|---|---|---|---|
+| campaign-01 | 30.17 | Specialist (campaign-01) [pilot, seed 0] | own track | 1/1 | 19.71 | s0: 19.71 |
 
-_Figure not yet available: its runs have no results yet._
+![Finishing time on each campaign track: small marks are single seeds, large marks the mean over finishing seeds, x marks runs that did not finish (DNF); the black bar is the scripted driver's reference time. Specialists are scored on their own track; the generalist zero-shot.](../reports/figures/specialists_campaign.svg){width=100%}
 
 ## Finish rate by track feature
 
@@ -165,7 +171,9 @@ _Figure not yet available: its runs have no results yet._
 
 _No exploit list yet (`results/exploits.json` does not exist)._
 
-_No evaluation has raised an exploit flag._
+| Configuration | Set | Overspeed flags | Coasting energy-gain flags | Seeds | Tracks |
+|---|---|---|---|---|---|
+| Specialist (campaign-01) [pilot, seed 0] | Val | 0 | 1 | 1 | 197 |
 
 ## Training curves of the generalist
 
@@ -173,7 +181,12 @@ _Figure not yet available: its runs have no results yet._
 
 # Discussion
 
-Not yet available: there are no results to discuss.
+The results so far, in plain words:
+
+- No trained agent has been evaluated yet.
+- The preregistered hypotheses H1-H3 are not tested yet: they need test results from 10 generalist seeds and 5 seeds each of the blind control and the single-track ablation (0 generalist seeds so far).
+
+A written interpretation will be added once the confirmatory runs are complete.
 
 # Limitations
 
