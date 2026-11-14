@@ -1,0 +1,7 @@
+# Keep LF line endings on every platform: the same working copy is used from Windows and from WSL.
+* text=auto eol=lf
+*.png binary
+*.pdf binary
+*.onnx binary
+*.wasm binary
+*.npz binary
