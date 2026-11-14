@@ -1,0 +1,3 @@
+2026-11-14 21:43:00.385 INFO racingmania.runs: specialist-finetune-campaign-04/seed1 on campaign: {'sws': 0.42371699053313405, 'finish_rate': 0.2, 'speed_ratio_finished': 2.11858495266567, 'n_tracks': 5, 'flags_overspeed': 0, 'flags_energy_gain': 0}
+2026-11-14 21:43:01.357 INFO racingmania.eval.evaluator: protected set 'test' read by specialist-finetune-campaign-04/seed1 (971 tracks); logged
+2026-11-14 21:43:55.365 INFO racingmania.runs: specialist-finetune-campaign-04/seed1 on test: {'sws': 0.2651804166330993, 'finish_rate': 0.1791967044284243, 'speed_ratio_finished': 1.4798286468433302, 'n_tracks': 971, 'flags_overspeed': 0, 'flags_energy_gain': 2}
