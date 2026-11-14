@@ -50,8 +50,9 @@ async function ensureTrack(name) {
 }
 
 const meta = (name) => app.index.tracks.find((t) => t.name === name);
+const finishedRun = (g) => g.finished !== false; // ghosts without the flag (older files or a cached older assets.js) are finished runs
 const authorTime = (name) => {
-  const times = (app.aiGhosts.get(name) ?? []).filter((g) => g.finished).map((g) => g.time).filter((t) => t > 0); // finished runs only
+  const times = (app.aiGhosts.get(name) ?? []).filter(finishedRun).map((g) => g.time).filter((t) => t > 0); // finished runs only
   return times.length ? Math.min(...times) : null;
 };
 const targetsOf = (name) => (app.tracks.has(name) ? medalTargets(app.tracks.get(name), authorTime(name)) : null);
@@ -90,7 +91,7 @@ function renderDetail() {
     ghosts: [
       { key: 'best', label: best ? `Your best (${formatTime(best.time)})` : 'Your best (none yet)', on: Boolean(best) && ghostOn('best'), disabled: !best },
       ...(app.aiGhosts.get(name) ?? []).map((g) => ({ key: g.path, on: ghostOn(g.path),
-        label: g.finished ? `AI · ${g.model} (${formatTime(g.time)})` : `AI · ${g.model} (did not finish: ${g.end ?? 'out'} at ${formatTime(g.time)})` })),
+        label: finishedRun(g) ? `AI · ${g.model} (${formatTime(g.time)})` : `AI · ${g.model} (did not finish: ${g.end ?? 'out'} at ${formatTime(g.time)})` })),
     ],
     hasModels: app.hasModels, models: app.index.models, model: app.hasModels ? currentModel().name : null,
     hasReplay: (app.aiGhosts.get(name) ?? []).length > 0,
