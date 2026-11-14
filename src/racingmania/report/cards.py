@@ -13,14 +13,16 @@ the README of the results dataset; both are in the project's Hugging Face collec
 
 from __future__ import annotations
 
+import json
 import math
 from datetime import date
+from pathlib import Path
 
 import yaml
 
 from ..eval import stats
 from . import taxonomy as tx
-from .render import REPO_URL
+from .render import HF_RESULTS_REPO, REPO_URL
 from .tables import ci, md_table, num, pct
 
 
@@ -44,8 +46,31 @@ def run_scores(res, rid: str) -> dict:
     return out
 
 
-def model_card(res, rid: str) -> str:
-    """Hugging Face model card for run ``rid`` (works for planned, training, trained and evaluated runs)."""
+def run_clips(repo: Path, rid: str | None = None, readme_only: bool = False) -> list[dict]:
+    """Recorded video clips (scripts/11_record_videos.py): the README clips (docs/videos/videos.json), then the clips
+    recorded for the Hugging Face cards (docs/videos/cards/videos.json); only run ``rid``'s if given, and only clips
+    whose MP4 exists."""
+    files = [repo / "docs" / "videos" / "videos.json"] + ([] if readme_only else [repo / "docs" / "videos" / "cards" / "videos.json"])
+    clips = [c for f in files if f.exists() for c in json.loads(f.read_text(encoding="utf-8"))]
+    return [c for c in clips if (rid is None or c.get("run") == rid) and c.get("mp4") and (repo / c["mp4"]).exists()]
+
+
+def video_section(clips: list[dict], url) -> str:
+    """Markdown for clips: an HTML5 <video> per clip (Hugging Face cards render it, as in the Hub's own examples, e.g.
+    https://huggingface.co/mishig/test_vid) and the clip's caption parts from videos.json. ``url(clip)`` gives the
+    MP4's address."""
+    out = []
+    for c in clips:
+        cap = c.get("caption") or {"What you see": c.get("explain", "").strip()}
+        out.append("\n".join([f"### {c['title']}", "",
+                              f'<video src="{url(c)}" controls muted loop playsinline width="100%"></video>', "",
+                              *[f"- **{k}:** {v}" for k, v in cap.items()]]))
+    return "\n\n".join(out)
+
+
+def model_card(res, rid: str, repo_id: str | None = None) -> str:
+    """Hugging Face model card for run ``rid`` (works for planned, training, trained and evaluated runs). With the
+    model repository's id, the card's videos point at the MP4s that publish.publish_model uploads to ``videos/``."""
     r = res.run(rid) or next((q for q in res.queued if q["rid"] == rid), None)
     if r is None:
         r = {"rid": rid, "experiment": rid.split("/")[0], "seed": None, "status": "unknown", "algo": None, "label": rid,
@@ -80,6 +105,15 @@ def model_card(res, rid: str) -> str:
         "RacingMania is an original 3D time-attack racing game for the browser (three.js + cannon-es `RaycastVehicle`) with "
         "reinforcement-learning drivers trained on a batched PyTorch port of the same car physics. Code, paper and full "
         f"results: <{REPO_URL}>.",
+    ]
+    clips = run_clips(res.paths.repo, rid)
+    if clips:
+        base = f"https://huggingface.co/{repo_id}/resolve/main/videos/" if repo_id else "videos/"
+        parts += ["## Videos", "Official evaluation runs of this model replayed in the browser game (\"Watch replay\"): the car "
+                  "states the evaluator recorded while scoring the run, so each clip is exactly the run its caption describes. "
+                  f"More clips, including the controls: <{REPO_URL}#videos>.",
+                  video_section(clips, lambda c: base + Path(c["mp4"]).name)]
+    parts += [
         "## Model",
         md_table(["Item", "Value"], [["Algorithm", algo.upper()], ["Architecture", r.get("architecture", "-")],
                                      ["Objective", r.get("objective", "-")], ["Observation", r.get("observation", "-")],
@@ -112,7 +146,8 @@ def model_card(res, rid: str) -> str:
             "inputs = {i.name: np.zeros([d if isinstance(d, int) else 1 for d in i.shape], np.float32) for i in sess.get_inputs()}\n"
             "steer_logits, pedal_logits = sess.run(None, inputs)\n"
             "steer, pedal = int(steer_logits.argmax()), int(pedal_logits.argmax())  # 0/1/2 = left/none/right, gas/coast/brake\n```",
-            "To watch it drive, open the game (`web/index.html`, or the GitHub Pages site) and choose the model under \"Watch the AI\".",
+            "To watch it drive, open the game (`web/index.html`, or the GitHub Pages site), choose it in a track's AI drivers "
+            "table and press \"Watch AI\" (live in the browser) or \"Watch replay\" (its official evaluation run).",
         ]
     parts += ["## Training configuration (from run.json)", md_table(["Setting", "Value"], cfg_rows, "_Not logged yet._"),
               "## Licence and citation", f"MIT. Author: Libor \"Burny\" Burian. Repository: <{REPO_URL}>."]
@@ -147,4 +182,10 @@ def dataset_card(res, an) -> str:
         "generated reports, figures and the paper",
         f"## Source\n\nCode: <{REPO_URL}>. Author: Libor \"Burny\" Burian. Licence: MIT.",
     ]
+    clips = run_clips(res.paths.repo, readme_only=True)  # the README's clips, controls included; MP4s under videos/
+    if clips:
+        parts[-1:-1] = ["## Videos", "The README's clips: official evaluation runs replayed in the browser game, chosen by fixed "
+                        "rules (best, typical and failure cases, then the controls). Each model's own clips are on its model card.",
+                        video_section(clips, lambda c: f"https://huggingface.co/datasets/{HF_RESULTS_REPO}/resolve/main/videos/"
+                                                       f"{Path(c['mp4']).name}")]
     return "\n\n".join(_clean(p) for p in parts) + "\n"

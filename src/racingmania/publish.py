@@ -117,6 +117,10 @@ def publish_results_dataset(message: str):
         if p.exists():
             api.upload_folder(folder_path=str(p), path_in_repo=sub, repo_id=repo, repo_type="dataset", commit_message=message,
                               ignore_patterns=["*.log"])
+    videos = REPO_ROOT / "docs" / "videos"
+    if videos.exists():  # the README clips, which the dataset card plays (report/cards.py dataset_card)
+        api.upload_folder(folder_path=str(videos), path_in_repo="videos", repo_id=repo, repo_type="dataset",
+                          commit_message=message, allow_patterns=["*.mp4"], ignore_patterns=["cards/*"])
     readme = REPO_ROOT / "results" / "HF_DATASET_CARD.md"
     if readme.exists():
         api.upload_file(path_or_fileobj=str(readme), path_in_repo="README.md", repo_id=repo, repo_type="dataset",
@@ -137,4 +141,11 @@ def publish_all(message: str, rid: str | None = None, status: str | None = None)
         files = {"final.pt": ckpt / "final.pt", "policy.onnx": res / "policy.onnx", "run.json": res / "run.json",
                  "train_metrics.csv": res / "train_metrics.csv", "val_metrics.csv": res / "val_metrics.csv"}
         files.update({f"eval/{p.name}": p for p in res.glob("eval_*.csv")})
-        publish_model(rid, status or "update", model_card(rid), files)
+        files.update(clip_files(rid))
+        publish_model(rid, status or "update", model_card(rid, repo_id=model_repo_id(rid)), files)
+
+
+def clip_files(rid: str) -> dict[str, Path]:
+    """The run's recorded clips ({path in repo: MP4}), which its model card plays (report/cards.py run_clips)."""
+    from .report.cards import run_clips
+    return {f"videos/{Path(c['mp4']).name}": REPO_ROOT / c["mp4"] for c in run_clips(REPO_ROOT, rid)}
