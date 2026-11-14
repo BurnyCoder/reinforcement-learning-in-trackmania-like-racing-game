@@ -1,0 +1,7 @@
+# Phase 4 hybrid: progress reward plus a hint for matching the scripted driver speed and steering (Evans et al. 2023 style).
+description: PPO with scripted-driver reward hints
+algo: ppo
+tracks: {pool: train}
+validation: {pool: val}
+env: {hint_weight: 0.05}
+ppo: {total_steps: 1000000000}

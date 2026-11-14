@@ -1,0 +1,6 @@
+# Hyperparameter sensitivity: networks of 3 x 512 units (larger networks generalised better in Procgen).
+description: PPO with 3x512 networks
+algo: ppo
+tracks: {pool: train}
+validation: {pool: val}
+ppo: {total_steps: 1000000000, hidden: [512, 512, 512]}

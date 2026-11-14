@@ -1,0 +1,6 @@
+# Baseline algorithm: PQN (Gallici et al. 2025), same observation, actions (9-way), reward and budget.
+description: PQN baseline
+algo: pqn
+tracks: {pool: train}
+validation: {pool: val}
+pqn: {total_steps: 1000000000}

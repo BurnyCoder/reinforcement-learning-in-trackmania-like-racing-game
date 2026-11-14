@@ -1,0 +1,7 @@
+# Control for H3: no upcoming-track points beyond the nearest one.
+description: Blind control - the observation keeps only the nearest centreline point
+algo: ppo
+tracks: {pool: train}
+validation: {pool: val}
+env: {blind: true}
+ppo: {total_steps: 1000000000}

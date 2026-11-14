@@ -1,0 +1,5 @@
+# Phase 4: DAgger (Ross et al. 2011), 5 rounds, expert share 0.5^round.
+description: DAgger with the scripted driver as expert
+algo: imitation-dagger
+tracks: {pool: train}
+validation: {pool: val}

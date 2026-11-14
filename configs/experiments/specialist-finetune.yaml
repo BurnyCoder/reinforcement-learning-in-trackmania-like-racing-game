@@ -1,0 +1,7 @@
+# Exploratory: specialist started from the seed-1 generalist's weights (Green et al. 2026 found faster convergence).
+description: Specialist fine-tuned from the seed-1 generalist
+algo: ppo
+tracks: {campaign: campaign-01}
+validation: {campaign: campaign-01}
+init_from: generalist/seed1
+ppo: {total_steps: 200000000, loaded_tracks: 1, rotate_tracks_every: 0, lr: 0.0003}

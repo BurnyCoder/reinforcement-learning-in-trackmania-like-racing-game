@@ -80,14 +80,17 @@ def physics_tick(cfg, tracks, track_id: Tensor, index: Tensor, car: CarState, st
 def agent_step(cfg, tracks, track_id: Tensor, car: CarState, rules: RuleState, action: Tensor):
     """``ticks_per_action`` ticks with the same action. Cars already done stay frozen.
 
-    Returns ``(car, rules, gained)`` with ``gained`` the progress summed over the step (metres).
+    Returns ``(car, rules, gained, wheel_contact)``: ``gained`` is the progress summed over the step
+    (metres); ``wheel_contact [N, 4]`` (bool) is each wheel's contact on the car's last active tick.
     """
     steer_cmd, pedal = decode_action(action)
     gained = torch.zeros_like(car.pos[:, 0])
+    last_contact = None
     for _ in range(cfg.ticks_per_action):
         active = ~(rules.finished | rules.out)
-        new_car, contacts, _ = physics_tick(cfg, tracks, track_id, rules.index, car, steer_cmd, pedal)
+        new_car, contacts, wc = physics_tick(cfg, tracks, track_id, rules.index, car, steer_cmd, pedal)
         car = new_car.where(active, car)
         rules, g = update_rules(tracks, track_id, rules, car.pos, contacts, active)
         gained = gained + g
-    return car, rules, gained
+        last_contact = wc.in_contact if last_contact is None else torch.where(active.unsqueeze(1), wc.in_contact, last_contact)
+    return car, rules, gained, last_contact

@@ -1,0 +1,6 @@
+# Hyperparameter sensitivity: weight decay 1e-5 (helped in Green et al. 2026).
+description: PPO with weight decay 1e-5
+algo: ppo
+tracks: {pool: train}
+validation: {pool: val}
+ppo: {total_steps: 1000000000, weight_decay: 0.00001}

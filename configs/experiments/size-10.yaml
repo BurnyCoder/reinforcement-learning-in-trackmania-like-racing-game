@@ -1,0 +1,6 @@
+# Training-set-size ablation (H2 uses size-1): N tracks drawn from the training pool with the run's seed.
+description: PPO trained on only 10 generated tracks
+algo: ppo
+tracks: {pool: train, n_tracks: 10}
+validation: {pool: val}
+ppo: {total_steps: 1000000000}

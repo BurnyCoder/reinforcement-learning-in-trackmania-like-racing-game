@@ -1,0 +1,6 @@
+# Ablation (g): one 9-way action head instead of two 3-way heads (matches the PQN baseline).
+description: PPO with a single 9-way categorical action head
+algo: ppo
+tracks: {pool: train}
+validation: {pool: val}
+ppo: {total_steps: 1000000000, action_mode: joint}

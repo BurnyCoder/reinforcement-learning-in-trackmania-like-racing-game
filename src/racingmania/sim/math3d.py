@@ -128,3 +128,33 @@ def inv_inertia_world(q: Tensor, inv_inertia: Tensor) -> Tensor:
     # (R·diag(I))·Rᵀ, each entry summed in cannon-es order: a1*b1 + a2*b2 + a3*b3.
     out = rs[..., :, 0:1] * rt[..., 0:1, :] + rs[..., :, 1:2] * rt[..., 1:2, :] + rs[..., :, 2:3] * rt[..., 2:3, :]
     return out
+
+
+def quat_from_basis(forward: Tensor, up: Tensor) -> Tensor:
+    """Batched unit quaternion mapping body +X to ``forward`` and +Y to ``up`` (+Z to forward × up).
+
+    Same construction as ``tracks.ribbon.quat_from_frame`` (Shepperd's method, choosing the branch
+    with the largest diagonal term for numerical stability), used for random training starts.
+    """
+    f = forward / torch.linalg.norm(forward, dim=-1, keepdim=True)
+    u = up - f * (f * up).sum(-1, keepdim=True)
+    u = u / torch.linalg.norm(u, dim=-1, keepdim=True)
+    r = torch.linalg.cross(f, u)
+    m = torch.stack((f, u, r), dim=-1)  # columns are the body axes
+    m00, m01, m02 = m[..., 0, 0], m[..., 0, 1], m[..., 0, 2]
+    m10, m11, m12 = m[..., 1, 0], m[..., 1, 1], m[..., 1, 2]
+    m20, m21, m22 = m[..., 2, 0], m[..., 2, 1], m[..., 2, 2]
+    tr = m00 + m11 + m22
+    safe = lambda x: torch.sqrt(torch.clamp(x, min=1e-12))
+    s0 = safe(tr + 1.0) * 2
+    q0 = torch.stack(((m21 - m12) / s0, (m02 - m20) / s0, (m10 - m01) / s0, 0.25 * s0), -1)
+    s1 = safe(1.0 + m00 - m11 - m22) * 2
+    q1 = torch.stack((0.25 * s1, (m01 + m10) / s1, (m02 + m20) / s1, (m21 - m12) / s1), -1)
+    s2 = safe(1.0 + m11 - m00 - m22) * 2
+    q2 = torch.stack(((m01 + m10) / s2, 0.25 * s2, (m12 + m21) / s2, (m02 - m20) / s2), -1)
+    s3 = safe(1.0 + m22 - m00 - m11) * 2
+    q3 = torch.stack(((m02 + m20) / s3, (m12 + m21) / s3, 0.25 * s3, (m10 - m01) / s3), -1)
+    c1 = (m00 > m11) & (m00 > m22)
+    c2 = m11 > m22
+    q = torch.where((tr > 0).unsqueeze(-1), q0, torch.where(c1.unsqueeze(-1), q1, torch.where(c2.unsqueeze(-1), q2, q3)))
+    return q / torch.linalg.norm(q, dim=-1, keepdim=True)

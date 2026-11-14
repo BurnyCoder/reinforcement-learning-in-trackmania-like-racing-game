@@ -1,0 +1,390 @@
+# Run matrix in the preregistered order (reports/plan.md, 'Runs, by phase'; reports/preregistration.md, section 7).
+# Generated from the approved run table; scripts/05_run_matrix.py executes it top to bottom and is resumable.
+phases:
+- name: 1-first-models
+  runs:
+  - experiment: specialist
+    seed: 0
+    track: campaign-01
+    eval_sets:
+    - campaign
+    - val
+  - experiment: generalist
+    seed: 0
+    eval_sets:
+    - val
+    - train_sample
+    - campaign
+- name: 2-single-seed
+  runs:
+  - experiment: generalist
+    seed: 1
+    eval_sets: &id001
+    - val
+    - train_sample
+    - campaign
+    - test
+    - oor
+  - experiment: blind
+    seed: 1
+    eval_sets: *id001
+  - experiment: pqn
+    seed: 1
+    eval_sets: *id001
+  - experiment: specialist
+    seed: 1
+    track: campaign-01
+    eval_sets:
+    - campaign
+    - test
+  - experiment: specialist
+    seed: 1
+    track: campaign-02
+    eval_sets:
+    - campaign
+    - test
+  - experiment: specialist
+    seed: 1
+    track: campaign-03
+    eval_sets:
+    - campaign
+    - test
+  - experiment: specialist
+    seed: 1
+    track: campaign-04
+    eval_sets:
+    - campaign
+    - test
+  - experiment: specialist
+    seed: 1
+    track: campaign-05
+    eval_sets:
+    - campaign
+    - test
+  - experiment: specialist-finetune
+    seed: 1
+    track: campaign-01
+    eval_sets:
+    - campaign
+    - test
+  - experiment: specialist-finetune
+    seed: 1
+    track: campaign-02
+    eval_sets:
+    - campaign
+    - test
+  - experiment: specialist-finetune
+    seed: 1
+    track: campaign-03
+    eval_sets:
+    - campaign
+    - test
+  - experiment: specialist-finetune
+    seed: 1
+    track: campaign-04
+    eval_sets:
+    - campaign
+    - test
+  - experiment: specialist-finetune
+    seed: 1
+    track: campaign-05
+    eval_sets:
+    - campaign
+    - test
+  - experiment: size-1
+    seed: 1
+    eval_sets: *id001
+  - experiment: size-10
+    seed: 1
+    eval_sets: *id001
+  - experiment: size-100
+    seed: 1
+    eval_sets: *id001
+  - experiment: size-1000
+    seed: 1
+    eval_sets: *id001
+  - experiment: size-10000
+    seed: 1
+    eval_sets: *id001
+  - experiment: ablation-continuous
+    seed: 1
+    eval_sets: *id001
+  - experiment: ablation-lookahead5
+    seed: 1
+    eval_sets: *id001
+  - experiment: ablation-lookahead40
+    seed: 1
+    eval_sets: *id001
+  - experiment: ablation-timecost
+    seed: 1
+    eval_sets: *id001
+  - experiment: ablation-10hz
+    seed: 1
+    eval_sets: *id001
+  - experiment: ablation-fallpenalty
+    seed: 1
+    eval_sets: *id001
+  - experiment: ablation-joint9
+    seed: 1
+    eval_sets: *id001
+- name: 3-patched-physics
+  runs: []
+  note: filled in only if an agent used an exploit; see preregistration section 8
+- name: 4-imitation-hybrids
+  runs:
+  - experiment: imitation-bc
+    seed: 1
+    eval_sets: *id001
+  - experiment: imitation-dagger
+    seed: 1
+    eval_sets: *id001
+  - experiment: hybrid-bc-ppo
+    seed: 1
+    eval_sets: *id001
+  - experiment: hybrid-reward-hints
+    seed: 1
+    eval_sets: *id001
+  - experiment: hybrid-scripted-starts
+    seed: 1
+    eval_sets: *id001
+- name: 5-hyperparameters
+  runs:
+  - experiment: hp-lr-div3
+    seed: 1
+    eval_sets: *id001
+  - experiment: hp-gamma995
+    seed: 1
+    eval_sets: *id001
+  - experiment: hp-net3x512
+    seed: 1
+    eval_sets: *id001
+  - experiment: hp-wd1e-5
+    seed: 1
+    eval_sets: *id001
+- name: 6-seed-sensitivity
+  runs:
+  - experiment: generalist
+    seed: 2
+    eval_sets: *id001
+  - experiment: generalist
+    seed: 3
+    eval_sets: *id001
+  - experiment: generalist
+    seed: 4
+    eval_sets: *id001
+  - experiment: generalist
+    seed: 5
+    eval_sets: *id001
+  - experiment: generalist
+    seed: 6
+    eval_sets: *id001
+  - experiment: generalist
+    seed: 7
+    eval_sets: *id001
+  - experiment: generalist
+    seed: 8
+    eval_sets: *id001
+  - experiment: generalist
+    seed: 9
+    eval_sets: *id001
+  - experiment: generalist
+    seed: 10
+    eval_sets: *id001
+  - experiment: blind
+    seed: 2
+    eval_sets: *id001
+  - experiment: blind
+    seed: 3
+    eval_sets: *id001
+  - experiment: blind
+    seed: 4
+    eval_sets: *id001
+  - experiment: blind
+    seed: 5
+    eval_sets: *id001
+  - experiment: size-1
+    seed: 2
+    eval_sets: *id001
+  - experiment: size-1
+    seed: 3
+    eval_sets: *id001
+  - experiment: size-1
+    seed: 4
+    eval_sets: *id001
+  - experiment: size-1
+    seed: 5
+    eval_sets: *id001
+  - experiment: specialist
+    seed: 2
+    track: campaign-01
+    eval_sets: &id002
+    - campaign
+    - test
+  - experiment: specialist
+    seed: 3
+    track: campaign-01
+    eval_sets: *id002
+  - experiment: specialist
+    seed: 4
+    track: campaign-01
+    eval_sets: *id002
+  - experiment: specialist
+    seed: 5
+    track: campaign-01
+    eval_sets: *id002
+  - experiment: specialist
+    seed: 2
+    track: campaign-02
+    eval_sets: &id003
+    - campaign
+    - test
+  - experiment: specialist
+    seed: 3
+    track: campaign-02
+    eval_sets: *id003
+  - experiment: specialist
+    seed: 4
+    track: campaign-02
+    eval_sets: *id003
+  - experiment: specialist
+    seed: 5
+    track: campaign-02
+    eval_sets: *id003
+  - experiment: specialist
+    seed: 2
+    track: campaign-03
+    eval_sets: &id004
+    - campaign
+    - test
+  - experiment: specialist
+    seed: 3
+    track: campaign-03
+    eval_sets: *id004
+  - experiment: specialist
+    seed: 4
+    track: campaign-03
+    eval_sets: *id004
+  - experiment: specialist
+    seed: 5
+    track: campaign-03
+    eval_sets: *id004
+  - experiment: specialist
+    seed: 2
+    track: campaign-04
+    eval_sets: &id005
+    - campaign
+    - test
+  - experiment: specialist
+    seed: 3
+    track: campaign-04
+    eval_sets: *id005
+  - experiment: specialist
+    seed: 4
+    track: campaign-04
+    eval_sets: *id005
+  - experiment: specialist
+    seed: 5
+    track: campaign-04
+    eval_sets: *id005
+  - experiment: specialist
+    seed: 2
+    track: campaign-05
+    eval_sets: &id006
+    - campaign
+    - test
+  - experiment: specialist
+    seed: 3
+    track: campaign-05
+    eval_sets: *id006
+  - experiment: specialist
+    seed: 4
+    track: campaign-05
+    eval_sets: *id006
+  - experiment: specialist
+    seed: 5
+    track: campaign-05
+    eval_sets: *id006
+  - experiment: size-10
+    seed: 2
+    eval_sets: *id001
+  - experiment: size-10
+    seed: 3
+    eval_sets: *id001
+  - experiment: size-100
+    seed: 2
+    eval_sets: *id001
+  - experiment: size-100
+    seed: 3
+    eval_sets: *id001
+  - experiment: size-1000
+    seed: 2
+    eval_sets: *id001
+  - experiment: size-1000
+    seed: 3
+    eval_sets: *id001
+  - experiment: size-10000
+    seed: 2
+    eval_sets: *id001
+  - experiment: size-10000
+    seed: 3
+    eval_sets: *id001
+  - experiment: ablation-continuous
+    seed: 2
+    eval_sets: *id001
+  - experiment: ablation-continuous
+    seed: 3
+    eval_sets: *id001
+  - experiment: ablation-lookahead5
+    seed: 2
+    eval_sets: *id001
+  - experiment: ablation-lookahead5
+    seed: 3
+    eval_sets: *id001
+  - experiment: ablation-lookahead40
+    seed: 2
+    eval_sets: *id001
+  - experiment: ablation-lookahead40
+    seed: 3
+    eval_sets: *id001
+  - experiment: ablation-timecost
+    seed: 2
+    eval_sets: *id001
+  - experiment: ablation-timecost
+    seed: 3
+    eval_sets: *id001
+  - experiment: ablation-10hz
+    seed: 2
+    eval_sets: *id001
+  - experiment: ablation-10hz
+    seed: 3
+    eval_sets: *id001
+  - experiment: ablation-fallpenalty
+    seed: 2
+    eval_sets: *id001
+  - experiment: ablation-fallpenalty
+    seed: 3
+    eval_sets: *id001
+  - experiment: ablation-joint9
+    seed: 2
+    eval_sets: *id001
+  - experiment: ablation-joint9
+    seed: 3
+    eval_sets: *id001
+  - experiment: hp-lr-div3
+    seed: 2
+    eval_sets: *id001
+  - experiment: hp-gamma995
+    seed: 2
+    eval_sets: *id001
+  - experiment: hp-net3x512
+    seed: 2
+    eval_sets: *id001
+  - experiment: hp-wd1e-5
+    seed: 2
+    eval_sets: *id001
+  - experiment: pqn
+    seed: 2
+    eval_sets: *id001
+  - experiment: pqn
+    seed: 3
+    eval_sets: *id001

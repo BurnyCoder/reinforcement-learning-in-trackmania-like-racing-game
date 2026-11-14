@@ -1,0 +1,7 @@
+# Ablation (b): 5 upcoming points (30 m) instead of 20.
+description: PPO observing 5 upcoming centreline points
+algo: ppo
+tracks: {pool: train}
+validation: {pool: val}
+env: {window_k: 5}
+ppo: {total_steps: 1000000000}

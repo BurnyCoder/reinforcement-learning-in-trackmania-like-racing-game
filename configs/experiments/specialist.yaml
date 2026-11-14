@@ -1,0 +1,6 @@
+# Specialist: the standard recipe on one campaign track; the track is given per run (track: campaign-0N).
+description: Specialist PPO agent trained on a single campaign track
+algo: ppo
+tracks: {campaign: campaign-01}
+validation: {campaign: campaign-01}
+ppo: {total_steps: 200000000, loaded_tracks: 1, rotate_tracks_every: 0}

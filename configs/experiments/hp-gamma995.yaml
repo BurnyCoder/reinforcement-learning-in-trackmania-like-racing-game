@@ -1,0 +1,6 @@
+# Hyperparameter sensitivity: discount 0.995.
+description: PPO with discount 0.995
+algo: ppo
+tracks: {pool: train}
+validation: {pool: val}
+ppo: {total_steps: 1000000000, gamma: 0.995}
