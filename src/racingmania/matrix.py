@@ -61,8 +61,20 @@ def status(r: dict) -> str:
     return json.loads(p.read_text()).get("status", "none") if p.exists() else "none"
 
 
+def publish_all(message: str, rid: str | None = None, status: str | None = None):
+    """Publish (publish.publish_all) in a fresh Python process after fast-forwarding main.
+
+    The queue runs for days while report code and templates change on main. An in-process build would mix
+    modules imported when the queue started with templates pulled since (on 2026-11-14 a new paper template
+    met the old render.py and the publish crashed the queue), and pulling only after the build leaves the
+    regenerated files in the way of the pull. Pulling first while the generated files are still clean, then
+    building in a child that imports the code just pulled, avoids both."""
+    subprocess.run(["git", "pull", "--ff-only"], cwd=REPO_ROOT, check=False)
+    args = ["--message", message] + (["--run", rid, "--status", status] if rid else [])
+    subprocess.run([sys.executable, "scripts/08_publish.py", *args], cwd=REPO_ROOT, check=True)
+
+
 def run_queue(phases: list[str] | None = None, publish: bool = True, limit: int | None = None):
-    from .publish import publish_all
     done = 0
     for r in load_matrix():
         if phases and r["phase"] not in phases:
