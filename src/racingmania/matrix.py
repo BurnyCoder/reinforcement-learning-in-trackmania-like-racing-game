@@ -83,7 +83,7 @@ def run_queue(phases: list[str] | None = None, publish: bool = True, limit: int 
             if publish:
                 publish_all(f"Run {rid} trained", rid, "trained")
         run_gpu(["scripts/03_evaluate.py", "--experiment", r["experiment"], "--seed", str(r["seed"]), *track_args,
-                 "--sets", *r.get("eval_sets", ["val", "train_sample", "campaign", "test", "oor"])])
+                 "--sets", *r.get("eval_sets", ["val", "train_sample", "train_own", "campaign", "test", "oor"])])
         run_gpu(["scripts/06_export_web.py", "--run", rid])
         if publish:
             publish_all(f"Run {rid} evaluated", rid, "evaluated")

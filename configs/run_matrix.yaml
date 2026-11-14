@@ -22,6 +22,7 @@ phases:
     eval_sets: &id001
     - val
     - train_sample
+    - train_own
     - campaign
     - test
     - oor

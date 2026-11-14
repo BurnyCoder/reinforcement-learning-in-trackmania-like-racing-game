@@ -1,0 +1,110 @@
+<!doctype html>
+<!--
+  results.html — the RacingMania results explorer. Local purpose: interactive views of the research
+  results: run statuses, configuration comparison with 95 % intervals, the preregistered hypotheses,
+  training curves, the training-set-size curve and a sortable per-track table.
+  Global context: a static page with no build step and no external requests; js/results/main.js
+  (ES modules, relative imports) loads assets/data/results.json, which scripts/07_make_report.py
+  generates from results/. Relative URLs only, so it works locally and under a GitHub Pages sub-path.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RacingMania — results explorer</title>
+  <meta name="description" content="Results of the RacingMania reinforcement-learning experiments: status of every run, scores with confidence intervals, hypotheses, training curves and per-track results.">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="css/results.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <h1>Racing<span>Mania</span> <small>results explorer</small></h1>
+      <p class="muted" id="generated">Loading results…</p>
+    </div>
+    <nav class="links">
+      <a href="index.html">Play the game</a>
+      <a id="repo-link" href="#" rel="noopener">Code, paper and reports</a>
+    </nav>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Views">
+    <button role="tab" data-view="overview" aria-selected="true">Overview</button>
+    <button role="tab" data-view="status">Run status</button>
+    <button role="tab" data-view="methods">Compare methods</button>
+    <button role="tab" data-view="curves">Training curves</button>
+    <button role="tab" data-view="size">Training-set size</button>
+    <button role="tab" data-view="tracks">Per-track results</button>
+  </nav>
+
+  <main>
+    <section id="view-overview" class="view">
+      <h2>Headline results</h2>
+      <ul id="headline" class="headline"></ul>
+      <h2>Preregistered hypotheses</h2>
+      <p class="muted small">Decision rule (preregistration): <b>refuted</b> if the 95 % interval lies below the threshold; <b>confirmed</b> if the Holm-adjusted one-sided t-test p-value is below 0.05; otherwise <b>inconclusive</b>; <b>not yet tested</b> until all preregistered seeds have test results.</p>
+      <div id="hypotheses" class="table-wrap"></div>
+      <h2>Glossary</h2>
+      <dl class="glossary">
+        <dt>SWS (success-weighted speed)</dt><dd>Mean over tracks of finished × (scripted driver's time ÷ agent's time). 1.0 = finishes every track as fast as the scripted driver; 0 = finishes nothing.</dd>
+        <dt>Finish rate</dt><dd>Share of tracks finished within 3× the reference time without falling off or stalling.</dd>
+        <dt>95 % interval</dt><dd>Two-level bootstrap: seeds and tracks resampled with replacement. With one seed it reflects track sampling only.</dd>
+        <dt>Seed</dt><dd>One independent training run. More seeds show how much results depend on luck.</dd>
+      </dl>
+    </section>
+
+    <section id="view-status" class="view" hidden>
+      <h2>Status of every run in the run matrix</h2>
+      <div id="status-legend" class="legend"></div>
+      <div id="status-board" class="board"></div>
+    </section>
+
+    <section id="view-methods" class="view" hidden>
+      <h2>Compare configurations</h2>
+      <div class="controls">
+        <label>Track set <select id="methods-set"></select></label>
+        <label>Metric <select id="methods-metric"><option value="sws">SWS</option><option value="finish">Finish rate</option></select></label>
+      </div>
+      <div id="methods-chart" class="chart"></div>
+      <p class="muted small" id="methods-note"></p>
+      <div id="methods-table" class="table-wrap"></div>
+    </section>
+
+    <section id="view-curves" class="view" hidden>
+      <h2>Training curves</h2>
+      <div class="controls">
+        <label>Metric <select id="curves-metric"></select></label>
+        <span class="muted small">Select up to 8 runs.</span>
+      </div>
+      <div class="split">
+        <div id="curves-runs" class="run-list"></div>
+        <div id="curves-chart" class="chart"></div>
+      </div>
+    </section>
+
+    <section id="view-size" class="view" hidden>
+      <h2>Score and train–test gap against the number of training tracks</h2>
+      <div id="size-chart" class="chart"></div>
+      <div id="gap-chart" class="chart"></div>
+      <div id="size-table" class="table-wrap"></div>
+    </section>
+
+    <section id="view-tracks" class="view" hidden>
+      <h2>Per-track results</h2>
+      <div class="controls">
+        <label>Track set <select id="tracks-set"></select></label>
+        <label>Configuration <select id="tracks-method"></select></label>
+        <label>Track name <input id="tracks-filter" type="search" placeholder="filter…"></label>
+        <label><input id="tracks-unfinished" type="checkbox"> unfinished only</label>
+      </div>
+      <p class="muted small" id="tracks-note"></p>
+      <div id="tracks-table" class="table-wrap"></div>
+      <button id="tracks-more" hidden>Show more</button>
+    </section>
+  </main>
+
+  <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+  <footer class="muted small">Every number on this page is generated from the result files by <code>scripts/07_make_report.py</code>. Author: Libor "Burny" Burian.</footer>
+  <script type="module" src="js/results/main.js"></script>
+</body>
+</html>

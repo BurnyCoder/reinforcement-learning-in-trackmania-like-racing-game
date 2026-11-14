@@ -1,0 +1,63 @@
+{
+  "single_tick": {
+    "campaign-01": {
+      "cases": 2000,
+      "max_abs_state_diff": 3.552713678800501e-15,
+      "median_abs_state_diff": 0.0,
+      "flag_mismatches": 0,
+      "contact_histogram": [
+        658,
+        211,
+        254,
+        280,
+        597
+      ]
+    },
+    "campaign-03": {
+      "cases": 2000,
+      "max_abs_state_diff": 7.105427357601002e-15,
+      "median_abs_state_diff": 0.0,
+      "flag_mismatches": 0,
+      "contact_histogram": [
+        654,
+        208,
+        261,
+        285,
+        592
+      ]
+    },
+    "campaign-05": {
+      "cases": 2000,
+      "max_abs_state_diff": 7.105427357601002e-15,
+      "median_abs_state_diff": 0.0,
+      "flag_mismatches": 0,
+      "contact_histogram": [
+        657,
+        207,
+        255,
+        286,
+        595
+      ]
+    }
+  },
+  "sequences": {
+    "campaign-01": {
+      "ticks_js": 540,
+      "ticks_port": 540,
+      "max_abs_state_diff": 1.4210854715202004e-14,
+      "same_end": true
+    },
+    "campaign-03": {
+      "ticks_js": 586,
+      "ticks_port": 586,
+      "max_abs_state_diff": 2.842170943040401e-14,
+      "same_end": true
+    },
+    "campaign-05": {
+      "ticks_js": 545,
+      "ticks_port": 545,
+      "max_abs_state_diff": 3.552713678800501e-14,
+      "same_end": true
+    }
+  }
+}
