@@ -5,7 +5,6 @@ Writes web/assets/models/<run>.onnx (+ results/<run>/policy.onnx), web/assets/gh
 updates web/assets/index.json, and records the ONNX-vs-PyTorch action agreement in run.json.
 """
 import argparse
-import csv
 import json
 import shutil
 
@@ -15,6 +14,7 @@ import _common  # noqa: F401
 
 from racingmania.drivers.simple import RandomDriver
 from racingmania.env.vec_env import RacingVecEnv
+from racingmania.export.ghosts import export_ghosts
 from racingmania.export.onnx_export import export_policy
 from racingmania.runs import campaign_pool, load_experiment, load_policy, run_dirs, update_run_json, vehicle_for
 from racingmania.tracks.campaign import CAMPAIGN_PLANS
@@ -29,28 +29,10 @@ res_dir, _, _ = run_dirs(rid)
 seed = int(rid.rsplit("seed", 1)[1])
 
 
-def export_ghosts(index: dict, flat: str):
-    """Copy the run's recorded campaign runs (results/<run>/replays) into the game as AI ghosts."""
-    ghosts = index.setdefault("ghosts", {})
-    keep_unfinished = rid.startswith("baselines/")  # a control's runs are kept even though they fail: they are what the README shows
-    ends = ({r["track"]: r["end"] for r in csv.DictReader(open(res_dir / "eval_campaign.csv", encoding="utf-8"))}
-            if (res_dir / "eval_campaign.csv").exists() else {})  # end reason of each official campaign run
-    for rep in sorted((res_dir / "replays").glob("*.json")) if (res_dir / "replays").exists() else []:
-        d = json.loads(rep.read_text())
-        if not d.get("finished") and not keep_unfinished:
-            continue
-        dst = WEB_ASSETS / "ghosts" / d["track"] / f"{flat}.json"
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        dst.write_text(json.dumps({"model": flat, "time": d["time"], "finished": bool(d.get("finished")),
-                                   "end": ends.get(d["track"], "finished" if d.get("finished") else "fell"), "states": d["states"]}))
-        rel = f"assets/ghosts/{d['track']}/{flat}.json"
-        ghosts[d["track"]] = sorted(set(ghosts.get(d["track"], [])) | {rel})
-
-
 index_path = WEB_ASSETS / "index.json"
 if rid.startswith("baselines/random/"):  # random actions: no network to export, only its recorded runs as ghosts
     index = json.loads(index_path.read_text())
-    export_ghosts(index, f"random-seed{seed}")
+    export_ghosts(index, res_dir, f"random-seed{seed}", keep_unfinished=True)
     index_path.write_text(json.dumps(index, indent=2))
     print("exported ghosts of", rid)
     raise SystemExit
@@ -87,6 +69,6 @@ index = json.loads(index_path.read_text())
 index["models"] = [m for m in index.get("models", []) if m["name"] != flat]
 index["models"].append({"name": flat, "file": f"assets/models/{flat}.onnx", "K": env_cfg.window_k, "stride": env_cfg.window_stride,
                         "description": description, "run": rid})
-export_ghosts(index, flat)
+export_ghosts(index, res_dir, flat, keep_unfinished=rid.startswith("baselines/"))  # a control's failed runs are what the README shows
 index_path.write_text(json.dumps(index, indent=2))
 print("exported", flat, check)

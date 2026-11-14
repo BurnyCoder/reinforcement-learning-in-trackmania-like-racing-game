@@ -37,14 +37,16 @@ def untrained_agent(seed: int, device="cuda"):
     return agent, norm
 
 
-def untrained_policy(seed: int, device="cuda"):
-    """The untrained control as a policy for the evaluator (most probable action)."""
+def untrained_policy(seed: int, device="cuda", sample: bool = False):
+    """The untrained control as a policy for the evaluator: its most probable action (the official control),
+    or with ``sample`` an action drawn from its probabilities (a demonstration of how PPO starts exploring;
+    seed torch's generator before evaluating to make it repeatable)."""
     agent, norm = untrained_agent(seed, device)
 
     def act(env):
         with torch.no_grad():
-            return agent.act(norm(env.observe().float()), deterministic=True)[1]
-    act.name = f"untrained-seed{seed}"
+            return agent.act(norm(env.observe().float()), deterministic=not sample)[1]
+    act.name = f"untrained-seed{seed}" + ("-sampled" if sample else "")
     return act
 
 

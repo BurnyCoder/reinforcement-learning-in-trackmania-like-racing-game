@@ -85,7 +85,16 @@ Each clip replays an official evaluation run in the browser game: the car states
 - **Evaluation:** official evaluation in `results/baselines/untrained/seed0/eval_campaign.csv` (standing start, most probable action, final checkpoint): did not finish: stalled after 2.00 s and 6 m (the scripted driver finishes in 30.17 s). The clip replays this run.
 - **Note:** Like every evaluated driver, the network takes its most probable action at each step instead of sampling one. With random initial weights its output layer starts close to zero (standard deviation 0.01, the CleanRL convention), so it picks almost the same keys every step, here steering right while coasting, and never presses gas. Sampled instead of taken greedily, the same network would press keys almost uniformly at random, which is how PPO starts exploring.
 
-### 9. Random actions (control) on the specialist's track
+### 9. Untrained network with sampled actions: almost uniformly random keys, as PPO starts exploring
+
+[![Untrained network with sampled actions: almost uniformly random keys, as PPO starts exploring: untrained-seed0-sampled on campaign-01](docs/videos/untrained-seed0-sampled_campaign-01.gif)](docs/videos/untrained-seed0-sampled_campaign-01.mp4)
+
+- **Model:** `demos/untrained-sampled/seed0`: the untrained control network (random initial weights, seed 0) with each action sampled from its probabilities (sampling seed 1000) instead of the most probable one.
+- **Map:** First Flight (`campaign-01`), a hand-made campaign track, 628 m long with 1 jump and up to 6° of banking; this network was never trained on any track.
+- **Evaluation:** demonstration run through the same evaluator, recorded in `results/demos/untrained-sampled/seed0/eval_campaign.csv` (standing start, sampled actions; not scored): did not finish: stalled after 28.99 s and 52 m (the scripted driver finishes in 30.17 s). The clip replays this run.
+- **Note:** The same network and weights as the clip before. The official evaluation takes the most probable action; here the keys of every step are drawn from the network's own probabilities, which are close to one in three for each steering and each pedal choice, so they are almost uniformly random, as at the start of PPO training. The car jitters between gas, coast and brake and drifts a few dozen metres before it is out for lack of progress. This is a demonstration run, not part of the scored evaluation.
+
+### 10. Random actions (control) on the specialist's track
 
 [![Random actions (control) on the specialist's track: random-seed0 on campaign-01](docs/videos/random-seed0_campaign-01.gif)](docs/videos/random-seed0_campaign-01.mp4)
 
