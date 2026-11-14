@@ -65,11 +65,24 @@ def _namespace() -> str:
     return os.environ.get("HF_NAMESPACE") or _hf().whoami()["name"]
 
 
+_collection = None  # slug of the project's collection, looked up once per process
+
+
 def _collection_slug(api) -> str:
-    title = os.environ.get("HF_COLLECTION_TITLE", "RacingMania RL")
-    col = api.create_collection(title=title, namespace=_namespace(), exists_ok=True,
-                                description="Reinforcement-learning drivers for RacingMania, an original 3D time-attack racing game")
-    return col.slug
+    """Slug of the project's Hugging Face collection, found with read-only calls and created only if missing.
+
+    ``create_collection(exists_ok=True)`` counts against Hugging Face's limit of 100 collection creations per
+    day even when the collection exists; calling it on every publish hit that limit on 2026-11-14 and stopped
+    the run queue (reports/notes/phase-2.md). ``HfApi.list_collections(owner=...)`` is a read."""
+    global _collection
+    if _collection is None:
+        title = os.environ.get("HF_COLLECTION_TITLE", "RacingMania RL")
+        _collection = os.environ.get("HF_COLLECTION_SLUG") or next(
+            (c.slug for c in api.list_collections(owner=_namespace(), limit=100) if c.title == title), None)
+        if _collection is None:
+            _collection = api.create_collection(title=title, namespace=_namespace(),
+                description="Reinforcement-learning drivers for RacingMania, an original 3D time-attack racing game").slug
+    return _collection
 
 
 def model_repo_id(rid: str) -> str:
