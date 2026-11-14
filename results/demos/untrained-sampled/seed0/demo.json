@@ -1,0 +1,6 @@
+{
+  "what": "untrained network, actions sampled from its probabilities",
+  "network_seed": 0,
+  "sample_seed": 1000,
+  "scored": false
+}

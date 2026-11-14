@@ -99,6 +99,7 @@
       "assets/ghosts/campaign-01/generalist-seed1.json",
       "assets/ghosts/campaign-01/random-seed0.json",
       "assets/ghosts/campaign-01/specialist-campaign-01-seed0.json",
+      "assets/ghosts/campaign-01/untrained-seed0-sampled.json",
       "assets/ghosts/campaign-01/untrained-seed0.json"
     ],
     "campaign-02": [
@@ -106,6 +107,7 @@
       "assets/ghosts/campaign-02/generalist-seed0.json",
       "assets/ghosts/campaign-02/generalist-seed1.json",
       "assets/ghosts/campaign-02/random-seed0.json",
+      "assets/ghosts/campaign-02/untrained-seed0-sampled.json",
       "assets/ghosts/campaign-02/untrained-seed0.json"
     ],
     "campaign-03": [
@@ -113,6 +115,7 @@
       "assets/ghosts/campaign-03/generalist-seed0.json",
       "assets/ghosts/campaign-03/generalist-seed1.json",
       "assets/ghosts/campaign-03/random-seed0.json",
+      "assets/ghosts/campaign-03/untrained-seed0-sampled.json",
       "assets/ghosts/campaign-03/untrained-seed0.json"
     ],
     "campaign-04": [
@@ -120,6 +123,7 @@
       "assets/ghosts/campaign-04/generalist-seed0.json",
       "assets/ghosts/campaign-04/generalist-seed1.json",
       "assets/ghosts/campaign-04/random-seed0.json",
+      "assets/ghosts/campaign-04/untrained-seed0-sampled.json",
       "assets/ghosts/campaign-04/untrained-seed0.json"
     ],
     "campaign-05": [
@@ -127,6 +131,7 @@
       "assets/ghosts/campaign-05/generalist-seed0.json",
       "assets/ghosts/campaign-05/generalist-seed1.json",
       "assets/ghosts/campaign-05/random-seed0.json",
+      "assets/ghosts/campaign-05/untrained-seed0-sampled.json",
       "assets/ghosts/campaign-05/untrained-seed0.json"
     ],
     "test-2000747": [

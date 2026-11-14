@@ -57,6 +57,10 @@ SET_NAMES = {"campaign": "hand-made campaign track", "test": "held-out generated
 
 def model_text(run: str) -> str:
     """One sentence on what the model is and how it was trained, from its run.json."""
+    if run.startswith("demos/untrained-sampled/"):  # a demonstration: demo.json instead of run.json (not in the report)
+        d = json.loads((RESULTS / run / "demo.json").read_text(encoding="utf-8"))
+        return (f"`{run}`: the untrained control network (random initial weights, seed {d['network_seed']}) with each action "
+                f"sampled from its probabilities (sampling seed {d['sample_seed']}) instead of the most probable one")
     info = json.loads((RESULTS / run / "run.json").read_text(encoding="utf-8"))
     if run.startswith("baselines/scripted/"):
         tuned = json.loads((RESULTS / "tracks" / "scripted_tuning.json").read_text(encoding="utf-8")).get("chosen", {})
@@ -87,7 +91,7 @@ def map_text(track: str, run: str, split: str) -> str:
     jumps = "no jumps" if f["jumps"] == 0 else f"{f['jumps']} jump{'' if f['jumps'] == 1 else 's'}"
     if run.startswith("baselines/scripted/"):
         relation = "the scripted driver is not trained; it drove this track once before, to certify it and set its reference time"
-    elif run.startswith("baselines/untrained/"):
+    elif run.startswith(("baselines/untrained/", "demos/untrained-sampled/")):
         relation = "this network was never trained on any track"
     elif run.startswith("baselines/random/"):
         relation = "random actions ignore the track entirely"
@@ -183,7 +187,10 @@ with sync_playwright() if todo else _nullcontext() as p:
 def eval_text(c: dict) -> str:
     """The official result, the scripted driver's reference and what the browser showed."""
     r = c["row"]
-    src = f"official evaluation in `results/{c['run']}/eval_{c['split']}.csv` (standing start, most probable action, final checkpoint)"
+    src = (f"official evaluation in `results/{c['run']}/eval_{c['split']}.csv` (standing start, most probable action, final checkpoint)"
+           if not c["run"].startswith("demos/") else
+           f"demonstration run through the same evaluator, recorded in `results/{c['run']}/eval_{c['split']}.csv` (standing start, "
+           f"sampled actions; not scored)")
     if r["finished"] == "1" and c["run"].startswith("baselines/scripted/"):
         res = (f"finished in {c['official_s']:.2f} s (the track's reference time, from the scripted driver's separate "
                f"certification run, is {c['reference_s']:.2f} s)")
