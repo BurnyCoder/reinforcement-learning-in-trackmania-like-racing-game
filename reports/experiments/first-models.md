@@ -74,6 +74,7 @@ Rows from other groups are shown for comparison. Track counts: Test (unseen gene
 | campaign-05 | 56.07 | Scripted driver | reference | 1/1 | 56.03 | s0: 56.03 |
 | campaign-05 | 56.07 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 34.96 | s0: 34.96 |
 | campaign-05 | 56.07 | Generalist (PPO) | zero-shot | 1/1 | 34.86 | s1: 34.86 |
+| campaign-05 | 56.07 | Specialist (campaign-05) | own track | 1/1 | 32.79 | s1: 32.79 |
 
 ![Finishing time on each campaign track: small marks are single seeds, large marks the mean over finishing seeds, x marks runs that did not finish (DNF); the black bar is the scripted driver's reference time. Specialists are scored on their own track; the generalist zero-shot.](../figures/specialists_campaign.png)
 
