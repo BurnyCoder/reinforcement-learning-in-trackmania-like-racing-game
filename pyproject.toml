@@ -42,3 +42,8 @@ torch = [{ index = "pytorch-cu132", marker = "sys_platform == 'linux' or sys_pla
 # Tests live in tests/; "slow" marks tests that train a model or drive a whole track.
 testpaths = ["tests"]
 markers = ["slow: long-running test (training or whole-track driving)", "web: needs a browser (Playwright)"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+]
