@@ -54,6 +54,40 @@ def test_coasting_never_gains_energy_on_flat_ground():
         e_prev = energy(car)
 
 
+def test_mechanical_energy_counts_rotation_in_the_chassis_frame():
+    """The exploit detector's energy: ½v² + g·y + ½ωᵀIω/m, with ω taken in the chassis frame, so the
+    same spin gives the same energy however the chassis is oriented (eval.evaluator.mechanical_energy)."""
+    from racingmania.eval.evaluator import mechanical_energy
+    from racingmania.sim.math3d import quat_from_axis_angle, quat_rotate
+    w_local = torch.tensor([[1.5, -2.0, 0.7]], dtype=torch.float64)
+    inertia = 1.0 / torch.tensor(CFG.inv_inertia, dtype=torch.float64)
+    expected_rot = float(0.5 * (inertia * w_local[0] ** 2).sum() / CFG.mass)
+    q = quat_from_axis_angle(torch.tensor([[0.3, 0.8, -0.5]], dtype=torch.float64) / (0.3**2 + 0.8**2 + 0.5**2) ** 0.5,
+                             torch.tensor([1.1], dtype=torch.float64))
+    car = CarState(pos=torch.tensor([[0.0, 2.0, 0.0]], dtype=torch.float64), quat=q,
+                   vel=torch.tensor([[3.0, 4.0, 0.0]], dtype=torch.float64), angvel=quat_rotate(q, w_local),
+                   steer=torch.zeros(1, dtype=torch.float64))
+    g = -CFG.gravity[1]
+    assert abs(float(mechanical_energy(car, CFG, g)[0]) - (12.5 + 2.0 * g + expected_rot)) < 1e-9
+
+
+def test_tumbling_in_the_air_never_gains_mechanical_energy():
+    """In free flight with spin, damping only removes energy: the detector's energy never rises."""
+    from racingmania.eval.evaluator import mechanical_energy
+    car, tid, rules = _start(lift=50.0)
+    car.vel[:, 0] = 20.0
+    car.angvel[:] = torch.tensor([2.0, 3.0, -1.0], dtype=torch.float64)
+    g = -CFG.gravity[1]
+    one = torch.ones(1, dtype=torch.long)
+    e_prev = float(mechanical_energy(car, CFG, g)[0])
+    for _ in range(100):
+        car, contacts, _ = physics_tick(CFG, TB, tid, rules.index, car, one, one)
+        assert int(contacts[0]) == 0
+        e = float(mechanical_energy(car, CFG, g)[0])
+        assert e <= e_prev + 1e-9
+        e_prev = e
+
+
 def test_batch_invariance_and_determinism():
     """A car's trajectory does not depend on the other cars in the batch."""
     car1, tid1, rules1 = _start(1)
