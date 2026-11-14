@@ -61,7 +61,12 @@ A run ends *finished* when the car passes the last checkpoint, and *out* when th
 
 Tracks are ribbons in the sky: a centreline with banking, width, gaps for jumps and checkpoints ([Perantoni & Limebeer 2015](https://doi.org/10.1115/1.4028253)), generated from a seeded sequence of TORCS-style straights and arcs ([TORCS track manual](https://torcs.sourceforge.net/api/track_manual.html)) with height changes, banking and parabolic-kicker jumps (ranges in Appendix B). A generated track enters a set only if the frozen scripted driver finishes it at three speed settings; its finishing time is the track's reference time. Sets use disjoint seed ranges:
 
-_Track sets have not been generated yet._
+| Set | Seeds | Generated | Geometric rejects | Certification rejects | Kept | Mean length (m) | Mean reference time (s) |
+|---|---|---|---|---|---|---|---|
+| oor | 3,000,000 - 3,000,199 | 200 | 0 | 13 | 187 | 1335 | 66.0 |
+| test | 2,000,000 - 2,000,999 | 1,000 | 0 | 29 | 971 | 1117 | 50.9 |
+| test_unfiltered | 2,000,000 - 2,000,199 | 200 | 0 | 5 | 200 | 1102 | 50.6 |
+| val | 1,000,000 - 1,000,199 | 200 | 0 | 3 | 197 | 1130 | 51.5 |
 
 Five hand-made campaign tracks serve the game, the specialists and a hand-made out-of-distribution test. Every read of the test and out-of-range sets is logged.
 
@@ -91,12 +96,12 @@ Runs follow the preregistered order: (1) the first two models (seed 0), which mu
 
 | Phase | not started | planned | training | trained | evaluated | total |
 |---|---|---|---|---|---|---|
-| 1-first-models | 2 | 0 | 0 | 0 | 0 | 2 |
+| 1-first-models | 1 | 1 | 0 | 0 | 0 | 2 |
 | 2-single-seed | 25 | 0 | 0 | 0 | 0 | 25 |
 | 4-imitation-hybrids | 5 | 0 | 0 | 0 | 0 | 5 |
 | 5-hyperparameters | 4 | 0 | 0 | 0 | 0 | 4 |
 | 6-seed-sensitivity | 65 | 0 | 0 | 0 | 0 | 65 |
-| **all** | 101 | 0 | 0 | 0 | 0 | 101 |
+| **all** | 100 | 1 | 0 | 0 | 0 | 101 |
 
 # Results
 
@@ -253,10 +258,14 @@ Environment settings:
 
 Seed ranges: train 0-49,999; val 1,000,000-1,000,199; test 2,000,000-2,000,999; oor 3,000,000-3,000,199.
 
+Scripted driver parameters (tuned on validation candidates, then frozen): `a_lat` = 6.0, `lookahead_gain` = 0.3, `lookahead_min` = 8.0, `lookahead_max` = 40.0, `a_brake` = 8.0, `jump_speed` = 25.0, `brake_margin` = 1.5, `speed_scale` = 1.0.
 
 # Appendix C: physics parity
 
-The parity tests (`tests/parity/test_physics_parity.py`) require one tick from random states to agree to 1e-9 in 64-bit floats and whole driven runs to agree to 1e-6; measured values are not recorded in `results/parity.json` yet.
+Measured agreement between the PyTorch port and cannon-es (from `results/parity.json`):
+
+- `single_tick`: {'campaign-01': {'cases': 2000, 'max_abs_state_diff': 3.552713678800501e-15, 'median_abs_state_diff': 0.0, 'flag_mismatches': 0, 'contact_histogram': [658, 211, 254, 280, 597]}, 'campaign-03': {'cases': 2000, 'max_abs_state_diff': 7.105427357601002e-15, 'median_abs_state_diff': 0.0, 'flag_mismatches': 0, 'contact_histogram': [654, 208, 261, 285, 592]}, 'campaign-05': {'cases': 2000, 'max_abs_state_diff': 7.105427357601002e-15, 'median_abs_state_diff': 0.0, 'flag_mismatches': 0, 'contact_histogram': [657, 207, 255, 286, 595]}}
+- `sequences`: {'campaign-01': {'ticks_js': 540, 'ticks_port': 540, 'max_abs_state_diff': 1.4210854715202004e-14, 'same_end': True}, 'campaign-03': {'ticks_js': 586, 'ticks_port': 586, 'max_abs_state_diff': 2.842170943040401e-14, 'same_end': True}, 'campaign-05': {'ticks_js': 545, 'ticks_port': 545, 'max_abs_state_diff': 3.552713678800501e-14, 'same_end': True}}
 
 # Appendix D: reproducing this paper
 
