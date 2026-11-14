@@ -168,6 +168,14 @@
       "stride": 3,
       "description": "Specialist fine-tuned from the seed-1 generalist",
       "run": "specialist-finetune-campaign-03/seed1"
+    },
+    {
+      "name": "specialist-finetune-campaign-04-seed1",
+      "file": "assets/models/specialist-finetune-campaign-04-seed1.onnx",
+      "K": 20,
+      "stride": 3,
+      "description": "Specialist fine-tuned from the seed-1 generalist",
+      "run": "specialist-finetune-campaign-04/seed1"
     }
   ],
   "ghosts": {
@@ -222,6 +230,7 @@
       "assets/ghosts/campaign-04/specialist-campaign-01-seed0.json",
       "assets/ghosts/campaign-04/specialist-campaign-04-seed1.json",
       "assets/ghosts/campaign-04/specialist-finetune-campaign-03-seed1.json",
+      "assets/ghosts/campaign-04/specialist-finetune-campaign-04-seed1.json",
       "assets/ghosts/campaign-04/untrained-seed0-sampled.json",
       "assets/ghosts/campaign-04/untrained-seed0.json"
     ],
