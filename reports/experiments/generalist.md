@@ -91,6 +91,7 @@ Rows from other groups are shown for comparison. Track counts: Test (unseen gene
 | PQN | Train | 0 | 1 | 1 | 1000 |
 | Specialist (campaign-02) | Test | 0 | 3 | 1 | 971 |
 | Specialist (campaign-03) | Test | 0 | 2 | 1 | 971 |
+| Specialist (campaign-04) | Test | 0 | 6 | 1 | 971 |
 
 ### Training curves
 

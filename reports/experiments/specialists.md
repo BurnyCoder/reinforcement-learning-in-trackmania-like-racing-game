@@ -17,7 +17,7 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 | `specialist-campaign-01/seed1` | evaluated | 2-single-seed | 200,278,016 | 0.25 | v1 | 11c90044c8 | test, campaign |
 | `specialist-campaign-02/seed1` | evaluated | 2-single-seed | 200,278,016 | 0.36 | v1 | 7d9d62a239 | test, campaign |
 | `specialist-campaign-03/seed1` | evaluated | 2-single-seed | 200,278,016 | 0.35 | v1 | 8b86d3895e | test, campaign |
-| `specialist-campaign-04/seed1` | trained | 2-single-seed | 200,278,016 | 0.29 | v1 | 9a5b160823 | — |
+| `specialist-campaign-04/seed1` | evaluated | 2-single-seed | 200,278,016 | 0.29 | v1 | 9a5b160823 | test, campaign |
 | `specialist-campaign-05/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
 | `specialist-finetune-campaign-01/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
 | `specialist-finetune-campaign-02/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
@@ -65,6 +65,7 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 | Specialist (campaign-01) | Specialist | 1 | 0.286 [0.250, 0.323] | 19.8 % | — | — | — | — | — | — | — | — | 0.577 [0.000, 1.188] | 40.0 % | — | — |
 | Specialist (campaign-02) | Specialist | 1 | 0.312 [0.274, 0.351] | 21.0 % | — | — | — | — | — | — | — | — | 0.312 [0.000, 0.937] | 20.0 % | — | — |
 | Specialist (campaign-03) | Specialist | 1 | 0.329 [0.291, 0.367] | 22.3 % | — | — | — | — | — | — | — | — | 0.290 [0.000, 0.870] | 20.0 % | — | — |
+| Specialist (campaign-04) | Specialist | 1 | 0.076 [0.056, 0.096] | 5.3 % | — | — | — | — | — | — | — | — | 0.424 [0.000, 1.271] | 20.0 % | — | — |
 
 Rows from other groups are shown for comparison. Track counts: Test (unseen generated): 971 tracks; Validation: 197 tracks; Training sample: 1,000 tracks; Own training tracks: 1,000 tracks; Out-of-range test: 187 tracks; Campaign (hand-made): 5 tracks; Unfiltered test: 200 tracks.
 
@@ -92,6 +93,7 @@ Rows from other groups are shown for comparison. Track counts: Test (unseen gene
 | campaign-04 | 42.52 | Scripted driver | reference | 1/1 | 42.52 | s0: 42.52 |
 | campaign-04 | 42.52 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 21.27 | s0: 21.27 |
 | campaign-04 | 42.52 | Generalist (PPO) | zero-shot | 1/1 | 21.60 | s1: 21.60 |
+| campaign-04 | 42.52 | Specialist (campaign-04) | own track | 1/1 | 20.07 | s1: 20.07 |
 | campaign-05 | 56.07 | CEM planner | reference | 1/1 | 35.27 | s0: 35.27 |
 | campaign-05 | 56.07 | Scripted driver | reference | 1/1 | 56.03 | s0: 56.03 |
 | campaign-05 | 56.07 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 34.96 | s0: 34.96 |
