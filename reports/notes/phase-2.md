@@ -12,3 +12,10 @@
 - **Why:** every publish looked up the collection with `HfApi.create_collection(..., exists_ok=True)`, and Hugging Face counts each such call as a creation even when the collection exists. With three publishes per run plus model uploads, a long day of runs passed 100 calls.
 - **Fix:** the collection is found with the read-only `HfApi.list_collections(owner=...)` (or `HF_COLLECTION_SLUG`) and created only when missing, once per process. The queue also no longer stops when a publish fails: it logs the error and goes on, since the next publish carries the whole state (tests: `tests/unit/test_matrix.py`).
 - **What came next:** training was paused at this point at the user's request (see below), so the queue was not restarted. The trained size-1 run was evaluated by hand with the queue's own commands.
+
+**Training paused (2026-11-14, about 23:50).**
+- **Decision:** the user postponed the rest of training to a later date and asked to wrap up with the results so far.
+- **State at the pause:** phase 1 done; 14 of 25 phase-2 runs evaluated (generalist, blind control, PQN, five specialists, five specialists fine-tuned from the generalist, and the single-track ablation `size-1/seed1`, evaluated by hand after the queue stopped); phases 4, 5 and 6 not started; phase 3 has no runs because no agent used a physics exploit.
+- **How it is recorded:** a `paused` block in `configs/run_matrix.yaml`. While it is present the queue does not start (`racingmania.matrix.run_queue`), and the report lists runs without results as `postponed` (README results block, paper status, run-status diagram, website status board).
+- **Resuming:** delete the block and run `uv run python scripts/05_run_matrix.py --phases 2-single-seed 4-imitation-hybrids 5-hyperparameters 6-seed-sensitivity`. Phase 4 first needs its focused literature search and a preregistration amendment fixing the imitation and hybrid variants. With the measured throughput (about 1.5 hours per 1-billion-step run including evaluation and publishing, about 25 minutes per 200-million-step specialist), the postponed runs need about 104 GPU hours.
+
