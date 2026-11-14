@@ -26,6 +26,18 @@ clips:
   explain: The generalist learned on tens of thousands of generated tracks and never on these hand-made ones, which were designed
     separately. It still reads the road ahead and picks a speed for each bend, and laps this track in about half the scripted
     driver's time. On the specialist's own track it is only slightly slower than the specialist (see the results).
+- title: 'The specialist does not generalize: clip 1''s model on clip 2''s track, which it never trained on'
+  replay: specialist-campaign-01-seed0
+  run: specialist-campaign-01/seed0
+  split: campaign
+  rule: best
+  rule_run: generalist/seed0
+  until: out
+  explain: The specialist from clip 1, on the track of clip 2, which it never trained on. For the first seconds it accelerates
+    exactly like the generalist, but then it brakes to a crawl, drifts towards the edge of a bend and drops off the road,
+    while the generalist on the same track keeps accelerating (clip 2; speeds compared from both recorded runs). Trained on
+    one track, it learned that track rather than how to drive, which is why the README's results show it finishing so few
+    unseen tracks.
 - title: 'Best generalist lap on a held-out generated track it never saw in training: it generalized'
   replay: generalist-seed0
   run: generalist/seed0
