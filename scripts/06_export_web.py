@@ -23,6 +23,8 @@ from racingmania.utils.paths import WEB_ASSETS
 
 ap = argparse.ArgumentParser(description=__doc__)
 ap.add_argument("--run", required=True, help="run id, e.g. generalist/seed1 or specialist-campaign-01/seed0")
+ap.add_argument("--ghosts-only", action="store_true", help="only (re)export the run's recorded campaign runs as ghosts")
+ap.add_argument("--keep-unfinished", action="store_true", help="also export runs that did not finish (e.g. for the README's failure clips)")
 a = ap.parse_args()
 rid = a.run
 res_dir, _, _ = run_dirs(rid)
@@ -30,9 +32,10 @@ seed = int(rid.rsplit("seed", 1)[1])
 
 
 index_path = WEB_ASSETS / "index.json"
-if rid.startswith("baselines/random/"):  # random actions: no network to export, only its recorded runs as ghosts
+if rid.startswith("baselines/random/") or a.ghosts_only:  # no network to export (or not asked): only the recorded runs as ghosts
     index = json.loads(index_path.read_text())
-    export_ghosts(index, res_dir, f"random-seed{seed}", keep_unfinished=True)
+    name = f"random-seed{seed}" if rid.startswith("baselines/random/") else         (f"untrained-seed{seed}" if rid.startswith("baselines/untrained/") else rid.replace("/", "-"))
+    export_ghosts(index, res_dir, name, keep_unfinished=a.keep_unfinished or rid.startswith("baselines/"))
     index_path.write_text(json.dumps(index, indent=2))
     print("exported ghosts of", rid)
     raise SystemExit
@@ -69,6 +72,6 @@ index = json.loads(index_path.read_text())
 index["models"] = [m for m in index.get("models", []) if m["name"] != flat]
 index["models"].append({"name": flat, "file": f"assets/models/{flat}.onnx", "K": env_cfg.window_k, "stride": env_cfg.window_stride,
                         "description": description, "run": rid})
-export_ghosts(index, res_dir, flat, keep_unfinished=rid.startswith("baselines/"))  # a control's failed runs are what the README shows
+export_ghosts(index, res_dir, flat, keep_unfinished=a.keep_unfinished or rid.startswith("baselines/"))  # a control's failed runs are what the README shows
 index_path.write_text(json.dumps(index, indent=2))
 print("exported", flat, check)

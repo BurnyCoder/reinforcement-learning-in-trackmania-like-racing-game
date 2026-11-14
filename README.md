@@ -17,33 +17,43 @@ Each clip replays an official evaluation run in the browser game: the car states
 
 [![Best specialist lap: specialist-campaign-01-seed0 on campaign-01](docs/videos/specialist-campaign-01-seed0_campaign-01.gif)](docs/videos/specialist-campaign-01-seed0_campaign-01.mp4)
 
-- **What you see:** The specialist has driven only this one track during training, so it knows every corner. Watch it accelerate hard from the start, hold high speed on the straights, keep its speed through the bends by staying close to the edge, and take the jump without slowing down. It is the fastest of all drivers evaluated so far on this track, but it learned the track by heart rather than learning to drive: on tracks it has not seen it mostly falls off (see the results).
+- **What you see:** The specialist has driven only this one track during training, so it knows every corner. Watch it accelerate hard from the start, hold high speed on the straights, keep its speed through the bends by staying close to the edge, and take the jump without slowing down. It is the fastest of all drivers evaluated so far on this track, but what it learned is how to drive this one track: on tracks with a different layout it mostly falls off (see the results).
 - **Model:** `specialist-campaign-01/seed0`: PPO, trained by reinforcement learning for 200 million agent steps on campaign-01 only (seed 0, 0.3 h on one GPU).
 - **Map:** First Flight (`campaign-01`), a hand-made campaign track, 628 m long with 1 jump and up to 6° of banking; the track this model was trained on.
 - **Evaluation:** official evaluation in `results/specialist-campaign-01/seed0/eval_campaign.csv` (standing start, most probable action, final checkpoint): finished in 19.71 s; the scripted driver needs 30.17 s, so this is 1.53× its speed. The clip replays this run.
 - **Why this clip:** chosen by a fixed rule as its only finished campaign track in its official evaluation.
 
-### 2. Best generalist lap on a hand-made track it never saw in training
+### 2. Best generalist lap on a hand-made track it never saw in training: it generalized
 
-[![Best generalist lap on a hand-made track it never saw in training: generalist-seed0 on campaign-04](docs/videos/generalist-seed0_campaign-04.gif)](docs/videos/generalist-seed0_campaign-04.mp4)
+[![Best generalist lap on a hand-made track it never saw in training: it generalized: generalist-seed0 on campaign-04](docs/videos/generalist-seed0_campaign-04.gif)](docs/videos/generalist-seed0_campaign-04.mp4)
 
-- **What you see:** The generalist learned on tens of thousands of generated tracks and never on these hand-made ones, which were designed separately. It still reads the road ahead and picks a speed for each bend, and laps this track in about half the scripted driver's time. On the specialist's own track it is only slightly slower than the specialist (see the results).
+- **What you see:** This is generalization: driving well on a track the model never saw in training. The generalist learned on tens of thousands of generated tracks and never on these hand-made ones, which were designed separately. It reads the road ahead, picks a speed for each bend, and laps this track in about half the scripted driver's time. On the specialist's own track it is only slightly slower than the specialist (see the results). Compare the next clip: the specialist on this same track.
 - **Model:** `generalist/seed0`: PPO, trained by reinforcement learning for 1 billion agent steps on 48,949 generated training tracks (seed 0, 1.3 h on one GPU).
 - **Map:** Technical (`campaign-04`), a hand-made campaign track, 666 m long with no jumps and up to 5° of banking; this model never saw it during training.
 - **Evaluation:** official evaluation in `results/generalist/seed0/eval_campaign.csv` (standing start, most probable action, final checkpoint): finished in 21.27 s; the scripted driver needs 42.52 s, so this is 2.00× its speed. The clip replays this run.
 - **Why this clip:** chosen by a fixed rule as the highest-scoring finished track of the 5 campaign tracks it finished in its official evaluation.
 
-### 3. Best generalist lap on a held-out generated track it never saw in training: it generalized
+### 3. The specialist does not generalize: clip 1's model on clip 2's track, which it never trained on
+
+[![The specialist does not generalize: clip 1's model on clip 2's track, which it never trained on: specialist-campaign-01-seed0 on campaign-04](docs/videos/specialist-campaign-01-seed0_campaign-04.gif)](docs/videos/specialist-campaign-01-seed0_campaign-04.mp4)
+
+- **What you see:** The specialist from clip 1, on the track of clip 2, which it never trained on. For the first seconds it accelerates exactly like the generalist, but then it brakes to a crawl, drifts towards the edge of a bend and drops off the road, while the generalist on the same track keeps accelerating (clip 2; speeds compared from both recorded runs). Trained on one track, it learned to drive that track, and that driving does not carry over to a different layout, which is why the README's results show it finishing so few unseen tracks.
+- **Model:** `specialist-campaign-01/seed0`: PPO, trained by reinforcement learning for 200 million agent steps on campaign-01 only (seed 0, 0.3 h on one GPU).
+- **Map:** Technical (`campaign-04`), a hand-made campaign track, 666 m long with no jumps and up to 5° of banking; this model never saw it during training.
+- **Evaluation:** official evaluation in `results/specialist-campaign-01/seed0/eval_campaign.csv` (standing start, most probable action, final checkpoint): did not finish: fell after 7.44 s and 73 m (the scripted driver finishes in 42.52 s). The clip replays this run.
+- **Why this clip:** chosen by a fixed rule as the same track as the generalist/seed0 clip: the highest-scoring finished track of the 5 campaign tracks `generalist/seed0` finished in its official evaluation.
+
+### 4. Best generalist lap on a held-out generated track it never saw in training: it generalized
 
 [![Best generalist lap on a held-out generated track it never saw in training: it generalized: generalist-seed0 on test-2000747](docs/videos/generalist-seed0_test-2000747.gif)](docs/videos/generalist-seed0_test-2000747.mp4)
 
-- **What you see:** This is generalization: a track from the held-out test seeds, which the generalist never trained on, driven from the standing start to the finish. Watch it slow down for each bend, hug the inside edge through it and accelerate out again, using only what it sees of the road ahead. Compare it with the next clip, the scripted driver on the same track.
+- **What you see:** Generalization again, now on a generated track from the held-out test seeds: the same kind of track as in training, but never this one, driven from the standing start to the finish. Watch it slow down for each bend, hug the inside edge through it and accelerate out again, using only what it sees of the road ahead. Compare it with the next clip, the scripted driver on the same track.
 - **Model:** `generalist/seed0`: PPO, trained by reinforcement learning for 1 billion agent steps on 48,949 generated training tracks (seed 0, 1.3 h on one GPU).
 - **Map:** Unseen test track 2000747 (`test-2000747`), a held-out generated test track, 1,461 m long with no jumps and up to 11° of banking; this model never saw it during training.
 - **Evaluation:** official evaluation in `results/generalist/seed0/eval_test.csv` (standing start, most probable action, final checkpoint): finished in 43.35 s; the scripted driver needs 79.77 s, so this is 1.84× its speed. The clip replays this run.
 - **Why this clip:** chosen by a fixed rule as the highest-scoring finished track of the 779 test tracks it finished in its official evaluation.
 
-### 4. Scripted driver on the same held-out track, for comparison
+### 5. Scripted driver on the same held-out track, for comparison
 
 [![Scripted driver on the same held-out track, for comparison: scripted-driver on test-2000747](docs/videos/scripted-driver_test-2000747.gif)](docs/videos/scripted-driver_test-2000747.mp4)
 
@@ -53,7 +63,7 @@ Each clip replays an official evaluation run in the browser game: the car states
 - **Evaluation:** official evaluation in `results/baselines/scripted/seed0/eval_test.csv` (standing start, most probable action, final checkpoint): finished in 79.75 s (the track's reference time, from the scripted driver's separate certification run, is 79.77 s). The clip replays this run.
 - **Why this clip:** chosen by a fixed rule as the same track as the generalist/seed0 clip: the highest-scoring finished track of the 779 test tracks `generalist/seed0` finished in its official evaluation.
 
-### 5. Typical generalist lap on a held-out generated track it never saw in training
+### 6. Typical generalist lap on a held-out generated track it never saw in training
 
 [![Typical generalist lap on a held-out generated track it never saw in training: generalist-seed0 on test-2000386](docs/videos/generalist-seed0_test-2000386.gif)](docs/videos/generalist-seed0_test-2000386.mp4)
 
@@ -63,7 +73,7 @@ Each clip replays an official evaluation run in the browser game: the car states
 - **Evaluation:** official evaluation in `results/generalist/seed0/eval_test.csv` (standing start, most probable action, final checkpoint): finished in 33.01 s; the scripted driver needs 49.36 s, so this is 1.50× its speed. The clip replays this run.
 - **Why this clip:** chosen by a fixed rule as the median-scoring finished track among those with at least one jump (397 test tracks with a jump that it finished) in its official evaluation.
 
-### 6. Generalization failure on a held-out track: the generalist falls off halfway round
+### 7. Generalization failure on a held-out track: the generalist falls off halfway round
 
 [![Generalization failure on a held-out track: the generalist falls off halfway round: generalist-seed0 on test-2000430](docs/videos/generalist-seed0_test-2000430.gif)](docs/videos/generalist-seed0_test-2000430.mp4)
 
@@ -73,7 +83,7 @@ Each clip replays an official evaluation run in the browser game: the car states
 - **Evaluation:** official evaluation in `results/generalist/seed0/eval_test.csv` (standing start, most probable action, final checkpoint): did not finish: fell after 24.43 s and 776 m (the scripted driver finishes in 66.30 s). The clip replays this run.
 - **Why this clip:** chosen by a fixed rule as the fall whose position is closest to the middle of its track among its 190 falls on test tracks in its official evaluation.
 
-### 7. Generalization failure beyond the training range: a corner tighter than any training track
+### 8. Generalization failure beyond the training range: a corner tighter than any training track
 
 [![Generalization failure beyond the training range: a corner tighter than any training track: generalist-seed0 on oor-3000123](docs/videos/generalist-seed0_oor-3000123.gif)](docs/videos/generalist-seed0_oor-3000123.mp4)
 
@@ -83,7 +93,7 @@ Each clip replays an official evaluation run in the browser game: the car states
 - **Evaluation:** official evaluation in `results/generalist/seed0/eval_oor.csv` (standing start, most probable action, final checkpoint): did not finish: fell after 17.76 s and 449 m (the scripted driver finishes in 52.16 s). The clip replays this run.
 - **Why this clip:** chosen by a fixed rule as the fall whose position is closest to the middle of its track among its 43 falls on tight-turn out-of-range tracks in its official evaluation.
 
-### 8. Untrained network (control) on the specialist's track
+### 9. Untrained network (control) on the specialist's track
 
 [![Untrained network (control) on the specialist's track: untrained-seed0 on campaign-01](docs/videos/untrained-seed0_campaign-01.gif)](docs/videos/untrained-seed0_campaign-01.mp4)
 
@@ -92,7 +102,7 @@ Each clip replays an official evaluation run in the browser game: the car states
 - **Map:** First Flight (`campaign-01`), a hand-made campaign track, 628 m long with 1 jump and up to 6° of banking; this network was never trained on any track.
 - **Evaluation:** official evaluation in `results/baselines/untrained/seed0/eval_campaign.csv` (standing start, most probable action, final checkpoint): did not finish: stalled after 2.00 s and 6 m (the scripted driver finishes in 30.17 s). The clip replays this run.
 
-### 9. Untrained network with sampled actions: almost uniformly random keys, as PPO starts exploring
+### 10. Untrained network with sampled actions: almost uniformly random keys, as PPO starts exploring
 
 [![Untrained network with sampled actions: almost uniformly random keys, as PPO starts exploring: untrained-seed0-sampled on campaign-01](docs/videos/untrained-seed0-sampled_campaign-01.gif)](docs/videos/untrained-seed0-sampled_campaign-01.mp4)
 
@@ -102,7 +112,7 @@ Each clip replays an official evaluation run in the browser game: the car states
 - **Evaluation:** demonstration run through the same evaluator, recorded in `results/demos/untrained-sampled/seed0/eval_campaign.csv` (standing start, sampled actions; not scored): did not finish: stalled after 28.99 s and 52 m (the scripted driver finishes in 30.17 s). The clip replays this run.
 - **Over many runs:** in 200 runs each on this track, random actions are out after 9.4 s on average (median 6.1 s, 10–90 % range 2.0–21.0 s) and the untrained network with sampled actions after 9.8 s (median 6.5 s, 2.0–23.1 s), with no detectable difference between them (Mann–Whitney p = 0.50 for the time, 0.48 for the progress). The gap between the two random clips is therefore consistent with luck, and this run is a lucky one, above the 90th percentile of its runs (`results/demos/random-vs-sampled/campaign-01.json`, `scripts/14_random_vs_sampled.py`).
 
-### 10. Random actions (control) on the specialist's track
+### 11. Random actions (control) on the specialist's track
 
 [![Random actions (control) on the specialist's track: random-seed0 on campaign-01](docs/videos/random-seed0_campaign-01.gif)](docs/videos/random-seed0_campaign-01.mp4)
 
