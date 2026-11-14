@@ -27,11 +27,19 @@ from .utils.paths import RESULTS_DIR
 log = get_logger(__name__)
 
 
-def untrained_policy(seed: int, device="cuda"):
-    """Freshly initialised PPO actor (same architecture as the standard recipe), default normaliser."""
+def untrained_agent(seed: int, device="cuda"):
+    """Freshly initialised PPO actor-critic (same architecture as the standard recipe) and its default
+    normaliser (zero mean, unit variance; it is never updated, so evaluation and export see the same one)."""
     torch.manual_seed(seed)
     agent = ActorCritic(obs_size()).to(device)
     norm = RunningNorm(obs_size()).to(device)
+    norm.frozen = True
+    return agent, norm
+
+
+def untrained_policy(seed: int, device="cuda"):
+    """The untrained control as a policy for the evaluator (most probable action)."""
+    agent, norm = untrained_agent(seed, device)
 
     def act(env):
         with torch.no_grad():

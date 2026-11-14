@@ -35,5 +35,11 @@
     "torch": "2.15.0+cu132",
     "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU"
   },
-  "updated": "2026-11-14T11:41:19.389469+00:00"
+  "updated": "2026-11-14T16:00:30.162050+00:00",
+  "onnx_check": {
+    "agreement": 1.0,
+    "max_abs_logit_diff": 1.30385160446167e-08,
+    "n": 512
+  },
+  "onnx_file": "assets/models/untrained-seed0.onnx"
 }

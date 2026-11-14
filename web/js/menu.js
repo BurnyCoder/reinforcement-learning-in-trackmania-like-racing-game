@@ -60,6 +60,7 @@ export class Menu {
       <div class="actions">
         <button data-mode="race" class="primary">Race <kbd>Enter</kbd></button>
         ${d.hasModels ? '<button data-mode="race-ai">Race vs AI</button><button data-mode="watch">Watch AI</button>' : ''}
+        ${d.hasReplay ? '<button data-mode="replay" title="Replay a recorded AI run: the first ticked AI ghost, or the first one">Watch replay</button>' : ''}
       </div>`;
   }
 }

@@ -15,9 +15,10 @@ import { Hud } from './hud.js';
 import { Menu } from './menu.js';
 import { RaceSession } from './race.js';
 import { loadBest, saveBest, loadSettings, saveSettings, samplePose } from './ghost.js';
+import { ReplayCar } from './replay.js';
 import { formatTime, formatDelta, medalTargets, medalFor } from './timing.js';
 
-const MODE_LABELS = { race: 'Race', 'race-ai': 'Race vs AI', watch: 'Watch AI' };
+const MODE_LABELS = { race: 'Race', 'race-ai': 'Race vs AI', watch: 'Watch AI', replay: 'Replay' };
 const COLORS = { player: 0xff6b35, ai: 0x7b61ff, bestGhost: 0xffffff, aiGhost: 0x7fd3ff };
 
 const app = {
@@ -50,7 +51,7 @@ async function ensureTrack(name) {
 
 const meta = (name) => app.index.tracks.find((t) => t.name === name);
 const authorTime = (name) => {
-  const times = (app.aiGhosts.get(name) ?? []).map((g) => g.time).filter((t) => t > 0);
+  const times = (app.aiGhosts.get(name) ?? []).filter((g) => g.finished).map((g) => g.time).filter((t) => t > 0); // finished runs only
   return times.length ? Math.min(...times) : null;
 };
 const targetsOf = (name) => (app.tracks.has(name) ? medalTargets(app.tracks.get(name), authorTime(name)) : null);
@@ -88,9 +89,11 @@ function renderDetail() {
     best: best?.time ?? null, medal: medalFor(best?.time ?? null, targets), targets,
     ghosts: [
       { key: 'best', label: best ? `Your best (${formatTime(best.time)})` : 'Your best (none yet)', on: Boolean(best) && ghostOn('best'), disabled: !best },
-      ...(app.aiGhosts.get(name) ?? []).map((g) => ({ key: g.path, label: `AI · ${g.model} (${formatTime(g.time)})`, on: ghostOn(g.path) })),
+      ...(app.aiGhosts.get(name) ?? []).map((g) => ({ key: g.path, on: ghostOn(g.path),
+        label: g.finished ? `AI · ${g.model} (${formatTime(g.time)})` : `AI · ${g.model} (did not finish: ${g.end ?? 'out'} at ${formatTime(g.time)})` })),
     ],
     hasModels: app.hasModels, models: app.index.models, model: app.hasModels ? currentModel().name : null,
+    hasReplay: (app.aiGhosts.get(name) ?? []).length > 0,
   });
 }
 
@@ -118,19 +121,24 @@ function onModel(name) { app.settings.model = name; persist(); }
 
 async function startRace(mode) {
   if (app.state !== 'menu' || app.starting) return;
-  if (mode !== 'race' && !app.hasModels) return;
+  if ((mode === 'race-ai' || mode === 'watch') && !app.hasModels) return;
   app.starting = true;
   try {
     const name = app.selected;
     const track = await ensureTrack(name);
-    let policy = null;
-    if (mode !== 'race') {
+    let policy = null, replay = null;
+    if (mode === 'race-ai' || mode === 'watch') {
       setStatus('Loading AI driver…');
       policy = await loadPolicy(currentModel());
+    } else if (mode === 'replay') { // the first ticked AI ghost of this track, else its first AI ghost
+      const ghosts = app.aiGhosts.get(name) ?? [];
+      const ghost = ghosts.find((g) => ghostOn(g.path)) ?? ghosts[0];
+      if (!ghost) return;
+      replay = new ReplayCar(app.cfg, track, ghost);
     }
     document.activeElement?.blur(); // Enter must not re-click the button that started the race
     app.renderer.setTrack(track);
-    app.session = new RaceSession({ cfg: app.cfg, track, mode, policy, best: loadBest(name) });
+    app.session = new RaceSession({ cfg: app.cfg, track, mode, policy, replay, best: loadBest(name) });
     app.targets = targetsOf(name);
     createCars();
     buildGhosts();
@@ -172,7 +180,8 @@ function buildGhosts() {
   const list = [];
   const best = app.session.best;
   if (best?.states?.length && ghostOn('best')) list.push({ states: best.states, body: COLORS.bestGhost });
-  for (const g of app.aiGhosts.get(app.selected) ?? []) if (ghostOn(g.path)) list.push({ states: g.states, body: COLORS.aiGhost });
+  const replayed = app.session?.ai?.states; // in replay mode the replayed run is drawn as the AI car, not as a ghost
+  for (const g of app.aiGhosts.get(app.selected) ?? []) if (ghostOn(g.path) && g.states !== replayed) list.push({ states: g.states, body: COLORS.aiGhost });
   app.ghostMeshes = list.map(({ states, body }) => {
     const mesh = createCarMesh(app.cfg, { body, ghost: true });
     app.renderer.scene.add(mesh.group);
@@ -216,12 +225,13 @@ function handleEvents(events) {
       const label = e.k === last ? 'Finish' : `CP ${e.k + 1}  ${formatTime(e.ticks * dt)}`;
       app.hud.showSplit(label, bestTicks != null ? (e.ticks - bestTicks) * dt : null);
     } else if (e.type === 'respawn' && isFocus) {
-      const notices = { manual: 'Back to the last checkpoint', fell: 'Fell off: back to the last checkpoint', airborne: 'Airborne too long: back to the last checkpoint', stalled: 'No progress for 2 s: back to the last checkpoint' };
+      const notices = { manual: 'Back to the last checkpoint', fell: 'Fell off: back to the last checkpoint', airborne: 'Airborne too long: back to the last checkpoint', stalled: 'No progress for 2 s: back to the last checkpoint',
+        dnf: `Out (${e.end ?? 'fell'}): the recorded run ends here, did not finish` }; // dnf: end of an unfinished replay (replay.js)
       if (e.moved > 1) app.hud.message(notices[e.reason] ?? `Out (${e.reason})`); // waiting at the spawn point is not news
       app.snap = true;
     } else if (e.type === 'finish') {
       if (e.car === 'player') onPlayerFinish();
-      else if (s.mode === 'watch') onAiFinishWatched();
+      else if (s.mode === 'watch' || s.mode === 'replay') onAiFinishWatched();
       else app.hud.message(`AI finished in ${formatTime(e.ticks * dt)}`, 4000);
     }
   }
@@ -259,6 +269,7 @@ function aiStatus(s) {
   const ai = s.ai;
   if (!ai) return null;
   if (ai.failed) return 'AI stopped: inference error (see console)';
+  if (ai.stopped) return `AI ${ai.policy.name} did not finish (${ai.end})`;
   const late = ai.late ? ` · ${ai.late} late step${ai.late === 1 ? '' : 's'}` : '';
   if (ai.finished && ai.finishTicks <= s.clock) return `AI ${ai.policy.name} finished ${formatTime(ai.finishTicks * app.cfg.dt)}${late}`;
   const total = s.track.checkpoints.length - 1;

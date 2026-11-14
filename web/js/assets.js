@@ -37,7 +37,8 @@ export const modelUrl = (file) => webUrl(file.includes('/') ? file : `assets/mod
 export async function loadAiGhosts(index, trackName) {
   const paths = index.ghosts?.[trackName] ?? [];
   const loaded = await Promise.all(paths.map((path) => loadJson(path).then(
-    (g) => ({ path, model: g.model ?? path.split('/').pop().replace(/\.json$/, ''), time: g.time, states: g.states }),
+    (g) => ({ path, model: g.model ?? path.split('/').pop().replace(/\.json$/, ''), time: g.time, states: g.states,
+      finished: g.finished !== false, end: g.end }), // unfinished runs (finished: false) end at `time` with reason `end`
     (err) => { console.error(`ghost ${path} failed to load:`, err); return null; },
   )));
   return loaded.filter((g) => g && Array.isArray(g.states) && g.states.length > 0);

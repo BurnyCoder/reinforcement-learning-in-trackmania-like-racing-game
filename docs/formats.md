@@ -135,7 +135,7 @@ One ONNX graph per trained model contains the observation function, the frozen o
 
 ## Asset index (`web/assets/index.json`)
 
-`tracks: [{"name", "title", "kind"}]` lists the tracks in the menu; `models` lists exported policies (above); `ghosts: {"<track>": ["assets/ghosts/<track>/<model>.json", ...]}` lists AI ghost files, each `{"model": "<model name>", "time": seconds, "states": [[x,y,z,qx,qy,qz,qw,steer], ...]}` in the replay format below. `scripts/06_export_web.py` maintains `models` and `ghosts`.
+`tracks: [{"name", "title", "kind", "note"?}]` lists the tracks in the menu (kind `campaign`, or `unseen` for held-out test tracks added by `scripts/12_export_unseen_track.py`, whose `note` says how the track was chosen); `models` lists exported policies (above); `ghosts: {"<track>": ["assets/ghosts/<track>/<model>.json", ...]}` lists AI ghost files, each `{"model": "<model name>", "time": seconds, "finished"?: bool, "end"?: "<end reason>", "states": [[x,y,z,qx,qy,qz,qw,steer], ...]}` in the replay format below. Ghosts are official evaluation runs; a ghost with `"finished": false` (allowed for controls and for the README's failure clips) ends at `time` with its evaluator end reason (`fell`, `airborne`, `stalled`) instead of a finish. The game's "Watch replay" mode plays the first ticked AI ghost of the track (`web/js/replay.js`). `scripts/06_export_web.py` maintains `models` and `ghosts`.
 
 ## Results (`results/<experiment>/<run>/`)
 

@@ -1,0 +1,47 @@
+# README video clips, recorded by scripts/11_record_videos.py with the browser game's "Watch replay" mode.
+# Every clip replays an official evaluation run: the car states the Python evaluator recorded while scoring
+# the run (a ghost in web/assets/ghosts/<track>/<replay>.json), so the clip is exactly the run its label
+# describes, failures included. Each clip names the ghost (replay), the run whose official evaluation it
+# comes from (run), the set (split), and either a fixed track or a selection rule over that evaluation
+# (racingmania.eval.clips: best, median_jump, mid_fail; rule_run: read the rule from another run's evaluation),
+# so the README shows labelled best, typical and failure cases rather than hand-picked ones.
+# until: finish (default) records to the finish line; out stops where an unfinished run ended.
+clips:
+  - title: Best specialist lap
+    replay: specialist-campaign-01-seed0
+    run: specialist-campaign-01/seed0
+    split: campaign
+    rule: best
+  - title: Best generalist lap on a hand-made track
+    replay: generalist-seed0
+    run: generalist/seed0
+    split: campaign
+    rule: best
+  - title: Best generalist lap on a held-out generated track
+    replay: generalist-seed0
+    run: generalist/seed0
+    split: test
+    rule: best
+  - title: Scripted driver on the same held-out track, for comparison
+    replay: scripted-driver
+    run: baselines/scripted/seed0
+    split: test
+    rule: best
+    rule_run: generalist/seed0   # the same track as the clip before
+  - title: Typical generalist lap on a held-out generated track
+    replay: generalist-seed0
+    run: generalist/seed0
+    split: test
+    rule: median_jump
+  - title: A generalist failure halfway round a held-out generated track
+    replay: generalist-seed0
+    run: generalist/seed0
+    split: test
+    rule: mid_fail
+    until: out
+  - title: Untrained network (control) on the specialist's track
+    replay: untrained-seed0
+    run: baselines/untrained/seed0
+    split: campaign
+    track: campaign-01
+    until: out
