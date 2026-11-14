@@ -378,7 +378,7 @@ Online: <https://burnycoder.github.io/reinforcement-learning-in-trackmania-like-
 uv run python -m http.server 8123 --directory web
 ```
 
-Then open <http://localhost:8123/>. Arrows or WASD drive (up = gas, down = brake/reverse), Enter or R restarts, Backspace respawns at the last checkpoint, Esc returns to the menu. Besides the five campaign tracks, the menu has three held-out test tracks (added by [`scripts/12_export_unseen_track.py`](scripts/12_export_unseen_track.py)) on which you can race the generalist on tracks it never saw. "Watch AI" and "Race vs AI" run the exported policies live in the browser; "Watch replay" plays a recorded official run (the first ticked AI ghost), including the scripted driver's and runs that fell off.
+Then open <http://localhost:8123/>. Arrows or WASD drive (up = gas, down = brake/reverse), Enter or R restarts, Backspace respawns at the last checkpoint, Esc returns to the menu. Each run starts with a 1.5 s "3, 2, 1, GO!" countdown during which the clock stays at zero; keys held during the countdown, or held through a restart, act from the first physics tick, so holding gas gives a full-throttle start. Besides the five campaign tracks, the menu has three held-out test tracks (added by [`scripts/12_export_unseen_track.py`](scripts/12_export_unseen_track.py)) on which you can race the generalist on tracks it never saw. "Watch AI" and "Race vs AI" run the exported policies live in the browser; The menu lists AI ghosts best time first. "Watch replay" plays a recorded official run (the first ticked AI ghost, otherwise the best run), including the scripted driver's and runs that fell off.
 
 ## Reproduce
 

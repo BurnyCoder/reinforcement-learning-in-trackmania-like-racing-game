@@ -31,6 +31,7 @@ const app = {
   cars: [], // [{ car, mesh }] for the session's cars
   ghostMeshes: [], // [{ states, mesh }]
   snap: true, // next camera update jumps instead of easing
+  countdown: 0, // seconds left of the start countdown (beginCountdown); the race clock waits while > 0
   menuTime: 0, // seconds spent in the menu (drives the orbit camera)
 };
 
@@ -151,11 +152,10 @@ async function startRace(mode) {
     app.menu.hide();
     app.hud.start(hudArgs());
     app.keyboard.active = true;
-    app.keyboard.clear();
+    app.keyboard.forgetTaps(); // keys still held count from the first tick; taps made in the menu do not
     app.state = 'race';
     app.snap = true;
-    app.loop.resetClock();
-    app.loop.running = true;
+    beginCountdown();
   } catch (e) {
     console.error(e);
     showError(`Could not start the race: ${e.message}`);
@@ -201,13 +201,36 @@ function restart() {
   s.restart();
   buildGhosts();
   app.hud.start(hudArgs());
-  app.keyboard.clear();
+  app.keyboard.forgetTaps(); // a key held through R keeps acting (no new keydown comes for it)
   app.snap = true;
+  beginCountdown();
+}
+
+// Start countdown, in the style of TrackMania's 3-2-1: while a human drives, the race clock waits at 0 for
+// COUNTDOWN_S and the keyboard is still read, so a key held at GO, or held through a restart, acts from the
+// very first physics tick. Spectator modes (watch, replay) start at once.
+const COUNTDOWN_S = 1.5; // "3", "2", "1" for 0.5 s each: short, so restarting stays quick
+function beginCountdown() {
+  app.countdown = app.session.player ? COUNTDOWN_S : 0;
+  app.hud.countdown(app.countdown ? '3' : '');
   app.loop.resetClock();
+  app.loop.running = app.countdown === 0;
+}
+
+// Once per frame during a race: count down in real time, then let the fixed-tick loop run.
+function stepCountdown(elapsed) {
+  if (!(app.countdown > 0)) return;
+  app.countdown -= elapsed;
+  if (app.countdown > 0) { app.hud.countdown(String(Math.ceil(app.countdown / (COUNTDOWN_S / 3)))); return; }
+  app.countdown = 0;
+  app.keyboard.forgetTaps(); // a key tapped and released during the countdown does not count; held keys do
+  app.hud.countdown('GO!');
+  app.loop.running = true; // nothing was banked while stopped, so the first tick comes one dt after GO
 }
 
 function toMenu() {
   app.loop.running = false;
+  app.countdown = 0;
   app.state = 'menu';
   for (const c of [...app.cars, ...app.ghostMeshes]) c.mesh.dispose();
   app.cars = [];
@@ -318,7 +341,7 @@ function drawRace(alpha, elapsed) {
 }
 
 function frame(alpha, elapsed) {
-  if (app.state === 'race') drawRace(alpha, elapsed);
+  if (app.state === 'race') { stepCountdown(elapsed); drawRace(alpha, elapsed); }
   else { app.menuTime += elapsed; app.renderer.orbit(app.menuTime); }
   app.renderer.render();
 }
@@ -374,7 +397,7 @@ window.racingmania = {
     if (!s) return { screen: app.state, selected: app.selected };
     const f = s.framesOf(s.focus)[1];
     return {
-      screen: app.state, mode: s.mode, time: s.timeOf(s.focus), clock: s.clock, tick: f.ticks, speedKmh: f.speed * 3.6,
+      screen: app.state, mode: s.mode, countdown: app.countdown, time: s.timeOf(s.focus), clock: s.clock, tick: f.ticks, speedKmh: f.speed * 3.6,
       position: f.p, quaternion: f.q, checkpoint: f.cp, finished: s.focus.finished, respawns: s.focus.respawns, aiLate: s.ai?.late ?? 0,
     };
   },

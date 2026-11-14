@@ -32,6 +32,10 @@ export class Keyboard {
 
   clear() { this.down.clear(); this.tapped.clear(); }
 
+  // Forget taps but keep keys that are still held. Used when a run starts or restarts: a key held through
+  // R must keep acting, since the browser auto-repeats only the newest key and no new keydown would come.
+  forgetTaps() { this.tapped.clear(); }
+
   // The action for the next agent step. Opposite keys together, or none, mean "none"/"coast".
   latch() {
     const on = (c) => this.down.has(c) || this.tapped.has(c);

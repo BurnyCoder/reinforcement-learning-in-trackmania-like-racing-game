@@ -22,11 +22,22 @@ def open_menu(page, url):
 
 
 def start(page, track, mode):
-    """Select a track in the menu and start a mode ('race', 'race-ai', 'watch')."""
+    """Select a track in the menu and start a mode ('race', 'race-ai', 'watch'), then wait out the start
+    countdown (only modes with a human driver have one)."""
     page.click(f'#track-list [data-track="{track}"]')
     page.wait_for_selector("#track-detail h2")
     page.click(f'button[data-mode="{mode}"]')
     page.wait_for_selector("#hud", state="visible")
+    page.wait_for_function("window.racingmania.state.countdown === 0")
+
+
+GAS_SIM = """async (n) => {
+    const { RaceSim } = await import('./js/core/sim.js');
+    const [cfg, track] = await Promise.all(['assets/vehicle.json', 'assets/tracks/campaign-01.json'].map((u) => fetch(u).then((r) => r.json())));
+    const sim = new RaceSim(cfg, track);
+    for (let i = 0; i < n; i++) sim.tick(1, 0);
+    return sim.state().slice(0, 3);
+}"""  # campaign-01 after n ticks of "gas, no steering" from the first tick (a synchronous simulation)
 
 
 def state(page):
@@ -75,6 +86,28 @@ def test_holding_gas_speeds_up_and_moves_the_car(page, site_url, console):
     page.wait_for_timeout(100)
     restarted = state(page)
     assert restarted["time"] < 0.5 and abs(restarted["position"][0] - before["position"][0]) < 1
+    assert console == []
+
+
+def test_gas_held_through_restart_and_countdown_acts_from_the_first_tick(page, site_url, console):
+    """R restarts into a 3-2-1 countdown with the race clock held at 0. A key held through R and the countdown
+    is not forgotten (the browser auto-repeats only the newest key), so the car runs exactly like a
+    simulation with gas from the very first tick."""
+    open_menu(page, site_url)
+    start(page, "campaign-01", "race")
+    page.keyboard.down("ArrowUp")
+    page.wait_for_timeout(1000)
+    page.keyboard.press("KeyR")  # restart while the gas stays held
+    s = state(page)
+    assert s["countdown"] > 0 and s["clock"] == 0, s
+    assert page.inner_text("#hud-countdown") in ("3", "2", "1")
+    page.wait_for_timeout(600)
+    assert state(page)["clock"] == 0  # the race clock waits during the countdown
+    page.wait_for_function("window.racingmania.state.clock >= 150")
+    s = state(page)  # gas still held
+    page.keyboard.up("ArrowUp")
+    reference = page.evaluate(GAS_SIM, s["tick"])
+    assert max(abs(a - b) for a, b in zip(s["position"], reference)) < 1e-9, (s, reference)
     assert console == []
 
 
@@ -231,12 +264,6 @@ def test_ai_driver_runs_an_onnx_policy(page, site_url, console, tmp_path):
     assert "checkpoint" in page.inner_text("#hud-ai")
     # No action delay: the live AI is exactly where a synchronous simulation with "gas" from the first
     # tick is after the same number of ticks (the closed loop of training and the Python evaluator).
-    reference = page.evaluate("""async (n) => {
-        const { RaceSim } = await import('./js/core/sim.js');
-        const [cfg, track] = await Promise.all(['assets/vehicle.json', 'assets/tracks/campaign-01.json'].map((u) => fetch(u).then((r) => r.json())));
-        const sim = new RaceSim(cfg, track);
-        for (let i = 0; i < n; i++) sim.tick(1, 0);
-        return sim.state().slice(0, 3);
-    }""", s["tick"])
+    reference = page.evaluate(GAS_SIM, s["tick"])
     assert reference == pytest.approx(s["position"], abs=1e-9), (reference, s)
     assert console == []
