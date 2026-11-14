@@ -14,7 +14,7 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 
 | Run | Status | Phase | Agent steps | Wall hours | Physics | Commit | Evaluated on |
 |---|---|---|---|---|---|---|---|
-| `size-1/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
+| `size-1/seed1` | planned | 2-single-seed | — | — | v1 | — | — |
 | `size-10/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
 | `size-100/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
 | `size-1000/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
