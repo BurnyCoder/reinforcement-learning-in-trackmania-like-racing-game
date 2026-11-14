@@ -14,7 +14,7 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 
 | Run | Status | Phase | Agent steps | Wall hours | Physics | Commit | Evaluated on |
 |---|---|---|---|---|---|---|---|
-| `blind/seed1` | planned | 2-single-seed | — | — | v1 | — | — |
+| `blind/seed1` | trained | 2-single-seed | 1,000,341,504 | 1.62 | v1 | 62d58e9cec | — |
 | `blind/seed2` | not started | 6-seed-sensitivity | — | — | v1 | — | — |
 | `blind/seed3` | not started | 6-seed-sensitivity | — | — | v1 | — | — |
 | `blind/seed4` | not started | 6-seed-sensitivity | — | — | v1 | — | — |
@@ -22,7 +22,9 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 
 ## Configuration (logged in each run.json)
 
-_No run of this group has logged its configuration yet (the experiment files are in `configs/experiments/`)._
+| Run | total_steps | num_envs | num_steps | lr | gamma | gae_lambda | ent_coef | clip_coef | hidden | action_mode | weight_decay | loaded_tracks | window_k | blind | time_cost | fall_penalty | random_start_prob | max_steps | hint_weight | scripted_starts | training tracks |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `blind/seed1` | 1000000000 | 16384 | 32 | 0.001 | 0.99 | 0.95 | 0.01 | 0.2 | [256, 256] | factored | 0.0 | 4096 | 20 | True | 0.0 | 0.0 | 0.5 | 1500 | 0.0 | False | 48949 |
 
 ## Results
 
@@ -42,6 +44,12 @@ Rows from other groups are shown for comparison. Track counts: Test (unseen gene
 | H1 | The generalist drives unseen tracks better than the scripted driver | SWS > 1.0 | generalist 1/10 | 1.214 [1.177, 1.250] (preliminary) | — | — | — | **not yet tested** |
 | H2 | Track diversity is what generalises (50,000 tracks vs 1 track) | SWS difference > 0.1 | generalist 1/10, size-1 0/5 | — | — | — | — | **not yet tested** |
 | H3 | The agent uses the look-ahead (generalist vs blind control) | SWS difference > 0.1 | generalist 1/10, blind 0/5 | — | — | — | — | **not yet tested** |
+
+### Training curves
+
+![Training curves of Blind control; one line per seed (seeds 1). Return and finish rate are over training episodes (standing and random starts); validation SWS is the evaluator's score on the validation tracks.](../figures/curves_blind.png)
+
+*Training curves of Blind control; one line per seed (seeds 1). Return and finish rate are over training episodes (standing and random starts); validation SWS is the evaluator's score on the validation tracks.*
 
 ## Learnings
 
