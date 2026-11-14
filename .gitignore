@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.pytest_cache/
+
+# Virtual environments (Windows venv here; the WSL venv lives on the Linux filesystem)
+.venv
+
+# Local configuration: never commit .env (only .env.example is tracked)
+.env
+
+# Node tooling used by the parity tests and to vendor browser libraries
+node_modules/
+
+# Large outputs live outside the repo (see RACINGMANIA_DATA_DIR in .env.example)
+runs/
+*.pt
+*.ckpt
+
+# Downloaded papers are read locally and linked, not redistributed
+papers/
+
+# Editor and OS noise
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

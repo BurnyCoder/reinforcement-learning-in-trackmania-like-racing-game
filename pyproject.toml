@@ -1,0 +1,44 @@
+# Project metadata and dependencies for RacingMania.
+# Global context: one Python package (src/racingmania) holds the GPU simulator port,
+# the RL training code, the evaluation and the report pipeline. The browser game lives in web/.
+[project]
+name = "racingmania"
+version = "0.1.0"
+description = "RacingMania: an original 3D time-attack racing game for the browser, and reinforcement-learning drivers trained on a batched GPU port of its car physics"
+readme = "README.md"
+authors = [{ name = "Libor \"Burny\" Burian" }]
+# PyTorch 2.15 ships Windows and Linux CUDA wheels for Python 3.11-3.15; 3.13 is the pinned interpreter.
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "huggingface-hub>=2.4.0",
+    "jinja2>=3.1.6",
+    "matplotlib>=3.11.2",
+    "numpy>=2.5.4",
+    "onnx>=1.23.2",
+    "onnxruntime>=1.32.0",
+    "onnxscript>=0.7.2",
+    "python-dotenv>=1.2.4",
+    "pyyaml>=6.0.3",
+    "scipy>=1.18.1",
+    "tensorboard>=2.21.0",
+    "torch>=2.15.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.13.6,<0.14.0"]
+build-backend = "uv_build"
+
+# PyTorch CUDA wheels come from PyTorch's own index, not PyPI.
+# Source: https://docs.astral.sh/uv/guides/integration/pytorch/ (explicit index + per-package source).
+[[tool.uv.index]]
+name = "pytorch-cu132"
+url = "https://download.pytorch.org/whl/cu132"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cu132", marker = "sys_platform == 'linux' or sys_platform == 'win32'" }]
+
+[tool.pytest.ini_options]
+# Tests live in tests/; "slow" marks tests that train a model or drive a whole track.
+testpaths = ["tests"]
+markers = ["slow: long-running test (training or whole-track driving)", "web: needs a browser (Playwright)"]
