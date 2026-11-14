@@ -14,7 +14,7 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 
 | Run | Status | Phase | Agent steps | Wall hours | Physics | Commit | Evaluated on |
 |---|---|---|---|---|---|---|---|
-| `generalist/seed1` | trained | 2-single-seed | 1,000,341,504 | 1.92 | v1 | a861208dbc | — |
+| `generalist/seed1` | evaluated | 2-single-seed | 1,000,341,504 | 1.92 | v1 | a861208dbc | test, val, train_sample, train_own, oor, campaign, test_unfiltered |
 | `generalist/seed2` | not started | 6-seed-sensitivity | — | — | v1 | — | — |
 | `generalist/seed3` | not started | 6-seed-sensitivity | — | — | v1 | — | — |
 | `generalist/seed4` | not started | 6-seed-sensitivity | — | — | v1 | — | — |
@@ -35,13 +35,14 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 
 ### Scores
 
-| Configuration | Role | Seeds | Test SWS [95 % CI] | Test finished | Val SWS [95 % CI] | Val finished | Train SWS [95 % CI] | Train finished | OOR SWS [95 % CI] | OOR finished | Campaign SWS [95 % CI] | Campaign finished | Unfiltered SWS [95 % CI] | Unfiltered finished |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Scripted driver | Reference | 1 | 0.998 [0.995, 1.000] | 99.8 % | 1.000 [1.000, 1.000] | 100.0 % | 0.999 [0.997, 1.000] | 99.9 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
-| Random actions | Control | 3 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
-| Untrained network | Control | 10 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
+| Configuration | Role | Seeds | Test SWS [95 % CI] | Test finished | Val SWS [95 % CI] | Val finished | Train SWS [95 % CI] | Train finished | Own train SWS [95 % CI] | Own train finished | OOR SWS [95 % CI] | OOR finished | Campaign SWS [95 % CI] | Campaign finished | Unfiltered SWS [95 % CI] | Unfiltered finished |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Scripted driver | Reference | 1 | 0.998 [0.995, 1.000] | 99.8 % | 1.000 [1.000, 1.000] | 100.0 % | 0.999 [0.997, 1.000] | 99.9 % | — | — | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
+| Random actions | Control | 3 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | — | — | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
+| Untrained network | Control | 10 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | — | — | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
+| Generalist (PPO) | Main method | 1 | 1.214 [1.177, 1.250] | 81.5 % | 1.236 [1.153, 1.315] | 82.7 % | 1.250 [1.214, 1.283] | 83.9 % | 1.250 [1.214, 1.283] | 83.9 % | 0.875 [0.769, 0.982] | 57.8 % | 1.590 [1.451, 1.783] | 100.0 % | 1.231 [1.147, 1.311] | 82.0 % |
 
-Rows from other groups are shown for comparison. Track counts: Test (unseen generated): 971 tracks; Validation: 197 tracks; Training sample: 1,000 tracks; Out-of-range test: 187 tracks; Campaign (hand-made): 5 tracks; Unfiltered test: 200 tracks.
+Rows from other groups are shown for comparison. Track counts: Test (unseen generated): 971 tracks; Validation: 197 tracks; Training sample: 1,000 tracks; Own training tracks: 1,000 tracks; Out-of-range test: 187 tracks; Campaign (hand-made): 5 tracks; Unfiltered test: 200 tracks.
 
 ### Comparison of all configurations
 
@@ -53,13 +54,17 @@ Rows from other groups are shown for comparison. Track counts: Test (unseen gene
 
 |  | Hypothesis | Tested quantity | Seeds (have/required) | Estimate [95 % CI] | Test statistic | p (one-sided) | p (Holm) | Decision |
 |---|---|---|---|---|---|---|---|---|
-| H1 | The generalist drives unseen tracks better than the scripted driver | SWS > 1.0 | generalist 0/10 | — | — | — | — | **not yet tested** |
-| H2 | Track diversity is what generalises (50,000 tracks vs 1 track) | SWS difference > 0.1 | generalist 0/10, size-1 0/5 | — | — | — | — | **not yet tested** |
-| H3 | The agent uses the look-ahead (generalist vs blind control) | SWS difference > 0.1 | generalist 0/10, blind 0/5 | — | — | — | — | **not yet tested** |
+| H1 | The generalist drives unseen tracks better than the scripted driver | SWS > 1.0 | generalist 1/10 | 1.214 [1.177, 1.250] (preliminary) | — | — | — | **not yet tested** |
+| H2 | Track diversity is what generalises (50,000 tracks vs 1 track) | SWS difference > 0.1 | generalist 1/10, size-1 0/5 | — | — | — | — | **not yet tested** |
+| H3 | The agent uses the look-ahead (generalist vs blind control) | SWS difference > 0.1 | generalist 1/10, blind 0/5 | — | — | — | — | **not yet tested** |
 
 ### Cross-checks (Agarwal et al. 2021)
 
-_Not yet available: the runs behind this table have no results yet._
+| Generalist vs | Set | Seeds (generalist / other) | IQM generalist | IQM other | P(generalist > other) | Time ratio where both finish | Tracks both finish |
+|---|---|---|---|---|---|---|---|
+| Scripted driver | test | 1 / 1 | 1.464 | 1.000 | 0.815 | 0.673 | 790 |
+| Random actions | test | 1 / 3 | 1.464 | 0.000 | 0.907 | — | 0 |
+| Untrained network | test | 1 / 10 | 1.464 | 0.000 | 0.907 | — | 0 |
 
 ### Finish rate by track feature
 
@@ -73,6 +78,8 @@ _Not yet available: the runs behind this table have no results yet._
 |---|---|---|---|---|---|
 | Untrained network | OOR | 0 | 1 | 10 | 187 |
 | Generalist (PPO) [pilot, seed 0] | Train | 0 | 3 | 1 | 1000 |
+| Generalist (PPO) | OOR | 0 | 3 | 1 | 187 |
+| Generalist (PPO) | Test | 0 | 1 | 1 | 971 |
 
 ### Training curves
 

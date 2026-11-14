@@ -44,3 +44,6 @@
 {"time": "2026-11-14T11:52:44.925391+00:00", "split": "oor", "policy": "untrained-seed9", "tracks": 187}
 {"time": "2026-11-14T11:53:15.987923+00:00", "split": "test_unfiltered", "policy": "untrained-seed9", "tracks": 200}
 {"time": "2026-11-14T12:08:27.872325+00:00", "split": "test", "policy": "cem", "tracks": 25}
+{"time": "2026-11-14T13:59:14.618826+00:00", "split": "test", "policy": "generalist/seed1", "tracks": 971}
+{"time": "2026-11-14T14:00:39.845911+00:00", "split": "oor", "policy": "generalist/seed1", "tracks": 187}
+{"time": "2026-11-14T14:02:15.309290+00:00", "split": "test_unfiltered", "policy": "generalist/seed1", "tracks": 200}

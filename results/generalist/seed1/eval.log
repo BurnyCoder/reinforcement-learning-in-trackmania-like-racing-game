@@ -1,0 +1,10 @@
+2026-11-14 14:54:58.506 INFO racingmania.runs: generalist/seed1 on val: {'sws': 1.2362129397031947, 'finish_rate': 0.8274111675126904, 'speed_ratio_finished': 1.494073307494045, 'n_tracks': 197, 'flags_overspeed': 0, 'flags_energy_gain': 0}
+2026-11-14 14:56:35.966 INFO racingmania.runs: generalist/seed1 on train_sample: {'sws': 1.249599993355455, 'finish_rate': 0.839, 'speed_ratio_finished': 1.4893921255726519, 'n_tracks': 1000, 'flags_overspeed': 0, 'flags_energy_gain': 0}
+2026-11-14 14:58:10.955 INFO racingmania.runs: generalist/seed1 on train_own: {'sws': 1.249599993355455, 'finish_rate': 0.839, 'speed_ratio_finished': 1.4893921255726519, 'n_tracks': 1000, 'flags_overspeed': 0, 'flags_energy_gain': 0}
+2026-11-14 14:59:13.792 INFO racingmania.runs: generalist/seed1 on campaign: {'sws': 1.5896284845774566, 'finish_rate': 1.0, 'speed_ratio_finished': 1.5896284845774566, 'n_tracks': 5, 'flags_overspeed': 0, 'flags_energy_gain': 0}
+2026-11-14 14:59:14.641 INFO racingmania.eval.evaluator: protected set 'test' read by generalist/seed1 (971 tracks); logged
+2026-11-14 15:00:39.072 INFO racingmania.runs: generalist/seed1 on test: {'sws': 1.2139755460184989, 'finish_rate': 0.8146240988671473, 'speed_ratio_finished': 1.490227882659877, 'n_tracks': 971, 'flags_overspeed': 0, 'flags_energy_gain': 1}
+2026-11-14 15:00:39.847 INFO racingmania.eval.evaluator: protected set 'oor' read by generalist/seed1 (187 tracks); logged
+2026-11-14 15:02:11.395 INFO racingmania.runs: generalist/seed1 on oor: {'sws': 0.8748553602420751, 'finish_rate': 0.5775401069518716, 'speed_ratio_finished': 1.5147958552339635, 'n_tracks': 187, 'flags_overspeed': 0, 'flags_energy_gain': 3}
+2026-11-14 15:02:15.310 INFO racingmania.eval.evaluator: protected set 'test_unfiltered' read by generalist/seed1 (200 tracks); logged
+2026-11-14 15:03:21.229 INFO racingmania.runs: generalist/seed1 on test_unfiltered: {'sws': 1.2314440587931992, 'finish_rate': 0.82, 'speed_ratio_finished': 1.5017610473087797, 'n_tracks': 200, 'flags_overspeed': 0, 'flags_energy_gain': 0}
