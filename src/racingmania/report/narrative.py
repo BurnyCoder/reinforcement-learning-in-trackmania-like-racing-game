@@ -79,6 +79,11 @@ def headline(an, detail: bool = True) -> list[str]:
     return out
 
 
+def _not_done(an) -> str:
+    """Lead-in for the list of unfinished phases: says when training was paused, if it is."""
+    return f"Training was paused on {an.paused['date']}; not done yet and postponed" if an.paused else "Not done yet"
+
+
 def hypotheses_brief(an) -> list[str]:
     """One sentence on H1-H3 before their tests, for the paper's abstract and discussion; the Hypotheses
     section carries the full preliminary_hypotheses block."""
@@ -90,7 +95,7 @@ def hypotheses_brief(an) -> list[str]:
     words = {"consistent with": "consistent with {}", "against": "against {}",
              "includes": "inconclusive for {}", "not estimable": "{} not estimable yet"}
     parts = [words[k].format(" and ".join(v)) for k, v in groups.items() if v]
-    done = (" Not done yet: " + ", ".join(x.split(":")[0] for x in an.outstanding) + ".") if an.outstanding else ""
+    done = (f" {_not_done(an)}: " + ", ".join(x.split(":")[0] for x in an.outstanding) + ".") if an.outstanding else ""
     return [f"Preliminary readings from the seeds so far, not the preregistered tests: {'; '.join(parts)}.{done}"]
 
 
@@ -118,6 +123,6 @@ def preliminary_hypotheses(an) -> list[str]:
     caveat = ("With one seed per configuration these intervals reflect only which tracks were sampled; seed-to-seed and "
               "checkpoint-to-checkpoint variation are not in them yet, so they can be too narrow.")
     if an.outstanding:
-        caveat += " Not done yet: " + "; ".join(an.outstanding) + "."
+        caveat += f" {_not_done(an)}: " + "; ".join(an.outstanding) + "."
     out.append(caveat)
     return out

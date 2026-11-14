@@ -51,3 +51,12 @@ def test_collection_is_found_by_reading_and_created_only_when_missing(monkeypatc
     monkeypatch.setattr(publish, "_collection", None)
     api = FakeApi(["Other"])
     assert publish._collection_slug(api) == "someone/new-456" and api.created == 1
+
+
+def test_paused_matrix_does_not_start_the_queue(monkeypatch, tmp_path, caplog):
+    m = tmp_path / "run_matrix.yaml"
+    m.write_text("paused: {date: '2026-11-14', note: test}\nphases:\n- name: p\n  runs:\n  - {experiment: generalist, seed: 9}\n", encoding="utf-8")
+    monkeypatch.setattr(matrix, "MATRIX_FILE", m)
+    monkeypatch.setattr(matrix, "run_gpu", lambda args: (_ for _ in ()).throw(AssertionError("must not train while paused")))
+    matrix.run_queue(publish=False)
+    assert "paused since 2026-11-14" in caplog.text

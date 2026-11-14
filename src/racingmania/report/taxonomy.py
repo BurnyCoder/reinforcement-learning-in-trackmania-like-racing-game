@@ -28,8 +28,9 @@ SET_LABELS = {
 SET_SHORT = {"test": "Test", "val": "Val", "train_sample": "Train", "train_own": "Own train", "oor": "OOR",
              "campaign": "Campaign", "test_unfiltered": "Unfiltered"}
 
-STATUSES = ["not started", "planned", "training", "trained", "evaluated"]
+STATUSES = ["postponed", "not started", "planned", "training", "trained", "evaluated"]
 STATUS_TEXT = {
+    "postponed": "in the run matrix; training was paused before it started (configs/run_matrix.yaml, paused)",
     "not started": "in the run matrix, not yet registered",
     "planned": "registered; code and config pushed before training",
     "training": "training in progress (or interrupted and resumable)",

@@ -1,11 +1,11 @@
 // status.js — the run-status board: every run of the run matrix as a chip, grouped by phase.
 // Global context: statuses come from each run's run.json (planned → training → trained → evaluated),
-// and run-matrix entries without a run.json are "not started" (reports/plan.md, publishing rule).
+// and run-matrix entries without a run.json are "not started", or "postponed" while training is paused.
 // Status colours are reserved for states and always come with an icon and the status word.
 
 import { esc } from "./format.js";
 
-const ICON = { evaluated: "✓", trained: "●", training: "▶", planned: "○", "not started": "·" };
+const ICON = { evaluated: "✓", trained: "●", training: "▶", planned: "○", "not started": "·", postponed: "‖" };
 
 export function renderStatus(data, board, legend) {
   const runs = data.runs || [];

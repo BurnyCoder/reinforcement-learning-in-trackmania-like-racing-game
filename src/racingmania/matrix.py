@@ -82,6 +82,11 @@ def publish_all(message: str, rid: str | None = None, status: str | None = None)
 
 
 def run_queue(phases: list[str] | None = None, publish: bool = True, limit: int | None = None):
+    paused = (yaml.safe_load(MATRIX_FILE.read_text(encoding="utf-8")) or {}).get("paused")
+    if paused:  # training postponed: resuming is a deliberate edit of the run matrix, not a stray restart
+        log.warning("the run matrix is paused since %s (%s); delete the 'paused' block in %s to resume",
+                    paused.get("date"), paused.get("note", ""), MATRIX_FILE)
+        return
     done = 0
     for r in load_matrix():
         if phases and r["phase"] not in phases:

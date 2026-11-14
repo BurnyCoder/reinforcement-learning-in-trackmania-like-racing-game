@@ -92,7 +92,7 @@ def results_json(res, an, figs) -> dict:
                                       "n_train_tracks", "seeds", "statuses", "algo", "architecture", "objective",
                                       "observation", "training_data", "start_states", "description")} for c in an.configs]
     data = {
-        "generated": date.today().isoformat(), "repo": REPO_URL, "primary_set": an.primary_set,
+        "generated": date.today().isoformat(), "repo": REPO_URL, "primary_set": an.primary_set, "paused": res.paused,
         "sets": tx.SET_LABELS, "set_short": tx.SET_SHORT, "statuses": tx.STATUSES, "status_text": tx.STATUS_TEXT,
         "categories": tx.CATEGORY_LABELS, "groups": [{"slug": g[0], "title": g[1], "question": g[2]} for g in tx.GROUPS],
         "headline": narrative.headline(an), "status_counts": an.status_counts, "runs": runs, "configs": configs,

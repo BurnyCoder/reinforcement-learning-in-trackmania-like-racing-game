@@ -106,6 +106,7 @@ class Results:
     features: dict = field(default_factory=dict)  # track name -> geometry features (features.py)
     experiments: dict = field(default_factory=dict)  # experiment name -> configs/experiments/<name>.yaml
     matrix: list = field(default_factory=list)  # flattened configs/run_matrix.yaml
+    paused: dict | None = None  # configs/run_matrix.yaml "paused": {date, note} while training is paused
     score_mismatches: int = 0  # rows whose score column disagrees with finished * ref / ticks
 
     def run(self, rid: str) -> dict | None:
@@ -152,6 +153,12 @@ def _json(path: Path):
         return None
 
 
+def load_pause(repo: Path) -> dict | None:
+    """The run matrix's ``paused`` block ({date, note}) while training is paused, else None."""
+    p = repo / "configs" / "run_matrix.yaml"
+    return (yaml.safe_load(p.read_text(encoding="utf-8")) or {}).get("paused") if p.exists() else None
+
+
 def load_matrix(repo: Path) -> list[dict]:
     """``configs/run_matrix.yaml`` flattened to one dict per run, in the preregistered order."""
     p = repo / "configs" / "run_matrix.yaml"
@@ -196,8 +203,8 @@ def _decorate(rec: dict, exp_cfg: dict, phase_order: dict) -> dict:
     return rec
 
 
-def read_runs(paths: ReportPaths, matrix: list[dict], experiments: dict) -> tuple[list[dict], list[dict]]:
-    """All registered runs, and the run-matrix entries that have no run.json yet."""
+def read_runs(paths: ReportPaths, matrix: list[dict], experiments: dict, paused: bool = False) -> tuple[list[dict], list[dict]]:
+    """All registered runs, and the run-matrix entries that have no run.json yet ("postponed" while paused)."""
     by_key = {(m["experiment"], int(m["seed"]), m.get("track")): m for m in matrix}
     phase_order = {}
     for m in matrix:
@@ -229,7 +236,7 @@ def read_runs(paths: ReportPaths, matrix: list[dict], experiments: dict) -> tupl
             continue
         rid = f"{m['experiment']}-{m['track']}/seed{m['seed']}" if m.get("track") else f"{m['experiment']}/seed{m['seed']}"
         rec = {"rid": rid, "experiment": m["experiment"], "seed": int(m["seed"]), "track": m.get("track"),
-               "status": "not started", "phase": m["phase"], "matrix_order": m["order"],
+               "status": "postponed" if paused else "not started", "phase": m["phase"], "matrix_order": m["order"],
                "algo": experiments.get(m["experiment"], {}).get("algo"),
                "description": experiments.get(m["experiment"], {}).get("description", "")}
         queued.append(_decorate(rec, experiments.get(m["experiment"], {}), phase_order))
@@ -244,7 +251,8 @@ def collect(paths: ReportPaths) -> Results:
     res = Results(paths=paths)
     res.matrix = load_matrix(paths.repo)
     res.experiments = load_experiments(paths.repo)
-    res.runs, res.queued = read_runs(paths, res.matrix, res.experiments)
+    res.paused = load_pause(paths.repo)
+    res.runs, res.queued = read_runs(paths, res.matrix, res.experiments, paused=bool(res.paused))
     for r in res.runs:
         d = paths.results / r["rid"]
         sets = {}

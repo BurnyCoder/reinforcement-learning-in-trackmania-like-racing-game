@@ -54,6 +54,7 @@ async function main() {
   }
   const total = data.runs?.length || 0, evaluated = (data.runs || []).filter((r) => r.status === "evaluated").length;
   $("generated").textContent = `Generated ${data.generated} from the result files · ${evaluated} of ${total} runs evaluated` +
+    (data.paused ? ` · training paused on ${data.paused.date}, the remaining runs are postponed` : "") +
     (data.primary_set ? ` · main set: ${data.sets[data.primary_set]}` : "");
   $("repo-link").href = data.repo;
   $("headline").innerHTML = (data.headline || []).map((s) => `<li>${boldMd(s)}</li>`).join("") || `<li>${esc("No results yet.")}</li>`;

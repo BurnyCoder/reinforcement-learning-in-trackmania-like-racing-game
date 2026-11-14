@@ -64,6 +64,7 @@ class Analysis:
     feature_rates: dict = field(default_factory=dict)
     specialists: list = field(default_factory=list)
     status_counts: dict = field(default_factory=dict)  # phase -> status -> count
+    paused: dict | None = None  # the run matrix's "paused" block, while training is paused
     flags: list = field(default_factory=list)
 
     def config(self, key: str) -> dict | None:
@@ -142,7 +143,7 @@ def build_configs(res) -> list[dict]:
             "order": (tx.CATEGORIES.index(r["category"]), r["phase_order"], r["matrix_order"] if r["matrix_order"] >= 0 else 10**6),
             "wall_hours": 0.0, "global_step": []})
         c["statuses"][r["status"]] += 1
-        if r["status"] == "not started":
+        if r["status"] in ("not started", "postponed"):  # matrix entries with no run.json yet
             c["queued"].append(r["rid"])
         else:
             c["rids"].append(r["rid"])
@@ -245,7 +246,7 @@ def outstanding(an) -> list[str]:
             continue
         total, done = sum(d.values()), d.get("evaluated", 0)
         if done < total:
-            out.append(f"{label}: {done} of {total} runs evaluated")
+            out.append(f"{label}: {done} of {total} runs evaluated" + (", the rest postponed" if an.paused else ""))
     return out
 
 
@@ -456,6 +457,7 @@ def analyze(res) -> Analysis:
     an.seed_sensitivity, an.single_vs_multi = seed_sensitivity(res, an)
     an.specialists = specialists(res, an)
     an.status_counts = status_counts(res)
+    an.paused = res.paused
     an.outstanding = outstanding(an)
     an.h2_related = h2_related(res, an)
     an.flags = [{"key": k, "label": an.config(k)["label"], "set": s, "overspeed": v["flags_overspeed"],
