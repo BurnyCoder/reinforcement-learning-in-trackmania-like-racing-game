@@ -49,7 +49,7 @@ export class Menu {
     const ghosts = d.ghosts.map((g) => `
       <label class="${g.disabled ? 'disabled' : ''}"><input type="checkbox" data-ghost="${esc(g.key)}" ${g.on ? 'checked' : ''} ${g.disabled ? 'disabled' : ''}> ${esc(g.label)}</label>`).join('');
     const models = d.hasModels ? `
-      <label class="model">AI driver <select id="model-select">${d.models.map((m) => `<option value="${esc(m.name)}" ${m.name === d.model ? 'selected' : ''} title="${esc(m.description ?? '')}">${esc(m.name)}</option>`).join('')}</select></label>` : '';
+      <label class="model">AI driver <select id="model-select">${d.models.map((m) => `<option value="${esc(m.name)}" ${m.name === d.model ? 'selected' : ''} title="${esc(m.description ?? '')}">${esc(m.label ?? m.name)}</option>`).join('')}</select></label>` : '';
     this.detail.innerHTML = `
       <h2>${esc(d.title)}</h2>
       <p class="muted">${esc(d.name)} · ${esc(d.info)}</p>
@@ -60,7 +60,7 @@ export class Menu {
       <div class="actions">
         <button data-mode="race" class="primary">Race <kbd>Enter</kbd></button>
         ${d.hasModels ? '<button data-mode="race-ai">Race vs AI</button><button data-mode="watch">Watch AI</button>' : ''}
-        ${d.hasReplay ? '<button data-mode="replay" title="Replay a recorded AI run: the first ticked AI ghost, or the first one">Watch replay</button>' : ''}
+        ${d.hasReplay ? '<button data-mode="replay" title="Replay a recorded AI run: the first ticked AI ghost, or the best run (top of the list)">Watch replay</button>' : ''}
       </div>`;
   }
 }
