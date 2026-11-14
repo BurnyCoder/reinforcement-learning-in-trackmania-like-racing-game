@@ -33,6 +33,12 @@ def state(page):
     return page.evaluate("window.racingmania.state")
 
 
+def best_run_first(ghosts):
+    """The game's ghost order (web/js/assets.js byBestRun): finished runs fastest first, then unfinished runs,
+    the longest-lasting first; ties keep index order (stable sort)."""
+    return sorted(ghosts, key=lambda g: (0, g["time"]) if g.get("finished", True) else (1, -g["time"]))
+
+
 def use_bare_index(page):
     """Serve an index with only the five campaign tracks and no models or ghosts, so a test of the game
     itself does not depend on which trained models and extra tracks have been published to web/assets."""
@@ -118,7 +124,7 @@ def test_watch_replay_follows_a_recorded_run(page, site_url, console):
     track = next((t for t, g in index.get("ghosts", {}).items() if g), None)
     if track is None:
         pytest.skip("no AI ghost exported")
-    ghost = json.loads((WEB / index["ghosts"][track][0]).read_text())  # the replay plays the track's first AI ghost
+    ghost = best_run_first([json.loads((WEB / p).read_text()) for p in index["ghosts"][track]])[0]  # the replay plays the best run
     open_menu(page, site_url)
     page.click(f'#track-list [data-track="{track}"]')
     page.wait_for_selector('button[data-mode="replay"]')
@@ -130,6 +136,27 @@ def test_watch_replay_follows_a_recorded_run(page, site_url, console):
     step = min(int(s["time"] / 0.05), len(ghost["states"]) - 1)  # ghost entry at the race clock (one per agent step)
     gx, gy, gz = ghost["states"][step][:3]
     assert ((s["position"][0] - gx) ** 2 + (s["position"][2] - gz) ** 2) ** 0.5 < 5.0, (s["position"], ghost["states"][step][:3])
+    assert console == []
+
+
+def test_bots_are_listed_best_time_first(page, site_url, console):
+    """The menu lists AI ghosts best run first (finished, fastest first; then unfinished, longest first), after
+    "Your best", and the "Race vs AI" driver list follows the same order with each driver's time on the track."""
+    index = json.loads((WEB / "assets" / "index.json").read_text())
+    track = max(index.get("ghosts", {}), key=lambda t: len(index["ghosts"][t]), default=None)
+    if track is None or len(index["ghosts"][track]) < 2:
+        pytest.skip("no track with two AI ghosts exported")
+    ghosts = best_run_first([json.loads((WEB / p).read_text()) for p in index["ghosts"][track]])
+    open_menu(page, site_url)
+    page.click(f'#track-list [data-track="{track}"]')
+    page.wait_for_selector("#track-detail .ghosts")
+    labels = page.locator("#track-detail .ghosts label").all_inner_texts()
+    assert labels[0].strip().startswith("Your best")
+    assert [l.split("AI · ")[1].split(" (")[0] for l in labels[1:]] == [g["model"] for g in ghosts], labels
+    if index.get("models"):
+        options = page.locator("#model-select option").all_inner_texts()
+        timed = [g["model"] for g in ghosts if g.get("finished", True) and g["model"] in {m["name"] for m in index["models"]}]
+        assert [o.split(" (")[0] for o in options[:len(timed)]] == timed, options
     assert console == []
 
 

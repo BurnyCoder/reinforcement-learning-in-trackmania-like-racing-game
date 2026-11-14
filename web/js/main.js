@@ -82,6 +82,11 @@ function renderDetail() {
   const name = app.selected, track = app.tracks.get(name);
   if (!track) return;
   const best = loadBest(name), targets = targetsOf(name);
+  // AI drivers for "Race vs AI" in the same order as the ghosts: by their finished run on this track, fastest
+  // first; drivers with no finished run here follow in index order (NaN from Infinity - Infinity sorts as a tie).
+  const finishTime = new Map((app.aiGhosts.get(name) ?? []).filter(finishedRun).map((g) => [g.model, g.time]));
+  const models = [...app.index.models].sort((a, b) => (finishTime.get(a.name) ?? Infinity) - (finishTime.get(b.name) ?? Infinity))
+    .map((m) => ({ ...m, label: finishTime.has(m.name) ? `${m.name} (${formatTime(finishTime.get(m.name))})` : m.name }));
   const jumps = track.gap.filter((g, i) => g && !track.gap[i - 1]).length; // runs of gap segments
   const cps = track.checkpoints.length - 1;
   app.menu.renderDetail({
@@ -93,7 +98,7 @@ function renderDetail() {
       ...(app.aiGhosts.get(name) ?? []).map((g) => ({ key: g.path, on: ghostOn(g.path),
         label: finishedRun(g) ? `AI · ${g.model} (${formatTime(g.time)})` : `AI · ${g.model} (did not finish: ${g.end ?? 'out'} at ${formatTime(g.time)})` })),
     ],
-    hasModels: app.hasModels, models: app.index.models, model: app.hasModels ? currentModel().name : null,
+    hasModels: app.hasModels, models, model: app.hasModels ? currentModel().name : null,
     hasReplay: (app.aiGhosts.get(name) ?? []).length > 0,
   });
 }

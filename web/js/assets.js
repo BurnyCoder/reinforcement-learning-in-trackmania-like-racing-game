@@ -32,7 +32,12 @@ export const loadTrack = (name) => loadJson(`assets/tracks/${name}.json`); // on
 // which is looked up in web/assets/models/ (the folder docs/formats.md names for policy models).
 export const modelUrl = (file) => webUrl(file.includes('/') ? file : `assets/models/${file}`);
 
-// Load every AI ghost listed for a track in index.json ("ghosts": {"<track>": [paths]}).
+// Best run first: finished runs by time, fastest first; then unfinished runs, the longest-lasting first
+// (a fall at 20 s got further than a stall at 2 s). Array.prototype.sort is stable, so ties keep index order.
+export const byBestRun = (a, b) => (b.finished - a.finished) || (a.finished ? a.time - b.time : b.time - a.time);
+
+// Load every AI ghost listed for a track in index.json ("ghosts": {"<track>": [paths]}), best run first
+// (byBestRun): the menu lists them in this order and "Watch replay" defaults to the first.
 // Files that fail to load are skipped with a console error rather than breaking the menu.
 export async function loadAiGhosts(index, trackName) {
   const paths = index.ghosts?.[trackName] ?? [];
@@ -41,5 +46,5 @@ export async function loadAiGhosts(index, trackName) {
       finished: g.finished !== false, end: g.end }), // unfinished runs (finished: false) end at `time` with reason `end`
     (err) => { console.error(`ghost ${path} failed to load:`, err); return null; },
   )));
-  return loaded.filter((g) => g && Array.isArray(g.states) && g.states.length > 0);
+  return loaded.filter((g) => g && Array.isArray(g.states) && g.states.length > 0).sort(byBestRun);
 }
