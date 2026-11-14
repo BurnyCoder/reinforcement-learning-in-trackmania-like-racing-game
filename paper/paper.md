@@ -102,11 +102,11 @@ Runs follow the preregistered order: (1) the first two models (seed 0), which mu
 |---|---|---|---|---|---|---|
 | baselines | 0 | 0 | 0 | 0 | 14 | 14 |
 | 1-first-models | 0 | 0 | 0 | 0 | 2 | 2 |
-| 2-single-seed | 24 | 1 | 0 | 0 | 0 | 25 |
+| 2-single-seed | 24 | 0 | 0 | 1 | 0 | 25 |
 | 4-imitation-hybrids | 5 | 0 | 0 | 0 | 0 | 5 |
 | 5-hyperparameters | 4 | 0 | 0 | 0 | 0 | 4 |
 | 6-seed-sensitivity | 65 | 0 | 0 | 0 | 0 | 65 |
-| **all** | 98 | 1 | 0 | 0 | 16 | 115 |
+| **all** | 98 | 0 | 0 | 1 | 16 | 115 |
 
 # Results
 
@@ -197,7 +197,7 @@ _No exploit list yet (`results/exploits.json` does not exist)._
 
 ## Training curves of the generalist
 
-![Training curves of Generalist (PPO) [pilot, seed 0]; one line per seed (seeds 0). Return and finish rate are over training episodes (standing and random starts); validation SWS is the evaluator's score on the validation tracks.](../reports/figures/curves_generalist-pilot.svg){width=100%}
+![Training curves of Generalist (PPO); one line per seed (seeds 1). Return and finish rate are over training episodes (standing and random starts); validation SWS is the evaluator's score on the validation tracks.](../reports/figures/curves_generalist.svg){width=100%}
 
 # Discussion
 
@@ -225,7 +225,7 @@ The game, the tested physics port, the track generator, the training and evaluat
 
 # Appendix A: hyperparameters
 
-PPO settings (logged in `results/generalist/seed0/run.json`):
+PPO settings (logged in `results/generalist/seed1/run.json`):
 
 | Setting | Value |
 |---|---|
@@ -252,7 +252,7 @@ PPO settings (logged in `results/generalist/seed0/run.json`):
 | `checkpoint_every_minutes` | `10.0` |
 | `rotate_tracks_every` | `20` |
 | `loaded_tracks` | `4096` |
-| `seed` | `0` |
+| `seed` | `1` |
 | `compile` | `True` |
 
 Environment settings:

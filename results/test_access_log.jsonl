@@ -43,3 +43,4 @@
 {"time": "2026-11-14T11:52:12.702059+00:00", "split": "test", "policy": "untrained-seed9", "tracks": 971}
 {"time": "2026-11-14T11:52:44.925391+00:00", "split": "oor", "policy": "untrained-seed9", "tracks": 187}
 {"time": "2026-11-14T11:53:15.987923+00:00", "split": "test_unfiltered", "policy": "untrained-seed9", "tracks": 200}
+{"time": "2026-11-14T12:08:27.872325+00:00", "split": "test", "policy": "cem", "tracks": 25}
