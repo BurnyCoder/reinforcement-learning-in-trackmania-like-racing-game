@@ -128,6 +128,14 @@
       "stride": 3,
       "description": "Specialist PPO agent trained on a single campaign track",
       "run": "specialist-campaign-03/seed1"
+    },
+    {
+      "name": "specialist-campaign-04-seed1",
+      "file": "assets/models/specialist-campaign-04-seed1.onnx",
+      "K": 20,
+      "stride": 3,
+      "description": "Specialist PPO agent trained on a single campaign track",
+      "run": "specialist-campaign-04/seed1"
     }
   ],
   "ghosts": {
@@ -172,6 +180,7 @@
       "assets/ghosts/campaign-04/pqn-seed1.json",
       "assets/ghosts/campaign-04/random-seed0.json",
       "assets/ghosts/campaign-04/specialist-campaign-01-seed0.json",
+      "assets/ghosts/campaign-04/specialist-campaign-04-seed1.json",
       "assets/ghosts/campaign-04/untrained-seed0-sampled.json",
       "assets/ghosts/campaign-04/untrained-seed0.json"
     ],
