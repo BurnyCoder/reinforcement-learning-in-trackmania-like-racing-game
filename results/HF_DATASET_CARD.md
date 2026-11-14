@@ -6,7 +6,7 @@ language:
 task_categories:
 - reinforcement-learning
 size_categories:
-- n<1K
+- 10K<n<100K
 tags:
 - reinforcement-learning
 - racingmania
@@ -22,12 +22,15 @@ tags:
 
 Every result file of the RacingMania project: per-run `run.json` (status, configuration, hardware, physics version), per-track evaluation CSVs (`eval_<set>.csv`: track, finished, ticks, time, reference ticks, score, end reason, progress, maximum speed, exploit flags), training and validation curves, track-set summaries, the test-access log, and the generated reports and paper. Column definitions: `docs/formats.md` in the repository.
 
-Snapshot of 2026-11-14: 2 registered runs (1 evaluated), 202 per-track evaluation rows.
+Snapshot of 2026-11-14: 16 registered runs (15 evaluated), 17,030 per-track evaluation rows.
 
 ## Headline (Validation)
 
 | Configuration | Seeds | SWS [95 % CI] | Finished |
 |---|---|---|---|
+| Scripted driver | 1 | 1.000 [1.000, 1.000] | 100.0 % |
+| Random actions | 3 | 0.000 [0.000, 0.000] | 0.0 % |
+| Untrained network | 10 | 0.000 [0.000, 0.000] | 0.0 % |
 | Specialist (campaign-01) [pilot, seed 0] | 1 | 0.188 [0.123, 0.260] | 13.2 % |
 
 ## Layout

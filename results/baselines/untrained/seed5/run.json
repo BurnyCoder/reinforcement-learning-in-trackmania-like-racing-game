@@ -1,0 +1,39 @@
+{
+  "experiment": "baseline-untrained",
+  "seed": 5,
+  "status": "evaluated",
+  "algo": "untrained",
+  "eval_summary": {
+    "campaign": {
+      "sws": 0.0,
+      "finish_rate": 0.0,
+      "speed_ratio_finished": NaN,
+      "n_tracks": 5,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    },
+    "val": {
+      "sws": 0.0,
+      "finish_rate": 0.0,
+      "speed_ratio_finished": NaN,
+      "n_tracks": 197,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    },
+    "train_sample": {
+      "sws": 0.0,
+      "finish_rate": 0.0,
+      "speed_ratio_finished": NaN,
+      "n_tracks": 1000,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    }
+  },
+  "hardware": {
+    "platform": "Linux-6.18.58.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.13.18",
+    "torch": "2.15.0+cu132",
+    "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU"
+  },
+  "updated": "2026-11-14T09:21:25.634930+00:00"
+}

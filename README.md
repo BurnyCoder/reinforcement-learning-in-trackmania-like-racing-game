@@ -32,16 +32,22 @@ Prior work trained agents for TrackMania against the real game in real time ([Li
 ## Results
 
 <!-- RESULTS:START -->
-_Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-14; 1 of 101 planned runs evaluated. Full tables: [`reports/summary.md`](reports/summary.md)._
+_Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-14; 15 of 115 planned runs evaluated. Full tables: [`reports/summary.md`](reports/summary.md)._
 
+- The scripted driver finished 100.0 % of the 197 validation tracks (the development set used for decisions, so these numbers are preliminary; test tracks are read only after the recipe is frozen) (SWS 1.000 [1.000, 1.000]).
+- The random actions finished 0.0 % of the 197 validation tracks (the development set used for decisions, so these numbers are preliminary; test tracks are read only after the recipe is frozen) (SWS 0.000 [0.000, 0.000]).
+- The untrained network finished 0.0 % of the 197 validation tracks (the development set used for decisions, so these numbers are preliminary; test tracks are read only after the recipe is frozen) (SWS 0.000 [0.000, 0.000]).
 - No trained agent has been evaluated yet.
 - The preregistered hypotheses H1-H3 are not tested yet: they need test results from 10 generalist seeds and 5 seeds each of the blind control and the single-track ablation (0 generalist seeds so far).
 
 **Main evaluation table** (SWS = success-weighted speed, 1.0 = as fast as the scripted driver on every track; 95 % two-level bootstrap intervals over seeds and tracks):
 
-| Configuration | Role | Seeds | Campaign SWS [95 % CI] | Campaign finished | Val SWS [95 % CI] | Val finished |
-|---|---|---|---|---|---|---|
-| Specialist (campaign-01) [pilot, seed 0] | Specialist | 1 | 0.306 [0.000, 0.918] | 20.0 % | 0.188 [0.123, 0.260] | 13.2 % |
+| Configuration | Role | Seeds | Campaign SWS [95 % CI] | Campaign finished | Val SWS [95 % CI] | Val finished | Train SWS [95 % CI] | Train finished |
+|---|---|---|---|---|---|---|---|---|
+| Scripted driver | Reference | 1 | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
+| Random actions | Control | 3 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
+| Untrained network | Control | 10 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
+| Specialist (campaign-01) [pilot, seed 0] | Specialist | 1 | 0.306 [0.000, 0.918] | 20.0 % | 0.188 [0.123, 0.260] | 13.2 % | — | — |
 
 **Preregistered hypotheses:**
 

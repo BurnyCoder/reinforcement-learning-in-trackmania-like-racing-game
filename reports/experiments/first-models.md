@@ -15,13 +15,14 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 | Run | Status | Phase | Agent steps | Wall hours | Physics | Commit | Evaluated on |
 |---|---|---|---|---|---|---|---|
 | `specialist-campaign-01/seed0` | evaluated | 1-first-models | 200,278,016 | 0.31 | v1 | d637109562 | val, campaign |
-| `generalist/seed0` | planned | 1-first-models | — | — | v1 | — | — |
+| `generalist/seed0` | trained | 1-first-models | 1,000,341,504 | 1.27 | v1 | 1c8e972820 | — |
 
 ## Configuration (logged in each run.json)
 
 | Run | total_steps | num_envs | num_steps | lr | gamma | gae_lambda | ent_coef | clip_coef | hidden | action_mode | weight_decay | loaded_tracks | window_k | blind | time_cost | fall_penalty | random_start_prob | max_steps | hint_weight | scripted_starts | training tracks |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `specialist-campaign-01/seed0` | 200000000 | 16384 | 32 | 0.001 | 0.99 | 0.95 | 0.01 | 0.2 | [256, 256] | factored | 0.0 | 1 | 20 | False | 0.0 | 0.0 | 0.5 | 1500 | 0.0 | False | 1 |
+| `generalist/seed0` | 1000000000 | 16384 | 32 | 0.001 | 0.99 | 0.95 | 0.01 | 0.2 | [256, 256] | factored | 0.0 | 4096 | 20 | False | 0.0 | 0.0 | 0.5 | 1500 | 0.0 | False | 48949 |
 
 ## Results
 
@@ -34,23 +35,35 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 
 ### Scores
 
-| Configuration | Role | Seeds | Val SWS [95 % CI] | Val finished | Campaign SWS [95 % CI] | Campaign finished |
-|---|---|---|---|---|---|---|
-| Specialist (campaign-01) [pilot, seed 0] | Specialist | 1 | 0.188 [0.123, 0.260] | 13.2 % | 0.306 [0.000, 0.918] | 20.0 % |
+| Configuration | Role | Seeds | Val SWS [95 % CI] | Val finished | Train SWS [95 % CI] | Train finished | Campaign SWS [95 % CI] | Campaign finished |
+|---|---|---|---|---|---|---|---|---|
+| Scripted driver | Reference | 1 | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
+| Random actions | Control | 3 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
+| Untrained network | Control | 10 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
+| Specialist (campaign-01) [pilot, seed 0] | Specialist | 1 | 0.188 [0.123, 0.260] | 13.2 % | — | — | 0.306 [0.000, 0.918] | 20.0 % |
 
-Rows from other groups are shown for comparison. Track counts: Validation: 197 tracks; Campaign (hand-made): 5 tracks.
+Rows from other groups are shown for comparison. Track counts: Validation: 197 tracks; Training sample: 1,000 tracks; Campaign (hand-made): 5 tracks.
 
 ### Campaign tracks
 
 | Campaign track | Scripted time (s) | Agent | Kind | Finished | Mean time (s) | Per seed (s) |
 |---|---|---|---|---|---|---|
+| campaign-01 | 30.17 | Scripted driver | reference | 1/1 | 30.16 | s0: 30.16 |
 | campaign-01 | 30.17 | Specialist (campaign-01) [pilot, seed 0] | own track | 1/1 | 19.71 | s0: 19.71 |
+| campaign-02 | 36.43 | Scripted driver | reference | 1/1 | 36.43 | s0: 36.43 |
+| campaign-03 | 48.50 | Scripted driver | reference | 1/1 | 48.52 | s0: 48.52 |
+| campaign-04 | 42.52 | Scripted driver | reference | 1/1 | 42.52 | s0: 42.52 |
+| campaign-05 | 56.07 | Scripted driver | reference | 1/1 | 56.03 | s0: 56.03 |
 
 ![Finishing time on each campaign track: small marks are single seeds, large marks the mean over finishing seeds, x marks runs that did not finish (DNF); the black bar is the scripted driver's reference time. Specialists are scored on their own track; the generalist zero-shot.](../figures/specialists_campaign.png)
 
 *Finishing time on each campaign track: small marks are single seeds, large marks the mean over finishing seeds, x marks runs that did not finish (DNF); the black bar is the scripted driver's reference time. Specialists are scored on their own track; the generalist zero-shot.*
 
 ### Training curves
+
+![Training curves of Generalist (PPO) [pilot, seed 0]; one line per seed (seeds 0). Return and finish rate are over training episodes (standing and random starts); validation SWS is the evaluator's score on the validation tracks.](../figures/curves_generalist-pilot.png)
+
+*Training curves of Generalist (PPO) [pilot, seed 0]; one line per seed (seeds 0). Return and finish rate are over training episodes (standing and random starts); validation SWS is the evaluator's score on the validation tracks.*
 
 ![Training curves of Specialist (campaign-01) [pilot, seed 0]; one line per seed (seeds 0). Return and finish rate are over training episodes (standing and random starts); validation SWS is the evaluator's score on the validation tracks.](../figures/curves_specialist-campaign-01-pilot.png)
 
@@ -71,3 +84,17 @@ These notes record what was tried, what went wrong and why, and how it was fixed
 **Track generation hung silently in WSL.** The first full pipeline smoke test made no progress for 36 minutes. Cause: the generator's worker processes (Python's "spawn" start method) re-imported the main script and PyTorch, about 600 MB each; 28 of them exceeded WSL2's 15 GB, the kernel killed workers, and the process pool replaced them forever. A second copy left over from an app restart doubled the load. Fix: the track geometry moved to a PyTorch-free module, the script got a `__main__` guard, and the pool uses 8 processes.
 
 **Hard landings.** Because the chassis never touches the road, a landing that pushes the suspension ray's origin below the road would let the car fall through. A drop test (now `tests/unit/test_physics_sanity.py::test_hard_landing_does_not_tunnel`) showed drops from up to 15 m (17 m/s vertical impact, more than the hardest generated jump landing) are absorbed and the car returns to its rest height, with the cannon-es default suspension damping of 10.
+
+**Training-set generation ran out of memory once.** Holding all 50,000 generated tracks as Python lists before certification needed about 14 GB, more than WSL2's 15 GB allows next to the workers. Generation and certification now run in chunks of 4,096 seeds, keep the geometry as NumPy arrays, and merge the chunks at the end. The full set took about 39 minutes; 48,949 of 50,000 seeds passed certification (`results/tracks/train_summary.json`).
+
+### Model 1: the first specialist (campaign track 1, seed 0)
+
+**It learned quickly and with the starting recipe unchanged.** The 200-million-step budget took 0.31 hours. Episodes started finishing from a standing start after about 16 million steps; from about 40 million steps on, the training return stayed flat (`results/specialist-campaign-01/seed0/train_metrics.csv`). The validation run during training at about 104 million steps and the final evaluation at 200 million steps give almost the same lap time (`val_metrics.csv`, `eval_campaign.csv` in the same folder), so the run was not extended. It passes its learning gate: it finishes campaign track 1 and is faster than the scripted driver.
+
+**Why the margin over the scripted driver is large.** The specialist's average speed on the 628 m track is about 50 % higher than the scripted driver's. The scripted driver plans its corner speeds for 6 m/s² of lateral acceleration, the lowest value of its tuning grid (preregistration, freeze amendment), while the tyres' friction coefficient of 1.5 would allow far more in principle. The scripted driver is therefore a cautious yardstick, not a near-optimal one; the CEM planner in phase 2 supplies a near-optimal reference.
+
+**It does not transfer.** A specialist is trained on one track, and on the other campaign tracks and on the validation tracks it mostly falls off, finishing only a small share (`eval_campaign.csv`, `eval_val.csv`). This is the expected contrast with the generalist and matches the single-track policies of Green et al. 2026, which finished none of their unseen tracks.
+
+**A false exploit flag, and a fix to the detector.** The specialist's validation evaluation raised one "energy gained while coasting" flag. Replaying that track step by step in the same batch showed a crash: the chassis spun up while losing linear speed, then turned the spin back into linear speed, which the detector counted as a gain because it left rotational kinetic energy out. Counting rotation, the car's energy fell in that step, and it never rose while coasting during the whole run. The detector now includes ½ωᵀIω/m, two unit tests cover it, and re-scoring the specialist gave the same scores and no flags (preregistration amendment of 2026-11-14).
+
+**Evaluation is deterministic per batch, not per track.** Replaying the flagged track on its own took a different path (out after 29.2 s instead of 29.88 s). The physics is batch-independent (a unit test checks it), but the policy's matrix products on the GPU round differently for different batch sizes, and a near-tied action can flip and send the car another way. Official evaluations always run the whole set of tracks together, which is bit-for-bit repeatable; the browser game's live AI runs one car in float64 JavaScript physics, so its lap can differ slightly from the official one.

@@ -12,7 +12,22 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 
 ## Runs
 
-_No runs in this group yet._
+| Run | Status | Phase | Agent steps | Wall hours | Physics | Commit | Evaluated on |
+|---|---|---|---|---|---|---|---|
+| `baselines/random/seed0` | evaluated | baselines | — | — | v1 | — | val, train_sample, campaign |
+| `baselines/random/seed1` | evaluated | baselines | — | — | v1 | — | val, train_sample, campaign |
+| `baselines/random/seed2` | evaluated | baselines | — | — | v1 | — | val, train_sample, campaign |
+| `baselines/scripted/seed0` | evaluated | baselines | — | — | v1 | — | val, train_sample, campaign |
+| `baselines/untrained/seed0` | evaluated | baselines | — | — | v1 | — | val, train_sample, campaign |
+| `baselines/untrained/seed1` | evaluated | baselines | — | — | v1 | — | val, train_sample, campaign |
+| `baselines/untrained/seed2` | evaluated | baselines | — | — | v1 | — | val, train_sample, campaign |
+| `baselines/untrained/seed3` | evaluated | baselines | — | — | v1 | — | val, train_sample, campaign |
+| `baselines/untrained/seed4` | evaluated | baselines | — | — | v1 | — | val, train_sample, campaign |
+| `baselines/untrained/seed5` | evaluated | baselines | — | — | v1 | — | val, train_sample, campaign |
+| `baselines/untrained/seed6` | evaluated | baselines | — | — | v1 | — | val, train_sample, campaign |
+| `baselines/untrained/seed7` | evaluated | baselines | — | — | v1 | — | val, train_sample, campaign |
+| `baselines/untrained/seed8` | evaluated | baselines | — | — | v1 | — | val, train_sample, campaign |
+| `baselines/untrained/seed9` | evaluated | baselines | — | — | v1 | — | val, train_sample, campaign |
 
 ## Configuration (logged in each run.json)
 
@@ -34,9 +49,13 @@ Scripted driver parameters chosen on validation candidates: `a_lat` = 6.0, `look
 
 ### Scores
 
-_Not yet available: the runs behind this table have no results yet._
+| Configuration | Role | Seeds | Val SWS [95 % CI] | Val finished | Train SWS [95 % CI] | Train finished | Campaign SWS [95 % CI] | Campaign finished |
+|---|---|---|---|---|---|---|---|---|
+| Scripted driver | Reference | 1 | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
+| Random actions | Control | 3 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
+| Untrained network | Control | 10 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
 
-Rows from other groups are shown for comparison. Track counts: Validation: 197 tracks; Campaign (hand-made): 5 tracks.
+Rows from other groups are shown for comparison. Track counts: Validation: 197 tracks; Training sample: 1,000 tracks; Campaign (hand-made): 5 tracks.
 
 ## Learnings
 
