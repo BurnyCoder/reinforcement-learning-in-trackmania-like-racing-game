@@ -1,0 +1,3 @@
+sws,finish_rate,speed_ratio_finished,n_tracks,flags_overspeed,flags_energy_gain,iteration,global_step,wall_hours
+0.0,0.0,nan,1,0,0,0,0,0.0
+1.7110161733292646,1.0,1.7110161733292646,1,0,0,165,86507520,0.16671683331330617
