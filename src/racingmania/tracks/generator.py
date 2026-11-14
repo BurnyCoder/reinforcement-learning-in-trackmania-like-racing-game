@@ -137,3 +137,13 @@ def generate_track(seed: int, max_tries: int = 50) -> dict | None:
         if crossing_ok(track):
             return track
     return None
+
+
+LIGHT_KEYS = ("name", "seed", "center", "left", "gap", "floor", "checkpoints", "start", "half_width", "length", "generator")
+
+
+def generate_light(seed: int) -> dict | None:
+    """``generate_track`` keeping only what track pools need, for worker processes (small to pickle).
+    This module imports no PyTorch, so worker processes stay small."""
+    t = generate_track(seed)
+    return None if t is None else {k: t[k] for k in LIGHT_KEYS}

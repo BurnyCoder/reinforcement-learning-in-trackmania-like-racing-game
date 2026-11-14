@@ -63,3 +63,17 @@ def test_batch_invariance_and_determinism():
         car1, rules1, _, _ = agent_step(CFG, TB, tid1, car1, rules1, torch.tensor([3]))
         carN, rulesN, _, _ = agent_step(CFG, TB, tidN, carN, rulesN, torch.tensor([3, 0, 2, 5, 3]))
     assert torch.equal(car1.flat()[0], carN.flat()[0])
+
+
+def test_hard_landing_does_not_tunnel():
+    """Drops from up to 15 m (17 m/s impact, beyond the hardest generated jump landing) are absorbed:
+    the wheel rays catch the road, the car never falls through and settles back at its rest height."""
+    lifts = torch.tensor([2.0, 6.0, 10.0, 15.0], dtype=torch.float64)
+    car, tid, rules = _start(len(lifts))
+    car.pos[:, 1] += lifts
+    car.vel[:, 0] = 5.0  # slow enough to stay on the 50 m start straight
+    y_rest = float(_start()[0].pos[0, 1])
+    for _ in range(80):
+        car, rules, _, _ = agent_step(CFG, TB, tid, car, rules, torch.full((len(lifts),), 4))
+    assert not bool(rules.out.any())
+    assert torch.allclose(car.pos[:, 1], torch.full_like(car.pos[:, 1], y_rest), atol=0.02)

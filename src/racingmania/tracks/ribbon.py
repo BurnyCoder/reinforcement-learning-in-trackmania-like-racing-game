@@ -15,7 +15,7 @@ import math
 
 import numpy as np
 
-from ..sim.track_tensors import ribbon_edges
+from .geometry import ribbon_edges
 
 SPACING = 2.0  # metres between centreline samples (horizontal arc length)
 FINE = 0.25  # metres between samples of the fine construction path

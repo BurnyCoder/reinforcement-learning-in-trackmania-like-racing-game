@@ -22,26 +22,17 @@ from ..sim.vehicle_config import load_vehicle_config
 from ..utils.logging import get_logger
 from ..utils.paths import RESULTS_DIR, WEB_ASSETS
 from .campaign import CAMPAIGN_PLANS, campaign_track
-from .generator import SPLITS, generate_track
+from .generator import SPLITS, generate_light
 from .store import batch_from_pool, pack, pool_path, save_pool
 from .validate import certify, tune_scripted
 
 log = get_logger(__name__)
-LIGHT_KEYS = ("name", "seed", "center", "left", "gap", "floor", "checkpoints", "start", "half_width", "length", "generator")
-
-
-def _light(seed: int):
-    """Generate one track and keep only what pools need (keeps inter-process traffic small)."""
-    t = generate_track(seed)
-    return None if t is None else {k: t[k] for k in LIGHT_KEYS}
-
-
-def generate_many(seeds, processes: int = 14) -> tuple[list[dict], int]:
+def generate_many(seeds, processes: int = 8) -> tuple[list[dict], int]:
     """Generate tracks for ``seeds`` in parallel; returns the valid ones and the number rejected."""
     t0 = time.time()
     ctx = mp.get_context("spawn")
     with ctx.Pool(processes) as pool:
-        out = pool.map(_light, list(seeds), chunksize=32)
+        out = pool.map(generate_light, list(seeds), chunksize=32)  # workers import only NumPy code
     good = [t for t in out if t is not None]
     log.info("generated %d/%d tracks in %.0fs", len(good), len(out), time.time() - t0)
     return good, len(out) - len(good)
@@ -53,7 +44,7 @@ def tracks_summary_dir():
     return d
 
 
-def tune(device="cuda", processes: int = 14) -> ScriptedParams:
+def tune(device="cuda", processes: int = 8) -> ScriptedParams:
     """Tune the scripted driver on validation candidates and save the table."""
     cfg = load_vehicle_config()
     lo, hi = SPLITS["val"]
@@ -70,7 +61,7 @@ def load_tuned() -> ScriptedParams:
     return ScriptedParams(**d)
 
 
-def build_split(split: str, params: ScriptedParams, device="cuda", processes: int = 14, limit: int | None = None,
+def build_split(split: str, params: ScriptedParams, device="cuda", processes: int = 8, limit: int | None = None,
                 keep_failed: bool = False):
     """Generate, certify and save one set. ``keep_failed`` keeps uncertified tracks (unfiltered test set)."""
     cfg = load_vehicle_config()

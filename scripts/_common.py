@@ -5,6 +5,12 @@ src/racingmania; this module only prepares the process (Triton floating-point fu
 timestamped logging) so every script behaves the same.
 """
 import os
+import sys
+
+# Windows consoles default to cp1252; libraries (e.g. the ONNX exporter) print emoji. Force UTF-8 output.
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        _stream.reconfigure(encoding="utf-8", errors="replace")
 
 os.environ.setdefault("TRITON_DEFAULT_FP_FUSION", "1")  # keep Triton's current default explicitly (silences a warning)
 

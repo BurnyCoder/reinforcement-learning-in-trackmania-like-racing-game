@@ -87,6 +87,18 @@ def tracks_for(spec: dict, seed: int):
     return pool, ids
 
 
+def matrix_phase(experiment: str, seed: int, track: str | None) -> str | None:
+    """Phase of a run in configs/run_matrix.yaml (None if the run is not in the matrix)."""
+    p = REPO_ROOT / "configs" / "run_matrix.yaml"
+    if not p.exists():
+        return None
+    for phase in yaml.safe_load(p.read_text(encoding="utf-8"))["phases"]:
+        for r in phase["runs"]:
+            if r["experiment"] == experiment and r["seed"] == seed and r.get("track") == track:
+                return phase["name"]
+    return None
+
+
 def vehicle_for(exp: dict):
     cfg = load_vehicle_config()
     over = exp.get("vehicle", {})
@@ -116,6 +128,7 @@ def train_run(experiment: str, seed: int, track: str | None = None, resume: bool
     val_pool, _ = tracks_for(exp["validation"], seed)
     val_tracks = batch_from_pool(val_pool, device=device)
     update_run_json(res_dir, experiment=experiment, seed=seed, track=track, status="training", algo=exp["algo"],
+                    phase=matrix_phase(experiment, seed, track),
                     description=exp.get("description", ""), git_commit=git_commit(), physics=PHYSICS_VERSION,
                     hardware=hardware(), ppo=dataclasses.asdict(ppo), env=dataclasses.asdict(env_cfg),
                     n_train_tracks=int(len(ids) if ids is not None else len(pool["n"])),
@@ -213,7 +226,12 @@ def evaluate_run(experiment: str, seed: int, sets: list[str], track: str | None 
     cfg = vehicle_for(exp)
     summary = {}
     for s in sets:
-        tb, protected = eval_tracks(s, device)
+        if s == "train_own":  # the run's own training tracks (at most 1,000): train–test gap of size ablations
+            pool, ids = tracks_for(exp["tracks"] if not track else {"campaign": track}, seed)
+            ids = np.arange(len(pool["n"])) if ids is None else ids
+            tb, protected = batch_from_pool(pool, ids[:1000], device=device), False
+        else:
+            tb, protected = eval_tracks(s, device)
         rows = evaluate(policy, cfg, tb, device=device, env_cfg=env_cfg, compile=True,
                         record_replays=s in record_replays_on, log_access=s if protected else None)
         write_eval_csv(rows, res_dir / f"eval_{s}.csv")
