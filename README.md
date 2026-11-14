@@ -173,7 +173,7 @@ Prior work trained agents for TrackMania against the real game, sped up through 
 ## Results
 
 <!-- RESULTS:START -->
-_Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-14; 26 of 116 planned runs evaluated. Full tables: [`reports/summary.md`](reports/summary.md)._
+_Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-14; 27 of 116 planned runs evaluated. Full tables: [`reports/summary.md`](reports/summary.md)._
 
 - The Generalist (PPO) (1 seed) finished 81.5 % of the 971 unseen test tracks (95 % CI 79.0 % to 83.8 %), with a success-weighted speed (SWS) of 1.214 [1.177, 1.250]; an SWS of 1.0 would mean finishing every track as fast as the scripted driver.
 - On the tracks it finished, it needed 0.67 times the scripted driver's time (32.7 % less time on average).
@@ -204,6 +204,7 @@ _Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-14;
 | Specialist (campaign-04) | Specialist | 1 | 0.076 [0.056, 0.096] | 5.3 % | — | — | 0.424 [0.000, 1.271] | 20.0 % | — | — | — | — |
 | Specialist (campaign-05) | Specialist | 1 | 0.687 [0.640, 0.735] | 45.2 % | — | — | 0.648 [0.000, 1.332] | 40.0 % | — | — | — | — |
 | Fine-tuned specialist (campaign-01) | Specialist | 1 | 0.478 [0.435, 0.523] | 31.8 % | — | — | 0.586 [0.000, 1.196] | 40.0 % | — | — | — | — |
+| Fine-tuned specialist (campaign-02) | Specialist | 1 | 0.446 [0.403, 0.490] | 29.7 % | — | — | 0.892 [0.278, 1.507] | 60.0 % | — | — | — | — |
 
 **Preregistered hypotheses:**
 
