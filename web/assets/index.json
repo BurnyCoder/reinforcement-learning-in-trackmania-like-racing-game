@@ -42,6 +42,12 @@
       "title": "Unseen test track 2000430",
       "kind": "unseen",
       "note": "Held-out test seed 2000430, never used in training; chosen as the fall whose position is closest to the middle of its track among its 190 falls on test tracks in the official evaluation of generalist/seed0."
+    },
+    {
+      "name": "oor-3000123",
+      "title": "Out-of-range track 3000123 (tight turns)",
+      "kind": "unseen",
+      "note": "Held-out oor seed 3000123, never used in training; chosen as the fall whose position is closest to the middle of its track among its 43 falls on tight-turn out-of-range tracks in the official evaluation of generalist/seed0."
     }
   ],
   "models": [
@@ -91,6 +97,7 @@
       "assets/ghosts/campaign-01/blind-seed1.json",
       "assets/ghosts/campaign-01/generalist-seed0.json",
       "assets/ghosts/campaign-01/generalist-seed1.json",
+      "assets/ghosts/campaign-01/random-seed0.json",
       "assets/ghosts/campaign-01/specialist-campaign-01-seed0.json",
       "assets/ghosts/campaign-01/untrained-seed0.json"
     ],
@@ -98,24 +105,28 @@
       "assets/ghosts/campaign-02/blind-seed1.json",
       "assets/ghosts/campaign-02/generalist-seed0.json",
       "assets/ghosts/campaign-02/generalist-seed1.json",
+      "assets/ghosts/campaign-02/random-seed0.json",
       "assets/ghosts/campaign-02/untrained-seed0.json"
     ],
     "campaign-03": [
       "assets/ghosts/campaign-03/blind-seed1.json",
       "assets/ghosts/campaign-03/generalist-seed0.json",
       "assets/ghosts/campaign-03/generalist-seed1.json",
+      "assets/ghosts/campaign-03/random-seed0.json",
       "assets/ghosts/campaign-03/untrained-seed0.json"
     ],
     "campaign-04": [
       "assets/ghosts/campaign-04/blind-seed1.json",
       "assets/ghosts/campaign-04/generalist-seed0.json",
       "assets/ghosts/campaign-04/generalist-seed1.json",
+      "assets/ghosts/campaign-04/random-seed0.json",
       "assets/ghosts/campaign-04/untrained-seed0.json"
     ],
     "campaign-05": [
       "assets/ghosts/campaign-05/blind-seed1.json",
       "assets/ghosts/campaign-05/generalist-seed0.json",
       "assets/ghosts/campaign-05/generalist-seed1.json",
+      "assets/ghosts/campaign-05/random-seed0.json",
       "assets/ghosts/campaign-05/untrained-seed0.json"
     ],
     "test-2000747": [
@@ -129,6 +140,9 @@
     "test-2000430": [
       "assets/ghosts/test-2000430/generalist-seed0.json",
       "assets/ghosts/test-2000430/scripted-driver.json"
+    ],
+    "oor-3000123": [
+      "assets/ghosts/oor-3000123/generalist-seed0.json"
     ]
   }
 }

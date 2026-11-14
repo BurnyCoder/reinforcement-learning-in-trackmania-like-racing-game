@@ -3,7 +3,8 @@
 # the run (a ghost in web/assets/ghosts/<track>/<replay>.json), so the clip is exactly the run its label
 # describes, failures included. Each clip names the ghost (replay), the run whose official evaluation it
 # comes from (run), the set (split), and either a fixed track or a selection rule over that evaluation
-# (racingmania.eval.clips: best, median_jump, mid_fail; rule_run: read the rule from another run's evaluation),
+# (racingmania.eval.clips: best, median_jump, mid_fail; rule_run: read the rule from another run's evaluation;
+# variant: only out-of-range tracks of that variant),
 # so the README shows labelled best, typical and failure cases rather than hand-picked ones.
 # until: finish (default) records to the finish line; out stops where an unfinished run ended.
 clips:
@@ -33,10 +34,17 @@ clips:
     run: generalist/seed0
     split: test
     rule: median_jump
-  - title: A generalist failure halfway round a held-out generated track
+  - title: "Generalization failure on a held-out track: the generalist falls off halfway round"
     replay: generalist-seed0
     run: generalist/seed0
     split: test
+    rule: mid_fail
+    until: out
+  - title: "Generalization failure beyond the training range: a corner tighter than any training track"
+    replay: generalist-seed0
+    run: generalist/seed0
+    split: oor
+    variant: tight_turns        # out-of-range tracks with tighter turns than training, where it fails most often
     rule: mid_fail
     until: out
   - title: Untrained network (control) on the specialist's track
@@ -45,3 +53,18 @@ clips:
     split: campaign
     track: campaign-01
     until: out
+    note: >-
+      Like every evaluated driver, the network takes its most probable action at each step instead of sampling one. With
+      random initial weights its output layer starts close to zero (standard deviation 0.01, the CleanRL convention), so it
+      picks almost the same keys every step, here steering right while coasting, and never presses gas. Sampled instead of
+      taken greedily, the same network would press keys almost uniformly at random, which is how PPO starts exploring.
+  - title: Random actions (control) on the specialist's track
+    replay: random-seed0
+    run: baselines/random/seed0
+    split: campaign
+    track: campaign-01
+    until: out
+    note: >-
+      This control presses a uniformly random key combination every agent step (0.05 s). Gas, coast and brake, which
+      reverses at a standstill, each come up a third of the time and cancel out, so the car makes almost no progress and is
+      out under the "no 0.5 m of progress in 2 s" rule.
