@@ -40,25 +40,30 @@ _No run of this group has logged its configuration yet (the experiment files are
 
 ### Scores
 
-| Configuration | Role | Seeds | Test SWS [95 % CI] | Test finished | Val SWS [95 % CI] | Val finished | Train SWS [95 % CI] | Train finished | OOR SWS [95 % CI] | OOR finished | Campaign SWS [95 % CI] | Campaign finished | Unfiltered SWS [95 % CI] | Unfiltered finished |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Scripted driver | Reference | 1 | 0.998 [0.995, 1.000] | 99.8 % | 1.000 [1.000, 1.000] | 100.0 % | 0.999 [0.997, 1.000] | 99.9 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
+| Configuration | Role | Seeds | Test SWS [95 % CI] | Test finished | Val SWS [95 % CI] | Val finished | Train SWS [95 % CI] | Train finished | Own train SWS [95 % CI] | Own train finished | OOR SWS [95 % CI] | OOR finished | Campaign SWS [95 % CI] | Campaign finished | Unfiltered SWS [95 % CI] | Unfiltered finished |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Scripted driver | Reference | 1 | 0.998 [0.995, 1.000] | 99.8 % | 1.000 [1.000, 1.000] | 100.0 % | 0.999 [0.997, 1.000] | 99.9 % | — | — | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
+| Generalist (PPO) | Main method | 1 | 1.214 [1.177, 1.250] | 81.5 % | 1.236 [1.153, 1.315] | 82.7 % | 1.250 [1.214, 1.283] | 83.9 % | 1.250 [1.214, 1.283] | 83.9 % | 0.875 [0.769, 0.982] | 57.8 % | 1.590 [1.451, 1.783] | 100.0 % | 1.231 [1.147, 1.311] | 82.0 % |
 
-Rows from other groups are shown for comparison. Track counts: Test (unseen generated): 971 tracks; Validation: 197 tracks; Training sample: 1,000 tracks; Out-of-range test: 187 tracks; Campaign (hand-made): 5 tracks; Unfiltered test: 200 tracks.
+Rows from other groups are shown for comparison. Track counts: Test (unseen generated): 971 tracks; Validation: 197 tracks; Training sample: 1,000 tracks; Own training tracks: 1,000 tracks; Out-of-range test: 187 tracks; Campaign (hand-made): 5 tracks; Unfiltered test: 200 tracks.
 
 ### Score and train-test gap against the number of training tracks
 
-_Not yet available: the runs behind this table have no results yet._
+| Training tracks | Configuration | Seeds | SWS [95 % CI] | Train - test gap [95 % CI] | Training score from |
+|---|---|---|---|---|---|
+| 48,949 | Generalist (PPO) | 1 | 1.214 [1.177, 1.250] | 0.036 [-0.015, 0.086] | train_own |
 
-_Figure not yet available: its runs have no results yet._
+![Training-set-size ablation: score (top) and train-test gap (bottom) against the number of training tracks; the largest value is the generalist trained on the whole pool. Mean over seeds (n per point) with 95 % two-level bootstrap intervals.](../figures/training_set_size.png)
+
+*Training-set-size ablation: score (top) and train-test gap (bottom) against the number of training tracks; the largest value is the generalist trained on the whole pool. Mean over seeds (n per point) with 95 % two-level bootstrap intervals.*
 
 ### Hypotheses
 
 |  | Hypothesis | Tested quantity | Seeds (have/required) | Estimate [95 % CI] | Test statistic | p (one-sided) | p (Holm) | Decision |
 |---|---|---|---|---|---|---|---|---|
-| H1 | The generalist drives unseen tracks better than the scripted driver | SWS > 1.0 | generalist 0/10 | — | — | — | — | **not yet tested** |
-| H2 | Track diversity is what generalises (50,000 tracks vs 1 track) | SWS difference > 0.1 | generalist 0/10, size-1 0/5 | — | — | — | — | **not yet tested** |
-| H3 | The agent uses the look-ahead (generalist vs blind control) | SWS difference > 0.1 | generalist 0/10, blind 0/5 | — | — | — | — | **not yet tested** |
+| H1 | The generalist drives unseen tracks better than the scripted driver | SWS > 1.0 | generalist 1/10 | 1.214 [1.177, 1.250] (preliminary) | — | — | — | **not yet tested** |
+| H2 | Track diversity is what generalises (50,000 tracks vs 1 track) | SWS difference > 0.1 | generalist 1/10, size-1 0/5 | — | — | — | — | **not yet tested** |
+| H3 | The agent uses the look-ahead (generalist vs blind control) | SWS difference > 0.1 | generalist 1/10, blind 0/5 | — | — | — | — | **not yet tested** |
 
 ## Learnings
 

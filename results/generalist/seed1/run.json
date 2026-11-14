@@ -2,9 +2,9 @@
   "experiment": "generalist",
   "seed": 1,
   "track": null,
-  "status": "trained",
+  "status": "evaluated",
   "phase": "2-single-seed",
-  "updated": "2026-11-14T13:52:46.891775+00:00",
+  "updated": "2026-11-14T14:05:00.722842+00:00",
   "algo": "ppo",
   "description": "Generalist PPO agent trained on the whole generated training pool",
   "git_commit": "a861208dbcd896c0f7fe896657c5ee2ca2f45920",
@@ -69,5 +69,69 @@
   "global_step": 1000341504,
   "iterations": 1908,
   "wall_hours": 1.9208961590131124,
-  "last_session_hours": 1.921039325926039
+  "last_session_hours": 1.921039325926039,
+  "eval_summary": {
+    "val": {
+      "sws": 1.2362129397031947,
+      "finish_rate": 0.8274111675126904,
+      "speed_ratio_finished": 1.494073307494045,
+      "n_tracks": 197,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    },
+    "train_sample": {
+      "sws": 1.249599993355455,
+      "finish_rate": 0.839,
+      "speed_ratio_finished": 1.4893921255726519,
+      "n_tracks": 1000,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    },
+    "train_own": {
+      "sws": 1.249599993355455,
+      "finish_rate": 0.839,
+      "speed_ratio_finished": 1.4893921255726519,
+      "n_tracks": 1000,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    },
+    "campaign": {
+      "sws": 1.5896284845774566,
+      "finish_rate": 1.0,
+      "speed_ratio_finished": 1.5896284845774566,
+      "n_tracks": 5,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    },
+    "test": {
+      "sws": 1.2139755460184989,
+      "finish_rate": 0.8146240988671473,
+      "speed_ratio_finished": 1.490227882659877,
+      "n_tracks": 971,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 1
+    },
+    "oor": {
+      "sws": 0.8748553602420751,
+      "finish_rate": 0.5775401069518716,
+      "speed_ratio_finished": 1.5147958552339635,
+      "n_tracks": 187,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 3
+    },
+    "test_unfiltered": {
+      "sws": 1.2314440587931992,
+      "finish_rate": 0.82,
+      "speed_ratio_finished": 1.5017610473087797,
+      "n_tracks": 200,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    }
+  },
+  "onnx_check": {
+    "agreement": 1.0,
+    "max_abs_logit_diff": 1.811981201171875e-05,
+    "n": 512
+  },
+  "onnx_file": "assets/models/generalist-seed1.onnx"
 }
