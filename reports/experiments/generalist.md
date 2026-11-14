@@ -95,6 +95,7 @@ Rows from other groups are shown for comparison. Track counts: Test (unseen gene
 | Specialist (campaign-05) | Test | 0 | 4 | 1 | 971 |
 | Fine-tuned specialist (campaign-02) | Test | 0 | 2 | 1 | 971 |
 | Fine-tuned specialist (campaign-03) | Test | 0 | 4 | 1 | 971 |
+| Fine-tuned specialist (campaign-04) | Test | 0 | 2 | 1 | 971 |
 
 ### Training curves
 

@@ -41,7 +41,7 @@ This paper asks four questions, fixed in the preregistration ([`reports/preregis
 
 **What is new** is a combination, limited to what our searches found ([`reports/literature-review.md`](https://github.com/BurnyCoder/reinforcement-learning-in-trackmania-like-racing-game/blob/main/reports/literature-review.md), section 14): the same car code runs in a playable browser game and, as a tested batched port, in training; the generalist is tested on held-out generated 3D tracks with hills, banking and jumps, with several seeds against a scripted driver, a blind control and a training-set-size ablation; and exploits of the physics engine are reported as findings rather than removed.
 
-**Status of this version.** 28 of 116 runs in the preregistered run matrix are evaluated. The confirmatory tests of H1-H3 need all preregistered seeds and are not complete; every number from fewer seeds or from the validation set is labelled preliminary.
+**Status of this version.** 29 of 116 runs in the preregistered run matrix are evaluated. The confirmatory tests of H1-H3 need all preregistered seeds and are not complete; every number from fewer seeds or from the validation set is labelled preliminary.
 
 # Background and related work
 
@@ -107,11 +107,11 @@ Runs follow the preregistered order: (1) the first two models (seed 0), which mu
 |---|---|---|---|---|---|---|
 | baselines | 0 | 0 | 0 | 0 | 15 | 15 |
 | 1-first-models | 0 | 0 | 0 | 0 | 2 | 2 |
-| 2-single-seed | 13 | 0 | 0 | 1 | 11 | 25 |
+| 2-single-seed | 13 | 0 | 0 | 0 | 12 | 25 |
 | 4-imitation-hybrids | 5 | 0 | 0 | 0 | 0 | 5 |
 | 5-hyperparameters | 4 | 0 | 0 | 0 | 0 | 4 |
 | 6-seed-sensitivity | 65 | 0 | 0 | 0 | 0 | 65 |
-| **all** | 87 | 0 | 0 | 1 | 28 | 116 |
+| **all** | 87 | 0 | 0 | 0 | 29 | 116 |
 
 # Results
 
@@ -143,6 +143,7 @@ Runs follow the preregistered order: (1) the first two models (seed 0), which mu
 | Fine-tuned specialist (campaign-01) | Specialist | 1 | 0.478 [0.435, 0.523] | 31.8 % | — | — | 0.586 [0.000, 1.196] | 40.0 % |
 | Fine-tuned specialist (campaign-02) | Specialist | 1 | 0.446 [0.403, 0.490] | 29.7 % | — | — | 0.892 [0.278, 1.507] | 60.0 % |
 | Fine-tuned specialist (campaign-03) | Specialist | 1 | 0.636 [0.589, 0.684] | 42.2 % | — | — | 0.971 [0.292, 1.651] | 60.0 % |
+| Fine-tuned specialist (campaign-04) | Specialist | 1 | 0.265 [0.229, 0.301] | 17.9 % | — | — | 0.424 [0.000, 1.271] | 20.0 % |
 
 Track counts: Test (unseen generated): 971 tracks; Validation: 197 tracks; Training sample: 1,000 tracks; Own training tracks: 1,000 tracks; Out-of-range test: 187 tracks; Campaign (hand-made): 5 tracks; Unfiltered test: 200 tracks.
 
@@ -167,7 +168,7 @@ Hypotheses marked "not yet tested" lack the preregistered seeds; any estimate sh
 - H2: Track diversity is what generalises (50,000 tracks vs 1 track). Not estimable yet: the single-track ablation (N = 1) has no test results yet.
 - H3: The agent uses the look-ahead (generalist vs blind control). SWS difference, paired on the same tracks, 0.204 [0.164, 0.245]; preliminary (1 seed per group, track resampling only): the interval lies above 0.1, consistent with H3.
 - Exploratory and not H2 itself: specialists trained on one hand-made track each finished 5.3 % to 45.2 % of the unseen test tracks (5 runs, seed 1), against 81.5 % for the generalist.
-- With one seed per configuration these intervals reflect only which tracks were sampled; seed-to-seed and checkpoint-to-checkpoint variation are not in them yet, so they can be too narrow. Not done yet: one seed of every experiment (phase 2): 11 of 25 runs evaluated; imitation and hybrids (phase 4): 0 of 5 runs evaluated; hyperparameter sensitivity (phase 5): 0 of 4 runs evaluated; seed sensitivity (phase 6): 0 of 65 runs evaluated.
+- With one seed per configuration these intervals reflect only which tracks were sampled; seed-to-seed and checkpoint-to-checkpoint variation are not in them yet, so they can be too narrow. Not done yet: one seed of every experiment (phase 2): 12 of 25 runs evaluated; imitation and hybrids (phase 4): 0 of 5 runs evaluated; hyperparameter sensitivity (phase 5): 0 of 4 runs evaluated; seed sensitivity (phase 6): 0 of 65 runs evaluated.
 
 Cross-checks (exploratory, Agarwal et al. 2021):
 
@@ -215,6 +216,7 @@ Cross-checks (exploratory, Agarwal et al. 2021):
 | campaign-04 | 42.52 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 21.27 | s0: 21.27 |
 | campaign-04 | 42.52 | Generalist (PPO) | zero-shot | 1/1 | 21.60 | s1: 21.60 |
 | campaign-04 | 42.52 | Specialist (campaign-04) | own track | 1/1 | 20.07 | s1: 20.07 |
+| campaign-04 | 42.52 | Fine-tuned specialist (campaign-04) | own track | 1/1 | 20.07 | s1: 20.07 |
 | campaign-05 | 56.07 | CEM planner | reference | 1/1 | 35.27 | s0: 35.27 |
 | campaign-05 | 56.07 | Scripted driver | reference | 1/1 | 56.03 | s0: 56.03 |
 | campaign-05 | 56.07 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 34.96 | s0: 34.96 |
@@ -260,6 +262,7 @@ _No exploit list yet (`results/exploits.json` does not exist)._
 | Specialist (campaign-05) | Test | 0 | 4 | 1 | 971 |
 | Fine-tuned specialist (campaign-02) | Test | 0 | 2 | 1 | 971 |
 | Fine-tuned specialist (campaign-03) | Test | 0 | 4 | 1 | 971 |
+| Fine-tuned specialist (campaign-04) | Test | 0 | 2 | 1 | 971 |
 
 ## Training curves of the generalist
 
