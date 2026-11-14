@@ -54,6 +54,7 @@ Rows from other groups are shown for comparison. Track counts: Test (unseen gene
 | campaign-01 | 30.17 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 20.02 | s0: 20.02 |
 | campaign-01 | 30.17 | Generalist (PPO) | zero-shot | 1/1 | 20.29 | s1: 20.29 |
 | campaign-01 | 30.17 | Specialist (campaign-01) [pilot, seed 0] | own track | 1/1 | 19.71 | s0: 19.71 |
+| campaign-01 | 30.17 | Specialist (campaign-01) | own track | 1/1 | 19.74 | s1: 19.74 |
 | campaign-02 | 36.43 | CEM planner | reference | 1/1 | 25.25 | s0: 25.25 |
 | campaign-02 | 36.43 | Scripted driver | reference | 1/1 | 36.43 | s0: 36.43 |
 | campaign-02 | 36.43 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 24.45 | s0: 24.45 |
