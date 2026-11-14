@@ -15,7 +15,7 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 | Run | Status | Phase | Agent steps | Wall hours | Physics | Commit | Evaluated on |
 |---|---|---|---|---|---|---|---|
 | `specialist-campaign-01/seed1` | evaluated | 2-single-seed | 200,278,016 | 0.25 | v1 | 11c90044c8 | test, campaign |
-| `specialist-campaign-02/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
+| `specialist-campaign-02/seed1` | planned | 2-single-seed | — | — | v1 | — | — |
 | `specialist-campaign-03/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
 | `specialist-campaign-04/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
 | `specialist-campaign-05/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
