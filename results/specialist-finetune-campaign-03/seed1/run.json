@@ -2,7 +2,96 @@
   "experiment": "specialist-finetune",
   "seed": 1,
   "track": "campaign-03",
-  "status": "planned",
+  "status": "evaluated",
   "phase": "2-single-seed",
-  "updated": "2026-11-14T19:59:35.719687+00:00"
+  "updated": "2026-11-14T20:20:59.543019+00:00",
+  "algo": "ppo",
+  "description": "Specialist fine-tuned from the seed-1 generalist",
+  "git_commit": "f534e2ecfd35ac1483fdb9b36f269df935d25a07",
+  "physics": "v1",
+  "hardware": {
+    "platform": "Linux-6.18.58.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.13.18",
+    "torch": "2.15.0+cu132",
+    "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU"
+  },
+  "ppo": {
+    "total_steps": 200000000,
+    "num_envs": 16384,
+    "num_steps": 32,
+    "lr": 0.0003,
+    "adaptive_lr": true,
+    "desired_kl": 0.01,
+    "lr_min": 1e-05,
+    "lr_max": 0.01,
+    "gamma": 0.99,
+    "gae_lambda": 0.95,
+    "num_minibatches": 4,
+    "update_epochs": 5,
+    "clip_coef": 0.2,
+    "ent_coef": 0.01,
+    "vf_coef": 1.0,
+    "max_grad_norm": 1.0,
+    "weight_decay": 0.0,
+    "hidden": [
+      256,
+      256
+    ],
+    "action_mode": "factored",
+    "eval_every_minutes": 10.0,
+    "checkpoint_every_minutes": 10.0,
+    "rotate_tracks_every": 0,
+    "loaded_tracks": 1,
+    "seed": 1,
+    "compile": true
+  },
+  "env": {
+    "random_start_prob": 0.5,
+    "random_start_speed": [
+      0.0,
+      30.0
+    ],
+    "random_start_lateral": 0.5,
+    "max_steps": 1500,
+    "reward_scale": 0.1,
+    "window_k": 20,
+    "window_stride": 3,
+    "blind": false,
+    "time_cost": 0.0,
+    "fall_penalty": 0.0,
+    "hint_weight": 0.0,
+    "scripted_starts": false
+  },
+  "n_train_tracks": 1,
+  "vehicle_overrides": {},
+  "checkpoint_dir": "/mnt/d/AI/racingmania/checkpoints/specialist-finetune-campaign-03/seed1",
+  "tensorboard_dir": "/mnt/d/AI/racingmania/tensorboard/specialist-finetune-campaign-03/seed1",
+  "global_step": 200278016,
+  "iterations": 382,
+  "wall_hours": 0.26758794764677685,
+  "last_session_hours": 0.2676633774571949,
+  "eval_summary": {
+    "campaign": {
+      "sws": 0.9712598302665633,
+      "finish_rate": 0.6,
+      "speed_ratio_finished": 1.6187663837776054,
+      "n_tracks": 5,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    },
+    "test": {
+      "sws": 0.6357446739759656,
+      "finish_rate": 0.42224510813594235,
+      "speed_ratio_finished": 1.505629459586982,
+      "n_tracks": 971,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 4
+    }
+  },
+  "onnx_check": {
+    "agreement": 1.0,
+    "max_abs_logit_diff": 2.0503997802734375e-05,
+    "n": 512
+  },
+  "onnx_file": "assets/models/specialist-finetune-campaign-03-seed1.onnx"
 }
