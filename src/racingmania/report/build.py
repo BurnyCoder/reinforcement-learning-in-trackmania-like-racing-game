@@ -23,7 +23,7 @@ import re
 import time
 
 from ..utils.logging import get_logger
-from . import cards, figures, render, webdata
+from . import cards, diagrams, figures, render, webdata
 from .analysis import analyze
 from .collect import ReportPaths, collect
 from .pdf import build_pdf
@@ -49,6 +49,7 @@ def build_all(results_dir=None, out_root=None, pdf: bool = True) -> dict:
     res = collect(paths)
     an = analyze(res)
     figs = figures.make_all(res, an, paths.figures)
+    figs.update(diagrams.make_all(res, an, paths.figures))  # architecture, system, protocol and run-status diagrams
     _clean_stale_figures(paths, figs)
     paths.reports.mkdir(parents=True, exist_ok=True)
     (paths.reports / "summary.md").write_text(render.summary(res, an, figs), encoding="utf-8", newline="\n")
@@ -73,7 +74,7 @@ def build_all(results_dir=None, out_root=None, pdf: bool = True) -> dict:
     return out
 
 
-def model_card(rid: str, results_dir=None) -> str:
+def model_card(rid: str, results_dir=None, repo_id: str | None = None) -> str:
     """Hugging Face model card of run ``rid`` (e.g. ``generalist/seed1``), from the current result files."""
     res = collect(ReportPaths.resolve(results_dir, None))
-    return cards.model_card(res, rid)
+    return cards.model_card(res, rid, repo_id)
