@@ -23,11 +23,11 @@ Each clip replays an official evaluation run in the browser game: the car states
 - **Evaluation:** official evaluation in `results/specialist-campaign-01/seed0/eval_campaign.csv` (standing start, most probable action, final checkpoint): finished in 19.71 s; the scripted driver needs 30.17 s, so this is 1.53× its speed. The clip replays this run.
 - **Why this clip:** chosen by a fixed rule as its only finished campaign track in its official evaluation.
 
-### 2. Best generalist lap on a hand-made track it never saw in training
+### 2. Best generalist lap on a hand-made track it never saw in training: it generalized
 
-[![Best generalist lap on a hand-made track it never saw in training: generalist-seed0 on campaign-04](docs/videos/generalist-seed0_campaign-04.gif)](docs/videos/generalist-seed0_campaign-04.mp4)
+[![Best generalist lap on a hand-made track it never saw in training: it generalized: generalist-seed0 on campaign-04](docs/videos/generalist-seed0_campaign-04.gif)](docs/videos/generalist-seed0_campaign-04.mp4)
 
-- **What you see:** The generalist learned on tens of thousands of generated tracks and never on these hand-made ones, which were designed separately. It still reads the road ahead and picks a speed for each bend, and laps this track in about half the scripted driver's time. On the specialist's own track it is only slightly slower than the specialist (see the results).
+- **What you see:** This is generalization: driving well on a track the model never saw in training. The generalist learned on tens of thousands of generated tracks and never on these hand-made ones, which were designed separately. It reads the road ahead, picks a speed for each bend, and laps this track in about half the scripted driver's time. On the specialist's own track it is only slightly slower than the specialist (see the results). Compare the next clip: the specialist on this same track.
 - **Model:** `generalist/seed0`: PPO, trained by reinforcement learning for 1 billion agent steps on 48,949 generated training tracks (seed 0, 1.3 h on one GPU).
 - **Map:** Technical (`campaign-04`), a hand-made campaign track, 666 m long with no jumps and up to 5° of banking; this model never saw it during training.
 - **Evaluation:** official evaluation in `results/generalist/seed0/eval_campaign.csv` (standing start, most probable action, final checkpoint): finished in 21.27 s; the scripted driver needs 42.52 s, so this is 2.00× its speed. The clip replays this run.
@@ -47,7 +47,7 @@ Each clip replays an official evaluation run in the browser game: the car states
 
 [![Best generalist lap on a held-out generated track it never saw in training: it generalized: generalist-seed0 on test-2000747](docs/videos/generalist-seed0_test-2000747.gif)](docs/videos/generalist-seed0_test-2000747.mp4)
 
-- **What you see:** This is generalization: a track from the held-out test seeds, which the generalist never trained on, driven from the standing start to the finish. Watch it slow down for each bend, hug the inside edge through it and accelerate out again, using only what it sees of the road ahead. Compare it with the next clip, the scripted driver on the same track.
+- **What you see:** Generalization again, now on a generated track from the held-out test seeds: the same kind of track as in training, but never this one, driven from the standing start to the finish. Watch it slow down for each bend, hug the inside edge through it and accelerate out again, using only what it sees of the road ahead. Compare it with the next clip, the scripted driver on the same track.
 - **Model:** `generalist/seed0`: PPO, trained by reinforcement learning for 1 billion agent steps on 48,949 generated training tracks (seed 0, 1.3 h on one GPU).
 - **Map:** Unseen test track 2000747 (`test-2000747`), a held-out generated test track, 1,461 m long with no jumps and up to 11° of banking; this model never saw it during training.
 - **Evaluation:** official evaluation in `results/generalist/seed0/eval_test.csv` (standing start, most probable action, final checkpoint): finished in 43.35 s; the scripted driver needs 79.77 s, so this is 1.84× its speed. The clip replays this run.

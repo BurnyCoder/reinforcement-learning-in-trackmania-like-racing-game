@@ -34,12 +34,12 @@
     }
   },
   {
-    "title": "Best generalist lap on a hand-made track it never saw in training",
+    "title": "Best generalist lap on a hand-made track it never saw in training: it generalized",
     "replay": "generalist-seed0",
     "run": "generalist/seed0",
     "split": "campaign",
     "rule": "best",
-    "explain": "The generalist learned on tens of thousands of generated tracks and never on these hand-made ones, which were designed separately. It still reads the road ahead and picks a speed for each bend, and laps this track in about half the scripted driver's time. On the specialist's own track it is only slightly slower than the specialist (see the results).",
+    "explain": "This is generalization: driving well on a track the model never saw in training. The generalist learned on tens of thousands of generated tracks and never on these hand-made ones, which were designed separately. It reads the road ahead, picks a speed for each bend, and laps this track in about half the scripted driver's time. On the specialist's own track it is only slightly slower than the specialist (see the results). Compare the next clip: the specialist on this same track.",
     "model": "generalist-seed0",
     "mode": "replay",
     "ghost": "assets/ghosts/campaign-04/generalist-seed0.json",
@@ -108,7 +108,7 @@
     "run": "generalist/seed0",
     "split": "test",
     "rule": "best",
-    "explain": "This is generalization: a track from the held-out test seeds, which the generalist never trained on, driven from the standing start to the finish. Watch it slow down for each bend, hug the inside edge through it and accelerate out again, using only what it sees of the road ahead. Compare it with the next clip, the scripted driver on the same track.",
+    "explain": "Generalization again, now on a generated track from the held-out test seeds: the same kind of track as in training, but never this one, driven from the standing start to the finish. Watch it slow down for each bend, hug the inside edge through it and accelerate out again, using only what it sees of the road ahead. Compare it with the next clip, the scripted driver on the same track.",
     "model": "generalist-seed0",
     "mode": "replay",
     "ghost": "assets/ghosts/test-2000747/generalist-seed0.json",
