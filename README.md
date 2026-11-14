@@ -192,6 +192,8 @@ uv run python scripts/07_make_report.py
 
 Single runs: `uv run python scripts/02_train.py --experiment generalist --seed 1`, then `uv run python scripts/03_evaluate.py --experiment generalist --seed 1 --sets val train_sample campaign test oor`. Live dashboard during training: `uv run tensorboard --logdir <RACINGMANIA_DATA_DIR>/tensorboard`.
 
+Diagnostics: `scripts/09_failure_analysis.py --run generalist/seed0 --sets val` writes where a run's failures happen (sharpest turn and jumps in the 60 m before each fall, against random places) to `results/<run>/failures_<set>.json`; `scripts/10_diagnose_flag.py --experiment generalist --seed 0 --set train_sample --track train-198` replays an exploit-flagged track step by step with its translational, gravitational and rotational energy; `scripts/tune_cem.py 30 60 90` compares CEM planning horizons on validation tracks.
+
 ## Features
 
 - Playable browser game: five campaign tracks, medals, splits, your best ghost, AI ghosts, race against a live AI driver.
