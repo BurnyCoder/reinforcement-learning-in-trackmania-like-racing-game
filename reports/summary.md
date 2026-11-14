@@ -22,8 +22,13 @@ Statuses: **not started** = in the run matrix, not yet registered; **planned** =
 
 - The Generalist (PPO) (1 seed) finished 81.5 % of the 971 unseen test tracks (95 % CI 79.0 % to 83.8 %), with a success-weighted speed (SWS) of 1.214 [1.177, 1.250]; an SWS of 1.0 would mean finishing every track as fast as the scripted driver.
 - On the tracks it finished, it needed 0.67 times the scripted driver's time (32.7 % less time on average).
-- Its finish rate was 8.1 percentage points more than the blind control (73.3 %, 1 seed); 1.6 percentage points more than the pqn (79.8 %, 1 seed); 81.5 percentage points more than the untrained network (0.0 %, 10 seeds); 81.5 percentage points more than the random actions (0.0 %, 3 seeds).
-- The preregistered hypotheses H1-H3 are not tested yet: they need test results from 10 generalist seeds and 5 seeds each of the blind control and the single-track ablation (1 generalist seeds so far).
+- Its finish rate was 8.1 percentage points more than the blind control (73.3 %, 1 seed); 1.6 percentage points more than the PQN (79.8 %, 1 seed); 81.5 percentage points more than the untrained network (0.0 %, 10 seeds); 81.5 percentage points more than the random actions (0.0 %, 3 seeds).
+- The preregistered tests of H1-H3 are not done yet: they need test results from 10 generalist seeds and 5 seeds each of the blind control and the single-track ablation (so far: generalist 1, single-track ablation (N = 1) 0, blind control 1). Preliminary readings from the seeds available, not tests:
+- H1: The generalist drives unseen tracks better than the scripted driver. SWS 1.214 [1.177, 1.250]; preliminary (1 seed, track resampling only): the interval lies above 1.0, consistent with H1.
+- H2: Track diversity is what generalises (50,000 tracks vs 1 track). Not estimable yet: the single-track ablation (N = 1) has no test results yet.
+- H3: The agent uses the look-ahead (generalist vs blind control). SWS difference, paired on the same tracks, 0.204 [0.164, 0.245]; preliminary (1 seed per group, track resampling only): the interval lies above 0.1, consistent with H3.
+- Exploratory and not H2 itself: specialists trained on one hand-made track each finished 5.3 % to 45.2 % of the unseen test tracks (5 runs, seed 1), against 81.5 % for the generalist.
+- With one seed per configuration these intervals reflect only which tracks were sampled; seed-to-seed and checkpoint-to-checkpoint variation are not in them yet, so they can be too narrow. Not done yet: one seed of every experiment (phase 2): 11 of 25 runs evaluated; imitation and hybrids (phase 4): 0 of 5 runs evaluated; hyperparameter sensitivity (phase 5): 0 of 4 runs evaluated; seed sensitivity (phase 6): 0 of 65 runs evaluated.
 - On campaign track campaign-01 the generalist (zero-shot) was 2.8 % slower than the specialist trained on that track.
 - On campaign track campaign-02 the generalist (zero-shot) was 5.5 % slower than the specialist trained on that track.
 - On campaign track campaign-03 the generalist (zero-shot) was 3.3 % slower than the specialist trained on that track.
@@ -32,11 +37,11 @@ Statuses: **not started** = in the run matrix, not yet registered; **planned** =
 
 ## Hypotheses (preregistered)
 
-|  | Hypothesis | Tested quantity | Seeds (have/required) | Estimate [95 % CI] | Test statistic | p (one-sided) | p (Holm) | Decision |
-|---|---|---|---|---|---|---|---|---|
-| H1 | The generalist drives unseen tracks better than the scripted driver | SWS > 1.0 | generalist 1/10 | 1.214 [1.177, 1.250] (preliminary) | — | — | — | **not yet tested** |
-| H2 | Track diversity is what generalises (50,000 tracks vs 1 track) | SWS difference > 0.1 | generalist 1/10, size-1 0/5 | — | — | — | — | **not yet tested** |
-| H3 | The agent uses the look-ahead (generalist vs blind control) | SWS difference > 0.1 | generalist 1/10, blind 1/5 | 0.204 [0.164, 0.245] (preliminary) | — | — | — | **not yet tested** |
+|  | Hypothesis | Tested quantity | Seeds (have/required) | Estimate [95 % CI] | Test statistic | p (one-sided) | p (Holm) | Decision | Preliminary reading (not a test) |
+|---|---|---|---|---|---|---|---|---|---|
+| H1 | The generalist drives unseen tracks better than the scripted driver | SWS > 1.0 | generalist 1/10 | 1.214 [1.177, 1.250] (preliminary) | — | — | — | **not yet tested** | preliminary (1 seed, track resampling only): the interval lies above 1.0, consistent with H1 |
+| H2 | Track diversity is what generalises (50,000 tracks vs 1 track) | SWS difference > 0.1 | generalist 1/10, size-1 0/5 | — | — | — | — | **not yet tested** | not estimable yet: the single-track ablation (N = 1) has no test results yet |
+| H3 | The agent uses the look-ahead (generalist vs blind control) | SWS difference > 0.1 | generalist 1/10, blind 1/5 | 0.204 [0.164, 0.245] (preliminary) | — | — | — | **not yet tested** | preliminary (1 seed per group, track resampling only): the interval lies above 0.1, consistent with H3 |
 
 Decision rule: refuted if the 95 % interval lies below the threshold; confirmed if the Holm-adjusted one-sided t-test p-value is below 0.05; otherwise inconclusive; not yet tested until all preregistered seeds have test results.
 

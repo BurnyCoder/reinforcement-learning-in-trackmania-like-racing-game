@@ -158,10 +158,11 @@ def hypothesis_table(an, compact: bool = False) -> str:
         stat = NA if h["statistic"] != h["statistic"] else f"t = {h['statistic']:.3f}, df = {h['df']:.1f}"
         quantity = f"{'SWS' if h['id'] == 'H1' else 'SWS difference'} > {h['threshold']}"
         row = [h["id"]] + ([] if compact else [h["statement"]]) + [quantity, seeds, est, stat, pval(h["p"]), pval(h["p_holm"]),
-                                                                  f"**{h['decision']}**"]
+                                                                  f"**{h['decision']}**", h.get("reading", "")]
         rows.append(row)
     heads = [""] + ([] if compact else ["Hypothesis"]) + ["Tested quantity", "Seeds (have/required)", "Estimate [95 % CI]",
-                                                         "Test statistic", "p (one-sided)", "p (Holm)", "Decision"]
+                                                         "Test statistic", "p (one-sided)", "p (Holm)", "Decision",
+                                                         "Preliminary reading (not a test)"]
     return md_table(heads, rows)
 
 
