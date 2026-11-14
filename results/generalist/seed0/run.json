@@ -2,9 +2,9 @@
   "experiment": "generalist",
   "seed": 0,
   "track": null,
-  "status": "trained",
+  "status": "evaluated",
   "phase": "1-first-models",
-  "updated": "2026-11-14T10:20:33.585005+00:00",
+  "updated": "2026-11-14T10:24:57.129136+00:00",
   "algo": "ppo",
   "description": "Generalist PPO agent trained on the whole generated training pool",
   "git_commit": "1c8e972820d695e7e9f0e589e3e475dc9b7b7a16",
@@ -69,5 +69,37 @@
   "global_step": 1000341504,
   "iterations": 1908,
   "wall_hours": 1.265602955420812,
-  "last_session_hours": 1.2656912392377853
+  "last_session_hours": 1.2656912392377853,
+  "eval_summary": {
+    "val": {
+      "sws": 1.2422590647779579,
+      "finish_rate": 0.8274111675126904,
+      "speed_ratio_finished": 1.5013805874923787,
+      "n_tracks": 197,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    },
+    "train_sample": {
+      "sws": 1.2178244980794029,
+      "finish_rate": 0.816,
+      "speed_ratio_finished": 1.4924319829404447,
+      "n_tracks": 1000,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 2
+    },
+    "campaign": {
+      "sws": 1.5956878544607627,
+      "finish_rate": 1.0,
+      "speed_ratio_finished": 1.5956878544607627,
+      "n_tracks": 5,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    }
+  },
+  "onnx_check": {
+    "agreement": 1.0,
+    "max_abs_logit_diff": 2.682209014892578e-05,
+    "n": 512
+  },
+  "onnx_file": "assets/models/generalist-seed0.onnx"
 }

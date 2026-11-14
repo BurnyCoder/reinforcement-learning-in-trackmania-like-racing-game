@@ -34,11 +34,32 @@
       "stride": 3,
       "description": "Specialist PPO agent trained on a single campaign track",
       "run": "specialist-campaign-01/seed0"
+    },
+    {
+      "name": "generalist-seed0",
+      "file": "assets/models/generalist-seed0.onnx",
+      "K": 20,
+      "stride": 3,
+      "description": "Generalist PPO agent trained on the whole generated training pool",
+      "run": "generalist/seed0"
     }
   ],
   "ghosts": {
     "campaign-01": [
+      "assets/ghosts/campaign-01/generalist-seed0.json",
       "assets/ghosts/campaign-01/specialist-campaign-01-seed0.json"
+    ],
+    "campaign-02": [
+      "assets/ghosts/campaign-02/generalist-seed0.json"
+    ],
+    "campaign-03": [
+      "assets/ghosts/campaign-03/generalist-seed0.json"
+    ],
+    "campaign-04": [
+      "assets/ghosts/campaign-04/generalist-seed0.json"
+    ],
+    "campaign-05": [
+      "assets/ghosts/campaign-05/generalist-seed0.json"
     ]
   }
 }
