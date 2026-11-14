@@ -1,0 +1,28 @@
+[
+  {
+    "model": "specialist-campaign-01-seed0",
+    "run": "specialist-campaign-01/seed0",
+    "track": "campaign-01",
+    "official_s": 19.71,
+    "reference_s": 30.17,
+    "description": "Specialist PPO agent trained on a single campaign track",
+    "game_s": 19.71,
+    "finished": true,
+    "respawns": 0,
+    "mp4": "docs/videos/specialist-campaign-01-seed0_campaign-01.mp4",
+    "gif": "docs/videos/specialist-campaign-01-seed0_campaign-01.gif"
+  },
+  {
+    "model": "generalist-seed0",
+    "run": "generalist/seed0",
+    "track": "campaign-04",
+    "official_s": 21.27,
+    "reference_s": 42.52,
+    "description": "Generalist PPO agent trained on the whole generated training pool",
+    "game_s": 21.27,
+    "finished": true,
+    "respawns": 0,
+    "mp4": "docs/videos/generalist-seed0_campaign-04.mp4",
+    "gif": "docs/videos/generalist-seed0_campaign-04.gif"
+  }
+]
