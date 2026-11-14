@@ -22,7 +22,7 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 | `specialist-finetune-campaign-01/seed1` | evaluated | 2-single-seed | 200,278,016 | 0.26 | v1 | 1a990052bb | test, campaign |
 | `specialist-finetune-campaign-02/seed1` | evaluated | 2-single-seed | 200,278,016 | 0.25 | v1 | 30ea48b44d | test, campaign |
 | `specialist-finetune-campaign-03/seed1` | evaluated | 2-single-seed | 200,278,016 | 0.27 | v1 | f534e2ecfd | test, campaign |
-| `specialist-finetune-campaign-04/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
+| `specialist-finetune-campaign-04/seed1` | planned | 2-single-seed | — | — | v1 | — | — |
 | `specialist-finetune-campaign-05/seed1` | not started | 2-single-seed | — | — | v1 | — | — |
 | `specialist-campaign-01/seed2` | not started | 6-seed-sensitivity | — | — | v1 | — | — |
 | `specialist-campaign-01/seed3` | not started | 6-seed-sensitivity | — | — | v1 | — | — |
