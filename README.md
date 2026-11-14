@@ -58,22 +58,41 @@ Each clip replays an official evaluation run in the browser game: the car states
 - **Evaluation:** official evaluation in `results/generalist/seed0/eval_test.csv` (standing start, most probable action, final checkpoint): finished in 33.01 s; the scripted driver needs 49.36 s, so this is 1.50× its speed. The clip replays this run.
 - **Why this clip:** chosen by a fixed rule as the median-scoring finished track among those with at least one jump (397 test tracks with a jump that it finished) in its official evaluation.
 
-### 6. A generalist failure halfway round a held-out generated track
+### 6. Generalization failure on a held-out track: the generalist falls off halfway round
 
-[![A generalist failure halfway round a held-out generated track: generalist-seed0 on test-2000430](docs/videos/generalist-seed0_test-2000430.gif)](docs/videos/generalist-seed0_test-2000430.mp4)
+[![Generalization failure on a held-out track: the generalist falls off halfway round: generalist-seed0 on test-2000430](docs/videos/generalist-seed0_test-2000430.gif)](docs/videos/generalist-seed0_test-2000430.mp4)
 
 - **Model:** `generalist/seed0`: PPO, trained by reinforcement learning for 1 billion agent steps on 48,949 generated training tracks (seed 0, 1.3 h on one GPU).
 - **Map:** Unseen test track 2000430 (`test-2000430`), a held-out generated test track, 1,559 m long with no jumps and up to 14° of banking; this model never saw it during training.
 - **Evaluation:** official evaluation in `results/generalist/seed0/eval_test.csv` (standing start, most probable action, final checkpoint): did not finish: fell after 24.43 s and 776 m (the scripted driver finishes in 66.30 s). The clip replays this run.
 - **Why this clip:** chosen by a fixed rule as the fall whose position is closest to the middle of its track among its 190 falls on test tracks in its official evaluation.
 
-### 7. Untrained network (control) on the specialist's track
+### 7. Generalization failure beyond the training range: a corner tighter than any training track
+
+[![Generalization failure beyond the training range: a corner tighter than any training track: generalist-seed0 on oor-3000123](docs/videos/generalist-seed0_oor-3000123.gif)](docs/videos/generalist-seed0_oor-3000123.mp4)
+
+- **Model:** `generalist/seed0`: PPO, trained by reinforcement learning for 1 billion agent steps on 48,949 generated training tracks (seed 0, 1.3 h on one GPU).
+- **Map:** Out-of-range track 3000123 (`oor-3000123`), a held-out out-of-range test track with one factor beyond the training range, arc radius 14–22 m (training: 22–120 m), 855 m long with 2 jumps and up to 9° of banking; this model never saw it during training.
+- **Evaluation:** official evaluation in `results/generalist/seed0/eval_oor.csv` (standing start, most probable action, final checkpoint): did not finish: fell after 17.76 s and 449 m (the scripted driver finishes in 52.16 s). The clip replays this run.
+- **Why this clip:** chosen by a fixed rule as the fall whose position is closest to the middle of its track among its 43 falls on tight-turn out-of-range tracks in its official evaluation.
+
+### 8. Untrained network (control) on the specialist's track
 
 [![Untrained network (control) on the specialist's track: untrained-seed0 on campaign-01](docs/videos/untrained-seed0_campaign-01.gif)](docs/videos/untrained-seed0_campaign-01.mp4)
 
 - **Model:** `baselines/untrained/seed0`: the same network as the trained agents (2 × 256 units) with random initial weights (seed 0) and no training; a control.
 - **Map:** First Flight (`campaign-01`), a hand-made campaign track, 628 m long with 1 jump and up to 6° of banking; this network was never trained on any track.
 - **Evaluation:** official evaluation in `results/baselines/untrained/seed0/eval_campaign.csv` (standing start, most probable action, final checkpoint): did not finish: stalled after 2.00 s and 6 m (the scripted driver finishes in 30.17 s). The clip replays this run.
+- **Note:** Like every evaluated driver, the network takes its most probable action at each step instead of sampling one. With random initial weights its output layer starts close to zero (standard deviation 0.01, the CleanRL convention), so it picks almost the same keys every step, here steering right while coasting, and never presses gas. Sampled instead of taken greedily, the same network would press keys almost uniformly at random, which is how PPO starts exploring.
+
+### 9. Random actions (control) on the specialist's track
+
+[![Random actions (control) on the specialist's track: random-seed0 on campaign-01](docs/videos/random-seed0_campaign-01.gif)](docs/videos/random-seed0_campaign-01.mp4)
+
+- **Model:** `baselines/random/seed0`: random actions, a uniformly random key combination every agent step from a seeded generator (seed 0); no network and no training; a control.
+- **Map:** First Flight (`campaign-01`), a hand-made campaign track, 628 m long with 1 jump and up to 6° of banking; random actions ignore the track entirely.
+- **Evaluation:** official evaluation in `results/baselines/random/seed0/eval_campaign.csv` (standing start, most probable action, final checkpoint): did not finish: stalled after 2.00 s and 6 m (the scripted driver finishes in 30.17 s). The clip replays this run.
+- **Note:** This control presses a uniformly random key combination every agent step (0.05 s). Gas, coast and brake, which reverses at a standstill, each come up a third of the time and cancel out, so the car makes almost no progress and is out under the "no 0.5 m of progress in 2 s" rule.
 <!-- VIDEOS:END -->
 
 The research question is whether one policy, trained with PPO ([Schulman et al. 2017](https://arxiv.org/abs/1707.06347)) on tens of thousands of procedurally generated tracks, can drive tracks it has never seen, and how it compares with a classical scripted driver and with specialists trained on a single track. The hypotheses, metric and analysis were [preregistered](reports/preregistration.md) before any model was trained.

@@ -35,7 +35,8 @@ from racingmania.utils.paths import RESULTS_DIR, WEB_ASSETS
 
 ap = argparse.ArgumentParser(description=__doc__)
 ap.add_argument("--run", default="generalist/seed0")
-ap.add_argument("--split", default="test", choices=["test", "val"])
+ap.add_argument("--split", default="test", choices=["test", "val", "oor"])
+ap.add_argument("--variant", default=None, help="only out-of-range tracks of this variant (oor split), e.g. tight_turns")
 ap.add_argument("--rule", nargs="+", default=["median_jump"], choices=sorted(RULES), help="selection rules (racingmania.eval.clips)")
 ap.add_argument("--ghosts", nargs="*", default=[], choices=["scripted", "run"],
                 help="also save official runs on these tracks as ghosts: the scripted driver's and/or the run's own")
@@ -44,10 +45,10 @@ a = ap.parse_args()
 rows = {r["track"]: r for r in csv.DictReader(open(RESULTS_DIR / a.run / f"eval_{a.split}.csv", encoding="utf-8"))}
 chosen = {}
 for rule in a.rule:
-    name, why = select_track(RESULTS_DIR, a.run, a.split, rule)
+    name, why = select_track(RESULTS_DIR, a.run, a.split, rule, variant=a.variant)
     chosen[name] = f"{why} in the official evaluation of {a.run}"
-if a.split == "test":
-    _log_access("test", "export:unseen-track-demo", len(chosen))
+if a.split in ("test", "oor"):
+    _log_access(a.split, "export:unseen-track-demo", len(chosen))
 cfg = load_vehicle_config()
 pool = load_pool(pool_path(a.split))
 index_path = WEB_ASSETS / "index.json"
@@ -68,7 +69,8 @@ def export_track(name: str, why: str):
     if int(ref[0]) == ticks:  # the fresh run's actions belong to this reference only if it reproduced it
         track["reference"]["actions"] = seqs[0]
     (WEB_ASSETS / "tracks" / f"{name}.json").write_text(json.dumps(track), encoding="utf-8")
-    entry = {"name": name, "title": f"Unseen test track {seed}", "kind": "unseen",
+    title = f"Unseen test track {seed}" if a.split != "oor" else f"Out-of-range track {seed} ({a.variant.replace('_', ' ')})" if a.variant         else f"Out-of-range track {seed}"  # short: the game's header shows it; the note gives the ranges
+    entry = {"name": name, "title": title, "kind": "unseen",
              "note": f"Held-out {a.split} seed {seed}, never used in training; chosen as {why}."}
     index["tracks"] = [t for t in index["tracks"] if t["name"] != name] + [entry]
     print(f"{name}: identical to the pool track; reference {ticks * cfg.dt:.2f} s (fresh certification {int(ref[0]) * cfg.dt:.2f} s, "

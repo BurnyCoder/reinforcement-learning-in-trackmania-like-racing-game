@@ -30,7 +30,7 @@ from pathlib import Path
 import yaml
 from playwright.sync_api import sync_playwright
 
-from racingmania.eval.clips import select_track
+from racingmania.eval.clips import select_track, variant_text
 from racingmania.report.features import geometry_features
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -44,13 +44,15 @@ ap.add_argument("--headed", action="store_true", help="show the browser window i
 ap.add_argument("--gif-width", type=int, default=400)
 ap.add_argument("--gif-fps", type=int, default=8)
 ap.add_argument("--captions-only", action="store_true", help="rewrite the README section from the last recording (videos.json)")
+ap.add_argument("--record", type=int, nargs="*", default=None, help="record only these clips (1-based); reuse the others from videos.json")
 a = ap.parse_args()
 out_dir = Path(a.out)
 out_dir.mkdir(parents=True, exist_ok=True)
 W, H = 1280, 720
 index = json.loads((ROOT / "web" / "assets" / "index.json").read_text(encoding="utf-8"))
 menu = {t["name"]: t for t in index["tracks"]}
-SET_NAMES = {"campaign": "hand-made campaign track", "test": "held-out generated test track", "val": "generated validation track"}
+SET_NAMES = {"campaign": "hand-made campaign track", "test": "held-out generated test track", "val": "generated validation track",
+             "oor": "held-out out-of-range test track"}
 
 
 def model_text(run: str) -> str:
@@ -62,6 +64,9 @@ def model_text(run: str) -> str:
                 f"see [The scripted driver](#the-scripted-driver)) with its 2 parameters tuned on validation tracks before any training"
                 + (f" (a_lat = {tuned['a_lat']} m/s², look-ahead gain = {tuned['lookahead_gain']} s)" if tuned else "")
                 + "; nothing is learned, and its time on each track is the reference that scores 1.0")
+    if run.startswith("baselines/random/"):
+        return (f"`{run}`: random actions, a uniformly random key combination every agent step from a seeded generator "
+                f"(seed {info['seed']}); no network and no training; a control")
     if run.startswith("baselines/untrained/"):
         return (f"`{run}`: the same network as the trained agents (2 × 256 units) with random initial weights "
                 f"(seed {info['seed']}) and no training; a control")
@@ -84,9 +89,16 @@ def map_text(track: str, run: str, split: str) -> str:
         relation = "the scripted driver is not trained; it drove this track once before, to certify it and set its reference time"
     elif run.startswith("baselines/untrained/"):
         relation = "this network was never trained on any track"
+    elif run.startswith("baselines/random/"):
+        relation = "random actions ignore the track entirely"
     else:
         relation = "the track this model was trained on" if seen else "this model never saw it during training"
-    return (f"{menu.get(track, {}).get('title', track)} (`{track}`), a {SET_NAMES[split]}, {f['length_m']:,.0f} m long with "
+    title = menu.get(track, {}).get("title", track).split(" (")[0]  # out-of-range titles carry the variant: stated below instead
+    variant = ""
+    if split == "oor":  # one generator factor beyond the training range (tracks/generator.py OOR_VARIANTS)
+        feats = {r["track"]: r for r in csv.DictReader(open(RESULTS / "tracks" / "oor_features.csv", encoding="utf-8"))}
+        variant = f" with one factor beyond the training range, {variant_text(feats[track]['variant'])},"
+    return (f"{title} (`{track}`), a {SET_NAMES[split]}{variant or ','} {f['length_m']:,.0f} m long with "
             f"{jumps} and up to {f['max_bank_deg']:.0f}° of banking; {relation}")
 
 
@@ -95,7 +107,7 @@ def clip_info(c: dict) -> dict:
     run = c["run"]
     rule_run = c.get("rule_run", run)  # whose official evaluation the selection rule reads
     who = f"`{rule_run}`" if c.get("rule_run") else "it"
-    track, why = (c["track"], "") if c.get("track") else select_track(RESULTS, rule_run, c["split"], c["rule"], who)
+    track, why = (c["track"], "") if c.get("track") else select_track(RESULTS, rule_run, c["split"], c["rule"], who, c.get("variant"))
     if c.get("rule_run"):
         why = f"the same track as the {rule_run} clip: {why}"
     c = {**c, "model": c["replay"], "mode": "replay", "ghost": f"assets/ghosts/{track}/{c['replay']}.json"}
@@ -134,11 +146,13 @@ def record(new_page, model: str, track: str, until: str, mode: str = "watch", gh
 
 
 clips = [clip_info(c) for c in yaml.safe_load(Path(a.clips).read_text(encoding="utf-8"))["clips"]]
-if a.captions_only:  # reuse the recorded clips and the browser times measured then
+todo = set(range(1, len(clips) + 1)) if a.record is None and not a.captions_only else set(a.record or [])
+if len(todo) < len(clips):  # reuse the other clips and the browser times measured when they were recorded
     last = {(v["model"], v["track"]): v for v in json.loads((out_dir / "videos.json").read_text(encoding="utf-8"))}
-    for c in clips:
-        c.update({k: last[(c["model"], c["track"])][k] for k in ("game_s", "game_finished", "mp4", "gif")})
-with sync_playwright() if not a.captions_only else _nullcontext() as p:
+    for k, c in enumerate(clips, 1):
+        if k not in todo:
+            c.update({f: last[(c["model"], c["track"])][f] for f in ("game_s", "game_finished", "mp4", "gif")})
+with sync_playwright() if todo else _nullcontext() as p:
     browser = p.chromium.launch(headless=not a.headed, args=["--ignore-gpu-blocklist", "--enable-gpu", "--use-angle=d3d11"]) if p else None
     tmp = Path(tempfile.mkdtemp())
 
@@ -146,7 +160,7 @@ with sync_playwright() if not a.captions_only else _nullcontext() as p:
         ctx = browser.new_context(viewport={"width": W, "height": H}, record_video_dir=str(tmp), record_video_size={"width": W, "height": H})
         return ctx, ctx.new_page(), time.time()
 
-    for c in clips if p else []:
+    for c in [c for k, c in enumerate(clips, 1) if k in todo] if p else []:
         raw, start, end, final = record(new_page, c["model"], c["track"], c["until"], c["mode"], c["ghost"])
         stem = out_dir / f"{c['model']}_{c['track']}"
         trim = ["-ss", f"{max(0.0, start - 0.5):.2f}", "-to", f"{end:.2f}", "-i", str(raw)]
@@ -191,6 +205,8 @@ for k, c in enumerate(clips, 1):
              f"- **Evaluation:** {eval_text(c)}."]
     if c["why"]:
         lines.append(f"- **Why this clip:** chosen by a fixed rule as {c['why']} in its official evaluation.")
+    if c.get("note"):  # hand-written explanation from clips.yaml (no result numbers: those come from the files above)
+        lines.append(f"- **Note:** {c['note'].strip()}")
     blocks.append("\n".join(lines))
 section = ("<!-- VIDEOS:START -->\n## Videos\n\n"
            "Each clip replays an official evaluation run in the browser game: the car states the evaluator recorded while scoring "

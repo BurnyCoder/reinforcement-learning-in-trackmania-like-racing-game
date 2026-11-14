@@ -1,6 +1,6 @@
 """Phase 6: export a trained run to the browser game: ONNX policy, AI ghosts, and the asset index.
 
-Usage: uv run python scripts/06_export_web.py --run generalist/seed1   (or --run baselines/untrained/seed0 for the untrained control)
+Usage: uv run python scripts/06_export_web.py --run generalist/seed1   (--run baselines/untrained/seed0: the untrained control; --run baselines/random/seed0: ghosts of the random-actions control)
 Writes web/assets/models/<run>.onnx (+ results/<run>/policy.onnx), web/assets/ghosts/<track>/<run>.json,
 updates web/assets/index.json, and records the ONNX-vs-PyTorch action agreement in run.json.
 """
@@ -27,6 +27,33 @@ a = ap.parse_args()
 rid = a.run
 res_dir, _, _ = run_dirs(rid)
 seed = int(rid.rsplit("seed", 1)[1])
+
+
+def export_ghosts(index: dict, flat: str):
+    """Copy the run's recorded campaign runs (results/<run>/replays) into the game as AI ghosts."""
+    ghosts = index.setdefault("ghosts", {})
+    keep_unfinished = rid.startswith("baselines/")  # a control's runs are kept even though they fail: they are what the README shows
+    ends = ({r["track"]: r["end"] for r in csv.DictReader(open(res_dir / "eval_campaign.csv", encoding="utf-8"))}
+            if (res_dir / "eval_campaign.csv").exists() else {})  # end reason of each official campaign run
+    for rep in sorted((res_dir / "replays").glob("*.json")) if (res_dir / "replays").exists() else []:
+        d = json.loads(rep.read_text())
+        if not d.get("finished") and not keep_unfinished:
+            continue
+        dst = WEB_ASSETS / "ghosts" / d["track"] / f"{flat}.json"
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        dst.write_text(json.dumps({"model": flat, "time": d["time"], "finished": bool(d.get("finished")),
+                                   "end": ends.get(d["track"], "finished" if d.get("finished") else "fell"), "states": d["states"]}))
+        rel = f"assets/ghosts/{d['track']}/{flat}.json"
+        ghosts[d["track"]] = sorted(set(ghosts.get(d["track"], [])) | {rel})
+
+
+index_path = WEB_ASSETS / "index.json"
+if rid.startswith("baselines/random/"):  # random actions: no network to export, only its recorded runs as ghosts
+    index = json.loads(index_path.read_text())
+    export_ghosts(index, f"random-seed{seed}")
+    index_path.write_text(json.dumps(index, indent=2))
+    print("exported ghosts of", rid)
+    raise SystemExit
 if rid.startswith("baselines/untrained/"):  # the untrained control: same weights as in its evaluation (baselines.untrained_agent)
     from racingmania.baselines import untrained_agent
     from racingmania.env.vec_env import EnvConfig
@@ -56,24 +83,10 @@ check = export_policy(agent, norm, env, onnx_path)
 shutil.copy2(onnx_path, res_dir / "policy.onnx")
 update_run_json(res_dir, onnx_check=check, onnx_file=f"assets/models/{flat}.onnx")
 
-index_path = WEB_ASSETS / "index.json"
 index = json.loads(index_path.read_text())
 index["models"] = [m for m in index.get("models", []) if m["name"] != flat]
 index["models"].append({"name": flat, "file": f"assets/models/{flat}.onnx", "K": env_cfg.window_k, "stride": env_cfg.window_stride,
                         "description": description, "run": rid})
-ghosts = index.setdefault("ghosts", {})
-keep_unfinished = rid.startswith("baselines/")  # a control's runs are kept even though they fail: they are what the README shows
-ends = ({r["track"]: r["end"] for r in csv.DictReader(open(res_dir / "eval_campaign.csv", encoding="utf-8"))}
-        if (res_dir / "eval_campaign.csv").exists() else {})  # end reason of each official campaign run
-for rep in sorted((res_dir / "replays").glob("*.json")) if (res_dir / "replays").exists() else []:
-    d = json.loads(rep.read_text())
-    if not d.get("finished") and not keep_unfinished:
-        continue
-    dst = WEB_ASSETS / "ghosts" / d["track"] / f"{flat}.json"
-    dst.parent.mkdir(parents=True, exist_ok=True)
-    dst.write_text(json.dumps({"model": flat, "time": d["time"], "finished": bool(d.get("finished")),
-                               "end": ends.get(d["track"], "finished" if d.get("finished") else "fell"), "states": d["states"]}))
-    rel = f"assets/ghosts/{d['track']}/{flat}.json"
-    ghosts[d["track"]] = sorted(set(ghosts.get(d["track"], [])) | {rel})
+export_ghosts(index, flat)
 index_path.write_text(json.dumps(index, indent=2))
 print("exported", flat, check)
