@@ -16,12 +16,30 @@ from pathlib import Path
 
 import numpy as np
 import torch
+from torch import Tensor
 
 from ..env.vec_env import OUT_REASONS, EnvConfig, RacingVecEnv
+from ..sim.math3d import quat_conj, quat_rotate
 from ..utils.logging import get_logger
 
 log = get_logger(__name__)
 TIME_CAP_FACTOR = 3.0
+
+
+def mechanical_energy(car, cfg, g: float) -> Tensor:
+    """Mechanical energy per kilogram [N]: translational + gravitational + rotational kinetic energy.
+
+    Rotational energy is ½·Σ I_j·ω_j² / m with ω in the chassis frame (``Body.invInertia`` is the
+    diagonal of the box's principal inertia, cannon-es ``Box.calculateInertia``). It must be counted:
+    in a crash the chassis spins up and later turns that spin back into linear speed, which looked like
+    an energy gain while coasting before rotation was included (specialist seed 0, track val-1000079).
+    Spring energy in the suspension is not counted (the wheel compressions are not part of the state),
+    so a flagged run is still confirmed by hand (preregistration, section 8).
+    """
+    inertia = 1.0 / torch.tensor(cfg.inv_inertia, device=car.vel.device, dtype=car.vel.dtype)  # principal moments (kg m²)
+    w_local = quat_rotate(quat_conj(car.quat), car.angvel)  # angular velocity in the chassis frame
+    rot = 0.5 * (inertia * w_local ** 2).sum(1) / cfg.mass  # ½ωᵀIω per kg
+    return 0.5 * (car.vel ** 2).sum(1) + g * car.pos[:, 1] + rot
 
 
 def evaluate(policy, cfg, tracks, device="cuda", dtype=torch.float32, ref_ticks=None, record_replays=False,
@@ -58,12 +76,12 @@ def evaluate(policy, cfg, tracks, device="cuda", dtype=torch.float32, ref_ticks=
             alive = ~(env.rules.finished | env.rules.out) & (env.rules.ticks < cap)
             if not bool(alive.any()):
                 break
-            energy_before = 0.5 * (env.car.vel ** 2).sum(1) + g * env.car.pos[:, 1]
+            energy_before = mechanical_energy(env.car, cfg, g)
             action = policy(env)
             env.step(action)
             speed = torch.linalg.norm(env.car.vel, dim=1)
             max_speed = torch.where(alive, torch.maximum(max_speed, speed.float()), max_speed)
-            energy_after = 0.5 * (env.car.vel ** 2).sum(1) + g * env.car.pos[:, 1]
+            energy_after = mechanical_energy(env.car, cfg, g)
             coasting = (action % 3) == 1  # coast pedal only (brake at standstill engages reverse, which adds energy)
             gain = torch.where(alive & coasting, (energy_after - energy_before).float(), torch.zeros_like(max_speed))
             coast_energy_gain = torch.maximum(coast_energy_gain, gain)
