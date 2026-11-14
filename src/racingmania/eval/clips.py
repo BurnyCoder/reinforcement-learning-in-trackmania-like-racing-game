@@ -17,6 +17,7 @@ from pathlib import Path
 VARIANT_ADJ = {"tight_turns": "tight-turn", "steep_hills": "steep-hill", "long_jumps": "long-jump", "long_track": "long"}
 RULES = {
     "best": "the highest-scoring finished track",
+    "median": "the median-scoring finished track",
     "median_jump": "the median-scoring finished track among those with at least one jump",
     "mid_fail": "the fall whose position is closest to the middle of its track",
 }
@@ -60,6 +61,9 @@ def select_track(results: Path, run: str, split: str, rule: str, who: str = "it"
         if len(finished) == 1:
             return track, f"{whose} only finished {split} track"
         return track, f"{RULES[rule]} of the {len(finished)} {split} tracks {who} finished"
+    if rule == "median":
+        cand = sorted(finished)
+        return cand[len(cand) // 2][1], f"{RULES[rule]} of the {len(finished)} {split} tracks {who} finished"
     feats = _features(results, "oor" if "out-of-range" in split else split.split(" ")[-1])
     if rule == "median_jump":
         cand = sorted((s, t) for s, t in finished if int(feats[t]["jumps"]) >= 1)

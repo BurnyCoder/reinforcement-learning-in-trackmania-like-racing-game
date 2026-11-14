@@ -108,7 +108,9 @@ if "scripted" in a.ghosts:  # the scripted driver's official runs, for the game'
     save_official_ghosts(_Scripted(load_tuned()), "baselines/scripted/seed0", "scripted-driver", EnvConfig())
 if "run" in a.ghosts:  # the run's own official runs (finished or not)
     from racingmania.runs import load_policy
-    experiment, seed = a.run.split("/")[0], int(a.run.rsplit("seed", 1)[1])
-    policy, _, _, env_cfg = load_policy(experiment, seed, None)
+    experiment, seed, track = a.run.split("/")[0], int(a.run.rsplit("seed", 1)[1]), None
+    if "-campaign-" in experiment:  # specialist run ids name their training track: specialist-campaign-01/seed1
+        experiment, track = experiment.split("-campaign-")[0], "campaign-" + experiment.split("-campaign-")[1]
+    policy, _, _, env_cfg = load_policy(experiment, seed, track)
     save_official_ghosts(policy, a.run, a.run.replace("/", "-"), env_cfg)
 index_path.write_text(json.dumps(index, indent=2), encoding="utf-8")

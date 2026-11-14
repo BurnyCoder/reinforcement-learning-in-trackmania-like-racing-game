@@ -48,6 +48,12 @@
       "title": "Out-of-range track 3000123 (tight turns)",
       "kind": "unseen",
       "note": "Held-out oor seed 3000123, never used in training; chosen as the fall whose position is closest to the middle of its track among its 43 falls on tight-turn out-of-range tracks in the official evaluation of generalist/seed0."
+    },
+    {
+      "name": "test-2000510",
+      "title": "Unseen test track 2000510",
+      "kind": "unseen",
+      "note": "Held-out test seed 2000510, never used in training; chosen as the median-scoring finished track of the 192 test tracks it finished in the official evaluation of specialist-campaign-01/seed1."
     }
   ],
   "models": [
@@ -175,6 +181,9 @@
     ],
     "oor-3000123": [
       "assets/ghosts/oor-3000123/generalist-seed0.json"
+    ],
+    "test-2000510": [
+      "assets/ghosts/test-2000510/specialist-campaign-01-seed1.json"
     ]
   }
 }
