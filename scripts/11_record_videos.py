@@ -184,6 +184,30 @@ with sync_playwright() if todo else _nullcontext() as p:
                                                indent=2), encoding="utf-8")
 
 
+def compare_text(c: dict) -> str:
+    """Sentence from a random-vs-sampled comparison file: both drivers' distributions, the test, and this clip's place."""
+    d = json.loads((RESULTS / c["compare"]).read_text(encoding="utf-8"))
+    r, u, tests = d["drivers"]["random_actions"], d["drivers"]["untrained_sampled"], d["tests"]
+    me = d["drivers"][c["compare_as"]]
+    p10, p50, p90 = me["time_p10_p50_p90_s"]
+    t = c["official_s"]
+    if t <= 2.0 + 1e-9:
+        place = f"an unlucky one: {me['share_out_at_2s']:.0%} of its runs end at 2.0 s like this one"
+    elif t >= p90:
+        place = "a lucky one, above the 90th percentile of its runs"
+    elif t <= p10:
+        place = "an unlucky one, in the bottom tenth of its runs"
+    else:
+        place = f"an ordinary one (the middle half of its runs is out after {p50:.1f} s or so)"
+    return (f"in {d['runs']} runs each on this track, random actions are out after {r['time_mean_s']:.1f} s on average "
+            f"(median {r['time_p10_p50_p90_s'][1]:.1f} s, 10–90 % range {r['time_p10_p50_p90_s'][0]:.1f}–{r['time_p10_p50_p90_s'][2]:.1f} s) and "
+            f"the untrained network with sampled actions after {u['time_mean_s']:.1f} s (median {u['time_p10_p50_p90_s'][1]:.1f} s, "
+            f"{u['time_p10_p50_p90_s'][0]:.1f}–{u['time_p10_p50_p90_s'][2]:.1f} s), with no detectable difference between them (Mann–Whitney "
+            f"p = {tests['time_mannwhitney_p']:.2f} for the time, {tests['progress_mannwhitney_p']:.2f} for the progress). The gap between "
+            f"the two random clips is therefore consistent with luck, and this run is {place} "
+            f"(`results/{c['compare']}`, `scripts/14_random_vs_sampled.py`).")
+
+
 def eval_text(c: dict) -> str:
     """The official result, the scripted driver's reference and what the browser showed."""
     r = c["row"]
@@ -207,13 +231,14 @@ def eval_text(c: dict) -> str:
 blocks = []
 for k, c in enumerate(clips, 1):
     lines = [f"### {k}. {c['title']}", "", f"[![{c['title']}: {c['model']} on {c['track']}]({c['gif']})]({c['mp4']})", "",
+             f"- **What you see:** {c['explain'].strip()}",
              f"- **Model:** {model_text(c['run'])}.",
              f"- **Map:** {map_text(c['track'], c['run'], c['split'])}.",
              f"- **Evaluation:** {eval_text(c)}."]
     if c["why"]:
         lines.append(f"- **Why this clip:** chosen by a fixed rule as {c['why']} in its official evaluation.")
-    if c.get("note"):  # hand-written explanation from clips.yaml (no result numbers: those come from the files above)
-        lines.append(f"- **Note:** {c['note'].strip()}")
+    if c.get("compare"):  # many-run comparison (scripts/14_random_vs_sampled.py): where this single run falls
+        lines.append(f"- **Over many runs:** {compare_text(c)}")
     blocks.append("\n".join(lines))
 section = ("<!-- VIDEOS:START -->\n## Videos\n\n"
            "Each clip replays an official evaluation run in the browser game: the car states the evaluator recorded while scoring "
