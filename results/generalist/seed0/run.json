@@ -4,7 +4,7 @@
   "track": null,
   "status": "evaluated",
   "phase": "1-first-models",
-  "updated": "2026-11-14T11:10:05.928407+00:00",
+  "updated": "2026-11-14T11:29:04.385051+00:00",
   "algo": "ppo",
   "description": "Generalist PPO agent trained on the whole generated training pool",
   "git_commit": "1c8e972820d695e7e9f0e589e3e475dc9b7b7a16",
@@ -71,27 +71,27 @@
   "wall_hours": 1.265602955420812,
   "last_session_hours": 1.2656912392377853,
   "eval_summary": {
-    "val": {
-      "sws": 1.2422590647779579,
-      "finish_rate": 0.8274111675126904,
-      "speed_ratio_finished": 1.5013805874923787,
-      "n_tracks": 197,
+    "test": {
+      "sws": 1.199322255689717,
+      "finish_rate": 0.8022657054582905,
+      "speed_ratio_finished": 1.4949190119059244,
+      "n_tracks": 971,
       "flags_overspeed": 0,
       "flags_energy_gain": 0
     },
-    "train_sample": {
-      "sws": 1.2336422656173713,
-      "finish_rate": 0.826,
-      "speed_ratio_finished": 1.4935136387619505,
-      "n_tracks": 1000,
+    "oor": {
+      "sws": 0.7875155932610951,
+      "finish_rate": 0.5240641711229946,
+      "speed_ratio_finished": 1.5027083259165794,
+      "n_tracks": 187,
       "flags_overspeed": 0,
-      "flags_energy_gain": 3
+      "flags_energy_gain": 0
     },
-    "campaign": {
-      "sws": 1.5959332142070077,
-      "finish_rate": 1.0,
-      "speed_ratio_finished": 1.5959332142070077,
-      "n_tracks": 5,
+    "test_unfiltered": {
+      "sws": 1.2270739053622648,
+      "finish_rate": 0.815,
+      "speed_ratio_finished": 1.5056121538187297,
+      "n_tracks": 200,
       "flags_overspeed": 0,
       "flags_energy_gain": 0
     }
