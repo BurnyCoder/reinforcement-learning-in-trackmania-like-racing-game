@@ -2,9 +2,9 @@
   "experiment": "specialist",
   "seed": 1,
   "track": "campaign-01",
-  "status": "trained",
+  "status": "evaluated",
   "phase": "2-single-seed",
-  "updated": "2026-11-14T17:30:21.973720+00:00",
+  "updated": "2026-11-14T17:33:48.667898+00:00",
   "algo": "ppo",
   "description": "Specialist PPO agent trained on a single campaign track",
   "git_commit": "11c90044c89cbecc5c74ac9d04237b431365514e",
@@ -69,5 +69,29 @@
   "global_step": 200278016,
   "iterations": 382,
   "wall_hours": 0.24837126440472074,
-  "last_session_hours": 0.24845208399825625
+  "last_session_hours": 0.24845208399825625,
+  "eval_summary": {
+    "campaign": {
+      "sws": 0.5766991849619233,
+      "finish_rate": 0.4,
+      "speed_ratio_finished": 1.4417479624048082,
+      "n_tracks": 5,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    },
+    "test": {
+      "sws": 0.2864797255325585,
+      "finish_rate": 0.19773429454170957,
+      "speed_ratio_finished": 1.448811528604762,
+      "n_tracks": 971,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    }
+  },
+  "onnx_check": {
+    "agreement": 1.0,
+    "max_abs_logit_diff": 8.58306884765625e-06,
+    "n": 512
+  },
+  "onnx_file": "assets/models/specialist-campaign-01-seed1.onnx"
 }
