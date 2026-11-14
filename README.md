@@ -2,6 +2,8 @@
 
 **An original 3D time-attack racing game for the browser, and reinforcement-learning drivers trained on a tested GPU port of its own car physics.**
 
+**▶ Play it in your browser: <https://burnycoder.github.io/reinforcement-learning-in-trackmania-like-racing-game/>** (results explorer: [results.html](https://burnycoder.github.io/reinforcement-learning-in-trackmania-like-racing-game/results.html))
+
 RacingMania is a small racing game in the time-attack genre popularised by TrackMania: one car, a road with hills, banked turns and jumps floating in the sky, checkpoints, medals, ghosts and instant restarts. It copies none of TrackMania's tracks, art or code. You can play it in the browser with the keyboard and race against AI drivers.
 
 The research question is whether one policy, trained with PPO ([Schulman et al. 2017](https://arxiv.org/abs/1707.06347)) on tens of thousands of procedurally generated tracks, can drive tracks it has never seen, and how it compares with a classical scripted driver and with specialists trained on a single track. The hypotheses, metric and analysis were [preregistered](reports/preregistration.md) before any model was trained.
@@ -12,7 +14,9 @@ The research question is whether one policy, trained with PPO ([Schulman et al. 
 
 | | |
 |---|---|
-| Play the game | `web/index.html` (see [Play](#play)); GitHub Pages deployment follows the first models |
+| Play the game | <https://burnycoder.github.io/reinforcement-learning-in-trackmania-like-racing-game/> (or locally, see [Play](#play)) |
+| Results explorer | <https://burnycoder.github.io/reinforcement-learning-in-trackmania-like-racing-game/results.html> |
+| Models and results on Hugging Face | [RacingMania RL collection](https://huggingface.co/collections/BurnyCoder/racingmania-rl-6af81116a617ddc332308929), [results dataset](https://huggingface.co/datasets/BurnyCoder/racingmania-results) |
 | Plan | [`reports/plan.md`](reports/plan.md) |
 | Preregistration | [`reports/preregistration.md`](reports/preregistration.md) |
 | Literature review (fact-checked, 286 claims) | [`reports/literature-review.md`](reports/literature-review.md), [`reports/source-ledger.md`](reports/source-ledger.md) |
@@ -135,6 +139,8 @@ export UV_PROJECT_ENVIRONMENT=$HOME/venvs/racingmania && uv sync
 ```
 
 ## Play
+
+Online: <https://burnycoder.github.io/reinforcement-learning-in-trackmania-like-racing-game/> (deployed from `web/` by `.github/workflows/pages.yml` on every push to `main`). Locally:
 
 ```bash
 uv run python -m http.server 8123 --directory web
