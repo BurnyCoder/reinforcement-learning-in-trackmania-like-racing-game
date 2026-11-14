@@ -1,0 +1,18 @@
+{
+  "tracks": 197,
+  "window_m": 60.0,
+  "failures": {
+    "n": 34,
+    "median_radius_m": 31.47673186469646,
+    "share_radius_below_40m": 0.6470588235294118,
+    "share_radius_below_60m": 0.9117647058823529,
+    "share_jump_in_window": 0.0
+  },
+  "random": {
+    "n": 985,
+    "median_radius_m": 87.52179270141177,
+    "share_radius_below_40m": 0.12081218274111676,
+    "share_radius_below_60m": 0.2568527918781726,
+    "share_jump_in_window": 0.03553299492385787
+  }
+}

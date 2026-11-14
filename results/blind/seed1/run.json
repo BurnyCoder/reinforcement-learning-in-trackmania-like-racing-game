@@ -2,7 +2,136 @@
   "experiment": "blind",
   "seed": 1,
   "track": null,
-  "status": "planned",
+  "status": "evaluated",
   "phase": "2-single-seed",
-  "updated": "2026-11-14T14:05:49.553506+00:00"
+  "updated": "2026-11-14T15:54:37.989682+00:00",
+  "algo": "ppo",
+  "description": "Blind control - the observation keeps only the nearest centreline point",
+  "git_commit": "62d58e9cec186ceae9803fe18a9a3772f532f20c",
+  "physics": "v1",
+  "hardware": {
+    "platform": "Linux-6.18.58.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.13.18",
+    "torch": "2.15.0+cu132",
+    "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU"
+  },
+  "ppo": {
+    "total_steps": 1000000000,
+    "num_envs": 16384,
+    "num_steps": 32,
+    "lr": 0.001,
+    "adaptive_lr": true,
+    "desired_kl": 0.01,
+    "lr_min": 1e-05,
+    "lr_max": 0.01,
+    "gamma": 0.99,
+    "gae_lambda": 0.95,
+    "num_minibatches": 4,
+    "update_epochs": 5,
+    "clip_coef": 0.2,
+    "ent_coef": 0.01,
+    "vf_coef": 1.0,
+    "max_grad_norm": 1.0,
+    "weight_decay": 0.0,
+    "hidden": [
+      256,
+      256
+    ],
+    "action_mode": "factored",
+    "eval_every_minutes": 10.0,
+    "checkpoint_every_minutes": 10.0,
+    "rotate_tracks_every": 20,
+    "loaded_tracks": 4096,
+    "seed": 1,
+    "compile": true
+  },
+  "env": {
+    "random_start_prob": 0.5,
+    "random_start_speed": [
+      0.0,
+      30.0
+    ],
+    "random_start_lateral": 0.5,
+    "max_steps": 1500,
+    "reward_scale": 0.1,
+    "window_k": 20,
+    "window_stride": 3,
+    "blind": true,
+    "time_cost": 0.0,
+    "fall_penalty": 0.0,
+    "hint_weight": 0.0,
+    "scripted_starts": false
+  },
+  "n_train_tracks": 48949,
+  "vehicle_overrides": {},
+  "checkpoint_dir": "/mnt/d/AI/racingmania/checkpoints/blind/seed1",
+  "tensorboard_dir": "/mnt/d/AI/racingmania/tensorboard/blind/seed1",
+  "global_step": 1000341504,
+  "iterations": 1908,
+  "wall_hours": 1.6234158396720886,
+  "last_session_hours": 1.6234885054826735,
+  "eval_summary": {
+    "val": {
+      "sws": 1.0029006235818405,
+      "finish_rate": 0.7258883248730964,
+      "speed_ratio_finished": 1.3816183415777803,
+      "n_tracks": 197,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 1
+    },
+    "train_sample": {
+      "sws": 1.0081012603118849,
+      "finish_rate": 0.732,
+      "speed_ratio_finished": 1.3771875140872745,
+      "n_tracks": 1000,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 2
+    },
+    "train_own": {
+      "sws": 1.0081012603118849,
+      "finish_rate": 0.732,
+      "speed_ratio_finished": 1.3771875140872745,
+      "n_tracks": 1000,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 2
+    },
+    "campaign": {
+      "sws": 1.44325874373819,
+      "finish_rate": 1.0,
+      "speed_ratio_finished": 1.44325874373819,
+      "n_tracks": 5,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    },
+    "test": {
+      "sws": 1.0100719711527153,
+      "finish_rate": 0.733264675592173,
+      "speed_ratio_finished": 1.377499837063605,
+      "n_tracks": 971,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    },
+    "oor": {
+      "sws": 0.6049187321352933,
+      "finish_rate": 0.4385026737967914,
+      "speed_ratio_finished": 1.3795097915768275,
+      "n_tracks": 187,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    },
+    "test_unfiltered": {
+      "sws": 1.021609975567126,
+      "finish_rate": 0.735,
+      "speed_ratio_finished": 1.389945544989287,
+      "n_tracks": 200,
+      "flags_overspeed": 0,
+      "flags_energy_gain": 0
+    }
+  },
+  "onnx_check": {
+    "agreement": 1.0,
+    "max_abs_logit_diff": 1.049041748046875e-05,
+    "n": 512
+  },
+  "onnx_file": "assets/models/blind-seed1.onnx"
 }
