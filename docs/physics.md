@@ -70,6 +70,7 @@ For each wheel `w` (all quantities in world space unless noted):
 | No rolling resistance or engine braking when coasting | `maxImpulse = brake` is zero when the brake is off; only the 1 % per second velocity damping slows the car |
 | One sliding wheel reduces grip on all wheels | The vehicle-wide `sliding` flag |
 | Reported launch when driving slowly over a raised body | cannon-es pull request #215 (unmerged) |
+| A wheel touching a surface at a steep angle pushes up to 10× harder, undamped | The spring force is multiplied by `clippedInvContactDotSuspension` = −1/(hit normal · ray direction); when that dot product is ≥ −0.1 (more than about 84° off) the factor is clamped to 10 and `suspensionRelativeVelocity` is set to 0, so no damping (`web/vendor/cannon-es/cannon-es.js`, `updateSuspension` and `castRay`; the same logic as Bullet's `btRaycastVehicle`). Seen so far only in crashes: rebounds of 2.5–7 J/kg after a violent impact, on 3 of 1,000 training-sample tracks for the first generalist, all in runs that failed |
 
 ## Port structure (`src/racingmania/sim/`)
 
