@@ -61,11 +61,15 @@ _Not yet available: the runs behind this table have no results yet._
 
 ### Finish rate by track feature
 
-_Figure not yet available: its runs have no results yet._
+![Finish rate by track feature on the validation set (development set; preliminary): jumps counted per track, banking and height range split into tertiles of that set (ranges in the labels). Mean over seeds and tracks in each bin with 95 % two-level bootstrap intervals. Secondary, descriptive analysis.](../figures/finish_by_feature.png)
+
+*Finish rate by track feature on the validation set (development set; preliminary): jumps counted per track, banking and height range split into tertiles of that set (ranges in the labels). Mean over seeds and tracks in each bin with 95 % two-level bootstrap intervals. Secondary, descriptive analysis.*
 
 ### Exploit flags
 
-_No evaluation has raised an exploit flag._
+| Configuration | Set | Overspeed flags | Coasting energy-gain flags | Seeds | Tracks |
+|---|---|---|---|---|---|
+| Generalist (PPO) [pilot, seed 0] | Train | 0 | 2 | 1 | 1000 |
 
 ## Learnings
 

@@ -1,9 +1,8 @@
-_Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-14; 15 of 115 planned runs evaluated. Full tables: [`reports/summary.md`](reports/summary.md)._
+_Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-14; 16 of 115 planned runs evaluated. Full tables: [`reports/summary.md`](reports/summary.md)._
 
-- The scripted driver finished 100.0 % of the 197 validation tracks (the development set used for decisions, so these numbers are preliminary; test tracks are read only after the recipe is frozen) (SWS 1.000 [1.000, 1.000]).
-- The random actions finished 0.0 % of the 197 validation tracks (the development set used for decisions, so these numbers are preliminary; test tracks are read only after the recipe is frozen) (SWS 0.000 [0.000, 0.000]).
-- The untrained network finished 0.0 % of the 197 validation tracks (the development set used for decisions, so these numbers are preliminary; test tracks are read only after the recipe is frozen) (SWS 0.000 [0.000, 0.000]).
-- No trained agent has been evaluated yet.
+- The Generalist (PPO) [pilot, seed 0] (1 seed) finished 82.7 % of the 197 validation tracks (the development set used for decisions, so these numbers are preliminary; test tracks are read only after the recipe is frozen) (95 % CI 77.2 % to 87.8 %), with a success-weighted speed (SWS) of 1.242 [1.159, 1.319]; an SWS of 1.0 would mean finishing every track as fast as the scripted driver.
+- On the tracks it finished, it needed 0.67 times the scripted driver's time (33.2 % faster on average).
+- Its finish rate was 82.7 percentage points more than the untrained network (0.0 %, 10 seeds); 82.7 percentage points more than the random actions (0.0 %, 3 seeds).
 - The preregistered hypotheses H1-H3 are not tested yet: they need test results from 10 generalist seeds and 5 seeds each of the blind control and the single-track ablation (0 generalist seeds so far).
 
 **Main evaluation table** (SWS = success-weighted speed, 1.0 = as fast as the scripted driver on every track; 95 % two-level bootstrap intervals over seeds and tracks):
@@ -13,6 +12,7 @@ _Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-14;
 | Scripted driver | Reference | 1 | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
 | Random actions | Control | 3 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
 | Untrained network | Control | 10 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
+| Generalist (PPO) [pilot, seed 0] | Main method | 1 | 1.596 [1.445, 1.799] | 100.0 % | 1.242 [1.159, 1.319] | 82.7 % | 1.218 [1.181, 1.253] | 81.6 % |
 | Specialist (campaign-01) [pilot, seed 0] | Specialist | 1 | 0.306 [0.000, 0.918] | 20.0 % | 0.188 [0.123, 0.260] | 13.2 % | — | — |
 
 **Preregistered hypotheses:**
