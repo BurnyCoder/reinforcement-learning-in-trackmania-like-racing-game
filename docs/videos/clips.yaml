@@ -64,6 +64,8 @@ clips:
     split: campaign
     track: campaign-01
     until: out
+    compare: demos/random-vs-sampled/campaign-01.json   # scripts/14_random_vs_sampled.py
+    compare_as: untrained_sampled
     note: >-
       The same network and weights as the clip before. The official evaluation takes the most probable action; here the
       keys of every step are drawn from the network's own probabilities, which are close to one in three for each steering
@@ -76,6 +78,8 @@ clips:
     split: campaign
     track: campaign-01
     until: out
+    compare: demos/random-vs-sampled/campaign-01.json
+    compare_as: random_actions
     note: >-
       This control presses a uniformly random key combination every agent step (0.05 s). Gas, coast and brake, which
       reverses at a standstill, each come up a third of the time and cancel out, so the car makes almost no progress and is

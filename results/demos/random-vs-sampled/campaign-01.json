@@ -1,0 +1,48 @@
+{
+  "track": "campaign-01",
+  "runs": 200,
+  "random_seed": 7,
+  "sample_seed": 123,
+  "drivers": {
+    "random_actions": {
+      "time_mean_s": 9.4364,
+      "time_p10_p50_p90_s": [
+        2.0,
+        6.1000000000000005,
+        21.032
+      ],
+      "time_max_s": 50.43,
+      "progress_mean_m": 13.097864186763763,
+      "progress_p10_p50_p90_m": [
+        6.042316436767578,
+        8.910714626312256,
+        26.9978609085083
+      ],
+      "share_out_at_2s": 0.27,
+      "share_finished": 0.0
+    },
+    "untrained_sampled": {
+      "time_mean_s": 9.7827,
+      "time_p10_p50_p90_s": [
+        2.0,
+        6.525,
+        23.076999999999998
+      ],
+      "time_max_s": 42.58,
+      "progress_mean_m": 13.476058168411255,
+      "progress_p10_p50_p90_m": [
+        6.09104290008545,
+        9.422636985778809,
+        28.094871711730956
+      ],
+      "share_out_at_2s": 0.225,
+      "share_finished": 0.0
+    }
+  },
+  "tests": {
+    "time_mannwhitney_p": 0.5018699523545935,
+    "time_ks_p": 0.9646522162314058,
+    "progress_mannwhitney_p": 0.4827397923849386,
+    "progress_ks_p": 0.7125821300149116
+  }
+}
