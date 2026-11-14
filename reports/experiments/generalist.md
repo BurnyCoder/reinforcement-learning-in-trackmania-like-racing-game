@@ -40,6 +40,7 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 | Scripted driver | Reference | 1 | 0.998 [0.995, 1.000] | 99.8 % | 1.000 [1.000, 1.000] | 100.0 % | 0.999 [0.997, 1.000] | 99.9 % | — | — | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
 | Random actions | Control | 3 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | — | — | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
 | Untrained network | Control | 10 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | — | — | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
+| Blind control | Control | 1 | 1.010 [0.971, 1.048] | 73.3 % | 1.003 [0.913, 1.086] | 72.6 % | 1.008 [0.970, 1.046] | 73.2 % | 1.008 [0.970, 1.046] | 73.2 % | 0.605 [0.506, 0.703] | 43.9 % | 1.443 [1.321, 1.590] | 100.0 % | 1.022 [0.934, 1.109] | 73.5 % |
 | Generalist (PPO) | Main method | 1 | 1.214 [1.177, 1.250] | 81.5 % | 1.236 [1.153, 1.315] | 82.7 % | 1.250 [1.214, 1.283] | 83.9 % | 1.250 [1.214, 1.283] | 83.9 % | 0.875 [0.769, 0.982] | 57.8 % | 1.590 [1.451, 1.783] | 100.0 % | 1.231 [1.147, 1.311] | 82.0 % |
 
 Rows from other groups are shown for comparison. Track counts: Test (unseen generated): 971 tracks; Validation: 197 tracks; Training sample: 1,000 tracks; Own training tracks: 1,000 tracks; Out-of-range test: 187 tracks; Campaign (hand-made): 5 tracks; Unfiltered test: 200 tracks.
@@ -56,12 +57,13 @@ Rows from other groups are shown for comparison. Track counts: Test (unseen gene
 |---|---|---|---|---|---|---|---|---|
 | H1 | The generalist drives unseen tracks better than the scripted driver | SWS > 1.0 | generalist 1/10 | 1.214 [1.177, 1.250] (preliminary) | — | — | — | **not yet tested** |
 | H2 | Track diversity is what generalises (50,000 tracks vs 1 track) | SWS difference > 0.1 | generalist 1/10, size-1 0/5 | — | — | — | — | **not yet tested** |
-| H3 | The agent uses the look-ahead (generalist vs blind control) | SWS difference > 0.1 | generalist 1/10, blind 0/5 | — | — | — | — | **not yet tested** |
+| H3 | The agent uses the look-ahead (generalist vs blind control) | SWS difference > 0.1 | generalist 1/10, blind 1/5 | 0.204 [0.164, 0.245] (preliminary) | — | — | — | **not yet tested** |
 
 ### Cross-checks (Agarwal et al. 2021)
 
 | Generalist vs | Set | Seeds (generalist / other) | IQM generalist | IQM other | P(generalist > other) | Time ratio where both finish | Tracks both finish |
 |---|---|---|---|---|---|---|---|
+| Blind control | test | 1 / 1 | 1.464 | 1.291 | 0.874 | 0.927 | 650 |
 | Scripted driver | test | 1 / 1 | 1.464 | 1.000 | 0.815 | 0.673 | 790 |
 | Random actions | test | 1 / 3 | 1.464 | 0.000 | 0.907 | — | 0 |
 | Untrained network | test | 1 / 10 | 1.464 | 0.000 | 0.907 | — | 0 |
@@ -77,6 +79,9 @@ Rows from other groups are shown for comparison. Track counts: Test (unseen gene
 | Configuration | Set | Overspeed flags | Coasting energy-gain flags | Seeds | Tracks |
 |---|---|---|---|---|---|
 | Untrained network | OOR | 0 | 1 | 10 | 187 |
+| Blind control | Own train | 0 | 2 | 1 | 1000 |
+| Blind control | Train | 0 | 2 | 1 | 1000 |
+| Blind control | Val | 0 | 1 | 1 | 197 |
 | Generalist (PPO) [pilot, seed 0] | Train | 0 | 3 | 1 | 1000 |
 | Generalist (PPO) | OOR | 0 | 3 | 1 | 187 |
 | Generalist (PPO) | Test | 0 | 1 | 1 | 971 |

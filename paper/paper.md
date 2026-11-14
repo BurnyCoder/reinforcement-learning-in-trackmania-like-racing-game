@@ -20,7 +20,7 @@ margin:
 Reinforcement-learning (RL) drivers in racing games are usually trained and tested on the same track, and the few published tests on unseen car tracks are negative or small. We built RacingMania, an original browser time-attack racer with hills, banked turns and jumps on the car physics of cannon-es, ported the same car physics line by line to batched PyTorch so that thousands of cars, each on its own procedurally generated track, train on one GPU, and preregistered three hypotheses: that a PPO policy trained on many generated tracks drives unseen tracks better than a scripted pure-pursuit driver (H1), that track diversity is what makes this possible (H2), and that the policy uses its view of the road ahead (H3). The primary metric is success-weighted speed (SWS), the mean over held-out tracks of finished × reference time / agent time.
 The Generalist (PPO) (1 seed) finished 81.5 % of the 971 unseen test tracks (95 % CI 79.0 % to 83.8 %), with a success-weighted speed (SWS) of 1.214 [1.177, 1.250]; an SWS of 1.0 would mean finishing every track as fast as the scripted driver.
 On the tracks it finished, it needed 0.67 times the scripted driver's time (32.7 % less time on average).
-Its finish rate was 81.5 percentage points more than the untrained network (0.0 %, 10 seeds); 81.5 percentage points more than the random actions (0.0 %, 3 seeds).
+Its finish rate was 8.1 percentage points more than the blind control (73.3 %, 1 seed); 81.5 percentage points more than the untrained network (0.0 %, 10 seeds); 81.5 percentage points more than the random actions (0.0 %, 3 seeds).
 The preregistered hypotheses H1-H3 are not tested yet: they need test results from 10 generalist seeds and 5 seeds each of the blind control and the single-track ablation (1 generalist seeds so far).
 
 # Introduction
@@ -36,7 +36,7 @@ This paper asks four questions, fixed in the preregistration ([`reports/preregis
 
 **What is new** is a combination, limited to what our searches found ([`reports/literature-review.md`](https://github.com/BurnyCoder/reinforcement-learning-in-trackmania-like-racing-game/blob/main/reports/literature-review.md), section 14): the same car code runs in a playable browser game and, as a tested batched port, in training; the generalist is tested on held-out generated 3D tracks with hills, banking and jumps, with several seeds against a scripted driver, a blind control and a training-set-size ablation; and exploits of the physics engine are reported as findings rather than removed.
 
-**Status of this version.** 18 of 116 runs in the preregistered run matrix are evaluated. The confirmatory tests of H1-H3 need all preregistered seeds and are not complete; every number from fewer seeds or from the validation set is labelled preliminary.
+**Status of this version.** 19 of 116 runs in the preregistered run matrix are evaluated. The confirmatory tests of H1-H3 need all preregistered seeds and are not complete; every number from fewer seeds or from the validation set is labelled preliminary.
 
 # Background and related work
 
@@ -102,11 +102,11 @@ Runs follow the preregistered order: (1) the first two models (seed 0), which mu
 |---|---|---|---|---|---|---|
 | baselines | 0 | 0 | 0 | 0 | 15 | 15 |
 | 1-first-models | 0 | 0 | 0 | 0 | 2 | 2 |
-| 2-single-seed | 23 | 0 | 0 | 1 | 1 | 25 |
+| 2-single-seed | 23 | 0 | 0 | 0 | 2 | 25 |
 | 4-imitation-hybrids | 5 | 0 | 0 | 0 | 0 | 5 |
 | 5-hyperparameters | 4 | 0 | 0 | 0 | 0 | 4 |
 | 6-seed-sensitivity | 65 | 0 | 0 | 0 | 0 | 65 |
-| **all** | 97 | 0 | 0 | 1 | 18 | 116 |
+| **all** | 97 | 0 | 0 | 0 | 19 | 116 |
 
 # Results
 
@@ -125,6 +125,7 @@ Runs follow the preregistered order: (1) the first two models (seed 0), which mu
 | Scripted driver | Reference | 1 | 0.998 [0.995, 1.000] | 99.8 % | 1.000 [1.000, 1.000] | 100.0 % | 1.000 [1.000, 1.000] | 100.0 % |
 | Random actions | Control | 3 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
 | Untrained network | Control | 10 | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % | 0.000 [0.000, 0.000] | 0.0 % |
+| Blind control | Control | 1 | 1.010 [0.971, 1.048] | 73.3 % | 0.605 [0.506, 0.703] | 43.9 % | 1.443 [1.321, 1.590] | 100.0 % |
 | Generalist (PPO) [pilot, seed 0] | Main method | 1 | 1.199 [1.160, 1.237] | 80.2 % | 0.788 [0.678, 0.899] | 52.4 % | 1.596 [1.447, 1.799] | 100.0 % |
 | Generalist (PPO) | Main method | 1 | 1.214 [1.177, 1.250] | 81.5 % | 0.875 [0.769, 0.982] | 57.8 % | 1.590 [1.451, 1.783] | 100.0 % |
 | Specialist (campaign-01) [pilot, seed 0] | Specialist | 1 | — | — | — | — | 0.306 [0.000, 0.918] | 20.0 % |
@@ -141,7 +142,7 @@ H1: the generalist's test SWS exceeds 1.0, the scripted driver's score. H2: SWS(
 |---|---|---|---|---|---|---|---|
 | H1 | SWS > 1.0 | generalist 1/10 | 1.214 [1.177, 1.250] (preliminary) | — | — | — | **not yet tested** |
 | H2 | SWS difference > 0.1 | generalist 1/10, size-1 0/5 | — | — | — | — | **not yet tested** |
-| H3 | SWS difference > 0.1 | generalist 1/10, blind 0/5 | — | — | — | — | **not yet tested** |
+| H3 | SWS difference > 0.1 | generalist 1/10, blind 1/5 | 0.204 [0.164, 0.245] (preliminary) | — | — | — | **not yet tested** |
 
 Hypotheses marked "not yet tested" lack the preregistered seeds; any estimate shown for them is preliminary and is not a test.
 
@@ -149,6 +150,7 @@ Cross-checks (exploratory, Agarwal et al. 2021):
 
 | Generalist vs | Set | Seeds (generalist / other) | IQM generalist | IQM other | P(generalist > other) | Time ratio where both finish | Tracks both finish |
 |---|---|---|---|---|---|---|---|
+| Blind control | test | 1 / 1 | 1.464 | 1.291 | 0.874 | 0.927 | 650 |
 | Scripted driver | test | 1 / 1 | 1.464 | 1.000 | 0.815 | 0.673 | 790 |
 | Random actions | test | 1 / 3 | 1.464 | 0.000 | 0.907 | — | 0 |
 | Untrained network | test | 1 / 10 | 1.464 | 0.000 | 0.907 | — | 0 |
@@ -211,6 +213,9 @@ _No exploit list yet (`results/exploits.json` does not exist)._
 | Configuration | Set | Overspeed flags | Coasting energy-gain flags | Seeds | Tracks |
 |---|---|---|---|---|---|
 | Untrained network | OOR | 0 | 1 | 10 | 187 |
+| Blind control | Own train | 0 | 2 | 1 | 1000 |
+| Blind control | Train | 0 | 2 | 1 | 1000 |
+| Blind control | Val | 0 | 1 | 1 | 197 |
 | Generalist (PPO) [pilot, seed 0] | Train | 0 | 3 | 1 | 1000 |
 | Generalist (PPO) | OOR | 0 | 3 | 1 | 187 |
 | Generalist (PPO) | Test | 0 | 1 | 1 | 971 |
@@ -225,7 +230,7 @@ The results so far, in plain words:
 
 - The Generalist (PPO) (1 seed) finished 81.5 % of the 971 unseen test tracks (95 % CI 79.0 % to 83.8 %), with a success-weighted speed (SWS) of 1.214 [1.177, 1.250]; an SWS of 1.0 would mean finishing every track as fast as the scripted driver.
 - On the tracks it finished, it needed 0.67 times the scripted driver's time (32.7 % less time on average).
-- Its finish rate was 81.5 percentage points more than the untrained network (0.0 %, 10 seeds); 81.5 percentage points more than the random actions (0.0 %, 3 seeds).
+- Its finish rate was 8.1 percentage points more than the blind control (73.3 %, 1 seed); 81.5 percentage points more than the untrained network (0.0 %, 10 seeds); 81.5 percentage points more than the random actions (0.0 %, 3 seeds).
 - The preregistered hypotheses H1-H3 are not tested yet: they need test results from 10 generalist seeds and 5 seeds each of the blind control and the single-track ablation (1 generalist seeds so far).
 
 A written interpretation will be added once the confirmatory runs are complete.
