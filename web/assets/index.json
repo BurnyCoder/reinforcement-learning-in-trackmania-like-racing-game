@@ -1,0 +1,31 @@
+{
+  "tracks": [
+    {
+      "name": "campaign-01",
+      "title": "First Flight",
+      "kind": "campaign"
+    },
+    {
+      "name": "campaign-02",
+      "title": "Rolling Hills",
+      "kind": "campaign"
+    },
+    {
+      "name": "campaign-03",
+      "title": "Banked Sweepers",
+      "kind": "campaign"
+    },
+    {
+      "name": "campaign-04",
+      "title": "Technical",
+      "kind": "campaign"
+    },
+    {
+      "name": "campaign-05",
+      "title": "Grand Tour",
+      "kind": "campaign"
+    }
+  ],
+  "models": [],
+  "ghosts": {}
+}

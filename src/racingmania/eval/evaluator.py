@@ -49,6 +49,10 @@ def evaluate(policy, cfg, tracks, device="cuda", dtype=torch.float32, ref_ticks=
     coast_energy_gain = torch.zeros(T, device=env.device)
     replays = [[] for _ in range(T)] if record_replays else None
     g = -cfg.gravity[1]
+    if record_replays:  # states[0] is the start state; states[k] is the state after k agent steps
+        st0 = torch.cat((env.car.pos, env.car.quat, env.car.steer.unsqueeze(1)), 1).float().cpu().numpy()
+        for i in range(T):
+            replays[i].append([round(float(x), 4) for x in st0[i]])
     with torch.no_grad():
         while True:
             alive = ~(env.rules.finished | env.rules.out) & (env.rules.ticks < cap)

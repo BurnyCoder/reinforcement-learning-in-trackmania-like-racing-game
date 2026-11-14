@@ -131,7 +131,11 @@ One ONNX graph per trained model contains the observation function, the frozen o
 | `steer_logits` | `[1, 3]` | scores for left / none / right |
 | `pedal_logits` | `[1, 3]` | scores for gas / coast / brake |
 
-`K` and the stride (3 samples = 6 m) are stored in `web/assets/models/index.json` next to each model, so look-ahead ablations export correctly. The action is held for `ticks_per_action` ticks.
+`K` and the stride (3 samples = 6 m) are stored with each model's entry in `web/assets/index.json` (`models: [{"name", "file", "K", "stride", "description", "run"}]`), so look-ahead ablations export correctly. The action is held for `ticks_per_action` ticks.
+
+## Asset index (`web/assets/index.json`)
+
+`tracks: [{"name", "title", "kind"}]` lists the tracks in the menu; `models` lists exported policies (above); `ghosts: {"<track>": ["assets/ghosts/<track>/<model>.json", ...]}` lists AI ghost files, each `{"model": "<model name>", "time": seconds, "states": [[x,y,z,qx,qy,qz,qw,steer], ...]}` in the replay format below. `scripts/06_export_web.py` maintains `models` and `ghosts`.
 
 ## Results (`results/<experiment>/<run>/`)
 
@@ -140,6 +144,6 @@ One ONNX graph per trained model contains the observation function, the frozen o
 | `run.json` | Status (`planned`, `training`, `trained`, `evaluated`), config, seed, git commit, physics version, hardware, step budget, wall-clock time |
 | `train_metrics.csv` | One row per logging interval: agent steps, mean episode return, finish rate, score on validation tracks, losses |
 | `eval_<set>.csv` | One row per track: track seed or name, finished, ticks, reference ticks, score, flags from the exploit detectors |
-| `replays/<track>.json` | State trajectories for the game's ghosts: per agent step `[x, y, z, qx, qy, qz, qw, steer]` |
+| `replays/<track>.json` | State trajectories for the game's ghosts: `states[0]` is the start state and `states[k]` the state after `k` agent steps, each `[x, y, z, qx, qy, qz, qw, steer]` |
 
 Checkpoints and TensorBoard logs are large and live under `RACINGMANIA_DATA_DIR`, mirrored to Hugging Face.

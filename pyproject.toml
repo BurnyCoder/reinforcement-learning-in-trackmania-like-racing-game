@@ -46,4 +46,5 @@ markers = ["slow: long-running test (training or whole-track driving)", "web: ne
 [dependency-groups]
 dev = [
     "pytest>=9.2.0",
+    "pytest-playwright>=0.10.0",
 ]

@@ -1,0 +1,143 @@
+/* style.css — layout and look of the RacingMania page: full-screen 3D view with overlays for the
+   menu, the race HUD and the finish screen. Global context: plain CSS, no build step; colours are
+   original (deep navy panels, coral and cyan accents) and do not imitate any other game. */
+
+:root {
+  --panel: rgba(13, 19, 32, 0.78);
+  --panel-solid: #0d1320;
+  --line: rgba(255, 255, 255, 0.12);
+  --text: #eef3f8;
+  --muted: #9aa8bb;
+  --accent: #ff6b35;
+  --accent2: #2cc6e0;
+  --faster: #3ee08a;
+  --slower: #ff5a5f;
+  --author: #2fe0b8;
+  --gold: #f5c542;
+  --silver: #c8d2dc;
+  --bronze: #d08a52;
+  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  color: var(--text);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: #c9dcf0; }
+[hidden] { display: none !important; }
+#view, #view canvas { position: fixed; inset: 0; display: block; }
+
+kbd {
+  display: inline-block; min-width: 1.6em; padding: 0.05em 0.35em; margin: 0 0.1em;
+  border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08); font: 600 0.8em/1.4 ui-monospace, Consolas, monospace; text-align: center;
+}
+.muted { color: var(--muted); }
+.small { font-size: 0.85em; }
+button {
+  font: inherit; color: var(--text); background: rgba(255, 255, 255, 0.08); border: 1px solid var(--line);
+  border-radius: 8px; padding: 0.55em 1.1em; cursor: pointer;
+}
+button:hover { background: rgba(255, 255, 255, 0.16); }
+button.primary { background: var(--accent); border-color: var(--accent); color: #1a0d05; font-weight: 700; }
+button.primary:hover { filter: brightness(1.08); }
+button kbd { border-color: rgba(0, 0, 0, 0.25); }
+
+/* Medal badges: plain coloured discs. */
+.medal { display: inline-block; width: 0.95em; height: 0.95em; border-radius: 50%; vertical-align: -0.12em; box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.25); }
+.medal.author { background: var(--author); }
+.medal.gold { background: var(--gold); }
+.medal.silver { background: var(--silver); }
+.medal.bronze { background: var(--bronze); }
+.medal.none { background: transparent; box-shadow: inset 0 0 0 1px var(--line); }
+
+/* ---- menu ---- */
+#menu {
+  position: fixed; inset: 0; display: flex; flex-direction: column; padding: 4vh 4vw;
+  background: linear-gradient(90deg, rgba(10, 15, 26, 0.88) 0%, rgba(10, 15, 26, 0.55) 55%, rgba(10, 15, 26, 0.1) 100%);
+}
+#menu h1 { margin: 0; font-size: clamp(2rem, 5vw, 3.4rem); letter-spacing: 0.02em; font-weight: 800; }
+#menu h1 span { color: var(--accent); }
+.tagline { margin: 0.2em 0 0; color: var(--muted); }
+.menu-body { display: flex; gap: 2rem; margin-top: 3vh; min-height: 0; flex: 1; align-items: flex-start; }
+#track-list { list-style: none; margin: 0; padding: 0; width: min(440px, 45vw); display: flex; flex-direction: column; gap: 0.4rem; }
+#track-list li {
+  display: flex; align-items: center; gap: 0.9rem; padding: 0.7rem 0.9rem; border-radius: 10px; cursor: pointer;
+  background: var(--panel); border: 1px solid var(--line);
+}
+#track-list li:hover { border-color: rgba(255, 255, 255, 0.3); }
+#track-list li.selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+#track-list .num { font: 700 1.1rem ui-monospace, Consolas, monospace; color: var(--accent); }
+#track-list .names { display: flex; flex-direction: column; flex: 1; }
+#track-list .title { font-weight: 700; }
+#track-list .name { font-size: 0.8rem; color: var(--muted); }
+#track-list .best { font-variant-numeric: tabular-nums; font-family: ui-monospace, Consolas, monospace; }
+#track-detail { width: min(400px, 40vw); padding: 1.2rem 1.4rem; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); }
+#track-detail h2 { margin: 0 0 0.2em; }
+#track-detail p { margin: 0.3em 0; }
+.best-line b { font-family: ui-monospace, Consolas, monospace; }
+.targets { list-style: none; padding: 0; margin: 0.6em 0; display: grid; gap: 0.25em; }
+.targets li, #hud-medals li { display: grid; grid-template-columns: 1.3em 4.5em auto; align-items: center; }
+.targets .t, #hud-medals .t { font-family: ui-monospace, Consolas, monospace; }
+.ghosts { border: 1px solid var(--line); border-radius: 8px; margin: 0.8em 0; padding: 0.4em 0.8em 0.6em; display: grid; gap: 0.3em; }
+.ghosts legend { color: var(--muted); font-size: 0.85em; padding: 0 0.3em; }
+.ghosts label.disabled { color: var(--muted); }
+.model { display: flex; gap: 0.6em; align-items: center; margin: 0.6em 0; }
+.model select { font: inherit; color: var(--text); background: var(--panel-solid); border: 1px solid var(--line); border-radius: 6px; padding: 0.3em; }
+.actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+footer.keys { margin-top: auto; }
+.keys { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; color: var(--muted); font-size: 0.85rem; }
+
+/* ---- HUD ---- */
+#hud { position: fixed; inset: 0; pointer-events: none; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
+.hud-top { position: absolute; top: 2.5vh; left: 50%; transform: translateX(-50%); text-align: center; }
+#hud-timer {
+  font: 800 clamp(2rem, 4.5vw, 3.2rem) ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums;
+  padding: 0.1em 0.5em; border-radius: 10px; background: var(--panel);
+}
+#hud-split { margin-top: 0.4em; font: 700 1.3rem ui-monospace, Consolas, monospace; min-height: 1.5em; }
+#hud-split.faster { color: var(--faster); }
+#hud-split.slower { color: var(--slower); }
+.hud-top-left { position: absolute; top: 2.5vh; left: 2vw; display: grid; gap: 0.25em; font-size: 0.95rem; padding: 0.4em 0.8em; border-radius: 8px; background: var(--panel); }
+#hud-mode { font-weight: 700; }
+#hud-best, #hud-ai { color: var(--muted); }
+#hud-ai:empty { display: none; }
+.hud-top-right { position: absolute; top: 2.5vh; right: 2vw; text-align: right; display: grid; gap: 0.5em; justify-items: end; }
+#hud-cp { font-weight: 700; font-size: 1.1rem; padding: 0.3em 0.7em; border-radius: 8px; background: var(--panel); }
+#hud-medals { list-style: none; margin: 0; padding: 0.4em 0.7em; border-radius: 8px; background: var(--panel); display: grid; gap: 0.15em; font-size: 0.9rem; text-align: left; }
+#hud-medals li { column-gap: 0.3em; }
+#hud-message { position: absolute; top: 30vh; width: 100%; text-align: center; font-size: 1.4rem; font-weight: 700; }
+#hud-speed {
+  position: absolute; right: 2vw; bottom: 3vh; padding: 0.05em 0.4em; border-radius: 10px; background: var(--panel);
+  font: 800 clamp(2.4rem, 5vw, 3.6rem) ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums;
+}
+#hud-speed small { font-size: 0.35em; margin-left: 0.3em; color: var(--muted); }
+#hud[data-mode="watch"] .drive { display: none; } /* nothing to drive when only the AI races */
+#hud-legend { position: absolute; left: 2vw; bottom: 3vh; max-width: 46vw; padding: 0.5em 0.8em; border-radius: 8px; background: rgba(13, 19, 32, 0.5); }
+
+/* ---- finish screen ---- */
+#finish {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); min-width: min(420px, 90vw);
+  padding: 1.4rem 1.8rem; border-radius: 14px; background: var(--panel); border: 1px solid var(--line);
+  backdrop-filter: blur(6px); text-align: center;
+}
+#finish h2 { margin: 0; }
+#finish-time { font: 800 3rem ui-monospace, Consolas, monospace; margin: 0.15em 0; }
+#finish-medal { font-weight: 700; font-size: 1.1rem; }
+#finish-medal .medal { margin-right: 0.4em; }
+#finish table { margin: 0.8em auto; border-collapse: collapse; font-family: ui-monospace, Consolas, monospace; }
+#finish td { padding: 0.15em 0.8em; text-align: right; }
+#finish td:first-child { text-align: left; font-family: system-ui, sans-serif; color: var(--muted); }
+#finish .actions { justify-content: center; }
+td.faster { color: var(--faster); }
+td.slower { color: var(--slower); }
+
+#loading, #error {
+  position: fixed; left: 50%; bottom: 6vh; transform: translateX(-50%); padding: 0.6em 1.2em;
+  border-radius: 8px; background: var(--panel); font-weight: 600;
+}
+#error { background: #5a1520; bottom: auto; top: 3vh; }
+
+@media (max-width: 760px) {
+  .menu-body { flex-direction: column; }
+  #track-list, #track-detail { width: 100%; }
+  #hud-legend { display: none; }
+}

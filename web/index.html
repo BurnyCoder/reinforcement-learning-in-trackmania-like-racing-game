@@ -1,0 +1,79 @@
+<!doctype html>
+<!--
+  index.html — the RacingMania browser game: one page with the 3D view, the menu, the HUD and the
+  finish screen. Global context: a static site with no build step; js/main.js (an ES module with
+  relative imports) does everything, so the same files work locally and on GitHub Pages sub-paths.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RacingMania</title>
+  <meta name="description" content="RacingMania: an original low-poly time-attack racing game in the browser, with AI drivers trained by reinforcement learning.">
+  <link rel="icon" href="data:,"> <!-- no favicon request (avoids a 404 in the console) -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="view"></div> <!-- the three.js canvas goes here -->
+
+  <section id="menu" hidden>
+    <header>
+      <h1>Racing<span>Mania</span></h1>
+      <p class="tagline">Time attack on roads in the sky. One car, checkpoints, medals, ghosts.</p>
+    </header>
+    <div class="menu-body">
+      <ol id="track-list" aria-label="Tracks"></ol>
+      <div id="track-detail"></div>
+    </div>
+    <footer class="keys">
+      <span><kbd>↑</kbd><kbd>↓</kbd> choose track</span>
+      <span><kbd>Enter</kbd> race</span>
+      <span>Drive: <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or arrows</span>
+    </footer>
+  </section>
+
+  <section id="hud" hidden>
+    <div class="hud-top-left">
+      <div id="hud-mode"></div>
+      <div id="hud-best"></div>
+      <div id="hud-ai"></div>
+    </div>
+    <div class="hud-top">
+      <div id="hud-timer">00:00.00</div>
+      <div id="hud-split"></div>
+    </div>
+    <div class="hud-top-right">
+      <div id="hud-cp"></div>
+      <ul id="hud-medals"></ul>
+    </div>
+    <div id="hud-message"></div>
+    <div id="hud-speed"><span id="hud-speed-value">0</span><small>km/h</small></div>
+    <div id="hud-legend" class="keys">
+      <span class="drive"><kbd>↑</kbd>/<kbd>W</kbd> gas</span>
+      <span class="drive"><kbd>↓</kbd>/<kbd>S</kbd> brake, reverse</span>
+      <span class="drive"><kbd>←</kbd><kbd>→</kbd>/<kbd>A</kbd><kbd>D</kbd> steer</span>
+      <span><kbd>Enter</kbd>/<kbd>R</kbd> restart</span>
+      <span class="drive"><kbd>Backspace</kbd> last checkpoint</span>
+      <span><kbd>Esc</kbd> menu</span>
+    </div>
+  </section>
+
+  <section id="finish" hidden>
+    <h2 id="finish-title">Finished</h2>
+    <div id="finish-time">00:00.00</div>
+    <div id="finish-medal" hidden></div>
+    <p id="finish-note"></p>
+    <table><tbody id="finish-splits"></tbody></table>
+    <p id="finish-extra" class="muted"></p>
+    <div class="actions">
+      <button data-act="retry" class="primary">Retry <kbd>Enter</kbd></button>
+      <button data-act="menu">Menu <kbd>Esc</kbd></button>
+    </div>
+  </section>
+
+  <div id="loading">Loading…</div>
+  <div id="error" hidden></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
