@@ -5,7 +5,9 @@
     "track": "campaign-01",
     "official_s": 19.71,
     "reference_s": 30.17,
+    "title": "specialist-campaign-01-seed0: best lap, on its training track (First Flight)",
     "description": "Specialist PPO agent trained on a single campaign track",
+    "note": "",
     "game_s": 19.71,
     "finished": true,
     "respawns": 0,
@@ -18,11 +20,28 @@
     "track": "campaign-04",
     "official_s": 21.27,
     "reference_s": 42.52,
+    "title": "generalist-seed0: best lap, on a hand-made track it never saw in training (Technical)",
     "description": "Generalist PPO agent trained on the whole generated training pool",
+    "note": "",
     "game_s": 21.27,
     "finished": true,
     "respawns": 0,
     "mp4": "docs/videos/generalist-seed0_campaign-04.mp4",
     "gif": "docs/videos/generalist-seed0_campaign-04.gif"
+  },
+  {
+    "model": "generalist-seed0",
+    "run": "generalist/seed0",
+    "track": "test-2000386",
+    "official_s": 33.01,
+    "reference_s": 49.36,
+    "title": "generalist-seed0 on a held-out generated track it never saw in training (Unseen test track 2000386)",
+    "description": "Generalist PPO agent trained on the whole generated training pool",
+    "note": "Held-out test seed 2000386, never used in training: the median-scoring track among the 397 test tracks with a jump that generalist/seed0 finished in its official evaluation.",
+    "game_s": 33.07,
+    "finished": true,
+    "respawns": 0,
+    "mp4": "docs/videos/generalist-seed0_test-2000386.mp4",
+    "gif": "docs/videos/generalist-seed0_test-2000386.gif"
   }
 ]

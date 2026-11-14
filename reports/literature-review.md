@@ -169,7 +169,7 @@ Henderson et al. 2018, Agarwal et al. 2021 and Patterson et al. 2024 (section 7)
 
 - Evidence that one policy can drive **unseen** car tracks is thin. The strongest multi-track study is for drones (Green et al. 2026); for cars it is negative (Fuchs, Learn-to-Race) or small: `viik2k/trace` reports a planar car lapping held-out generated tracks, on 64 validation tracks and three reference tracks, with one of three seeds passing and no paper.
 - We found no study of this for a 3D car with suspension, hills, banking and jumps, none with keyboard-style discrete actions, and none that reports intervals over many seeds on a large held-out set.
-- No batched GPU port of a game's raycast vehicle is public, so training normally runs against the game itself in real time (Linesight, TMRL) or on a simulator that humans do not play.
+- No batched GPU port of a game's raycast vehicle is public, so training normally runs against the game itself, sped up through TMInterface (Linesight, whose default configuration sets `running_speed = 80`) or in real time (TMRL), or on a simulator that humans do not play.
 - What is new here is therefore a combination, not a single method: the same car code runs in a playable browser game and, as a tested port, in training; the generalist is tested on 1,000 unseen generated 3D tracks with ten seeds against a scripted driver, a blind control and a training-set-size ablation; and exploits of the physics are reported systematically rather than removed. Each of these claims is limited to what our searches found.
 
 ## 15. Fact-check log
@@ -199,3 +199,5 @@ All corrections are applied in the text above. The ones that changed the design:
 **Limits of the fact-check.** Most paper quotes were relayed by a page-reading tool rather than read character by character; papers were searched in full and their relevant sections read, not read line by line; negative claims ("no rule for test-set size", "no public batched port") rest on searches. Code, registries and documentation in sections 8–12 were read as raw text.
 
 **Still unverified:** which Swift reward weight belongs to which term; whether any RL agent has used a TrackMania physics bug; Rapier's substep integration code (read only from its changelog); that PolyTrack is closed source and what Yosh has or has not published (searches only).
+
+**Later corrections (2026-11-14, README review with a fresh link check).** (1) Linesight does not train in real time: its default configuration runs the game sped up through TMInterface (`running_speed = 80` in `config_files/config.py`) and lists several official maps for training; section 14's wording is corrected. (2) No published source calls cannon-es's `RaycastVehicle` a port of Bullet's `btRaycastVehicle`; the code follows it (shared function names such as `resolveSingleBilateral`, and a commented-out Bullet line `btWheelContactPoint ...` kept in the source), so the README, plan and paper now say "follows Bullet's code".
