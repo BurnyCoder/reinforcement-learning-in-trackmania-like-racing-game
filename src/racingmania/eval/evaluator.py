@@ -44,15 +44,23 @@ def mechanical_energy(car, cfg, g: float) -> Tensor:
 
 def evaluate(policy, cfg, tracks, device="cuda", dtype=torch.float32, ref_ticks=None, record_replays=False,
              max_ticks_default: int = 30000, env_cfg: EnvConfig | None = None, compile: bool = False,
-             log_access: str | None = None) -> list[dict]:
+             log_access: str | None = None, fresh_compile: bool = True) -> list[dict]:
     """Run ``policy(env) -> actions`` once on every track of ``tracks`` (a TrackBatch).
 
     ``ref_ticks``: reference finishing ticks per track (default: the TrackBatch's ``ref_ticks``);
     tracks without a reference use ``max_ticks_default`` as the cap and get no score.
     ``log_access``: name of a protected set (test, oor); every evaluation on it is appended to
     ``results/test_access_log.jsonl`` (preregistration, section 3).
+    ``fresh_compile``: with ``compile``, reset the in-process compiler state first (``torch.compiler.reset``) so
+    the simulator is compiled for exactly this batch size. Without it, a second evaluation in the
+    same process reuses a kernel recompiled for dynamic shapes, whose float32 rounding differs; on
+    chaotic tracks that changes outcomes (741 of 1,000 training-sample tracks ended on a different
+    tick, reports/plan.md amendments). Training's monitoring validation passes False to keep its
+    compiled training step.
     Returns one dictionary per track.
     """
+    if compile and fresh_compile:
+        torch.compiler.reset()  # public API, https://docs.pytorch.org/docs/stable/generated/torch.compiler.reset.html
     if log_access:
         _log_access(log_access, getattr(policy, "name", type(policy).__name__), tracks.num_tracks)
     T = tracks.num_tracks
