@@ -232,9 +232,12 @@ def eval_text(c: dict) -> str:
     return f"{src}: {res}. The clip replays this run{check}"
 
 
-blocks = []
+blocks, group = [], None
 for k, c in enumerate(clips, 1):
-    lines = [f"### {k}. {c['title']}", "", f"[![{c['title']}: {c['model']} on {c['track']}]({c['gif']})]({c['mp4']})", "",
+    if c.get("group") and c["group"] != group:  # section heading when a new group starts (positive, negative, controls)
+        group = c["group"]
+        blocks.append(f"### {group}")
+    lines = [f"#### {k}. {c['title']}", "", f"[![{c['title']}: {c['model']} on {c['track']}]({c['gif']})]({c['mp4']})", "",
              f"- **What you see:** {c['explain'].strip()}",
              f"- **Model:** {model_text(c['run'])}.",
              f"- **Map:** {map_text(c['track'], c['run'], c['split'])}.",
