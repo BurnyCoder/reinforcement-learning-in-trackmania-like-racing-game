@@ -1,5 +1,12 @@
 # Run matrix in the preregistered order (reports/plan.md, 'Runs, by phase'; reports/preregistration.md, section 7).
 # Generated from the approved run table; scripts/05_run_matrix.py executes it top to bottom and is resumable.
+# While `paused` is set, the queue does not start, and the report lists runs without a run.json as "postponed".
+# To resume training, delete the `paused` block and run scripts/05_run_matrix.py for the remaining phases.
+paused:
+  date: '2026-11-14'
+  note: >-
+    Training paused at the user's request after the size-1 run (seed 1) of phase 2; the remaining runs of
+    phases 2, 4, 5 and 6 are postponed to a later date. Phase 3 has no runs because no agent used a physics exploit.
 phases:
 - name: 1-first-models
   runs:

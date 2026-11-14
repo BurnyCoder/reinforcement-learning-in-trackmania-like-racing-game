@@ -244,7 +244,9 @@ def readme_block(res, an, figs) -> str:
     total = len(res.runs) + len(res.queued)
     evaluated = sum(1 for r in res.runs if r["status"] == "evaluated")
     parts = [f"_Results generated from `results/` by `scripts/07_make_report.py` on {date.today().isoformat()}; "
-             f"{evaluated} of {total} planned runs evaluated. Full tables: [`reports/summary.md`](reports/summary.md)._",
+             f"{evaluated} of {total} planned runs evaluated."
+             + (f" Training was paused on {res.paused['date']}; the remaining runs are postponed." if res.paused else "")
+             + " Full tables: [`reports/summary.md`](reports/summary.md)._",
              "\n".join(f"- {x}" for x in narrative.headline(an))]
     if an.summaries:
         parts += ["**Main evaluation table** (SWS = success-weighted speed, 1.0 = as fast as the scripted driver on every "
@@ -317,7 +319,7 @@ def paper_context(res, an, figs) -> dict:
     return {
         "date": date.today().isoformat(), "repo_url": REPO_URL,
         "n_runs": len(res.runs) + len(res.queued), "n_evaluated": sum(1 for r in res.runs if r["status"] == "evaluated"),
-        "has_results": bool(an.summaries), "primary_set": s, "primary_is_test": s == "test",
+        "paused": res.paused, "has_results": bool(an.summaries), "primary_set": s, "primary_is_test": s == "test",
         "headline": narrative.headline(an, detail=False),
         "hypotheses_tested": all(h["tested"] for h in an.hypotheses), "any_tested": any(h["tested"] for h in an.hypotheses),
         "preliminary_hypotheses": narrative.preliminary_hypotheses(an),

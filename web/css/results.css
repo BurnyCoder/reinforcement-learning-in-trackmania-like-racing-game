@@ -109,6 +109,8 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: now
 .chip.training .icon { color: var(--warning); }
 .chip.planned .icon, .chip.not-started .icon { color: var(--muted); }
 .chip.not-started { border-style: dashed; color: var(--ink2); }
+.chip.postponed { border-style: dotted; color: var(--muted); }
+.chip.postponed .icon { color: var(--muted); }
 
 .split { display: grid; grid-template-columns: minmax(220px, 300px) 1fr; gap: 0.8rem; align-items: start; }
 .run-list { background: var(--surface); border: 1px solid var(--ring); border-radius: 8px; padding: 0.5rem; max-height: 520px; overflow-y: auto; font-size: 0.85rem; }

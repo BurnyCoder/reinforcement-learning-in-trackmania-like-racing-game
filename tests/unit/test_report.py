@@ -198,7 +198,7 @@ def test_hypotheses_follow_preregistration(built):
         side = ("above" if x["lo"] > x["threshold"] else "below" if x["hi"] < x["threshold"] else "includes")
         assert x["reading"].startswith("preliminary (") and side in x["reading"]
     readme = (out / "README.md").read_text(encoding="utf-8")
-    assert "Preliminary readings from the seeds available, not tests" in readme and "Not done yet:" in readme
+    assert "Preliminary readings from the seeds available, not tests" in readme and "not done yet" in readme.lower()
 
 
 def test_model_card(built):

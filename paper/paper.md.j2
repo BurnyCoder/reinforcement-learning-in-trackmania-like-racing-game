@@ -45,7 +45,7 @@ This paper asks four questions, fixed in the preregistration ([`reports/preregis
 
 **What is new** is a combination, limited to what our searches found ([`reports/literature-review.md`]({{ repo_url }}/blob/main/reports/literature-review.md), section 14): the same car code runs in a playable browser game and, as a tested batched port, in training; the generalist is tested on held-out generated 3D tracks with hills, banking and jumps, with several seeds against a scripted driver, a blind control and a training-set-size ablation; and exploits of the physics engine are reported as findings rather than removed.
 
-**Status of this version.** {{ n_evaluated }} of {{ n_runs }} runs in the preregistered run matrix are evaluated.{% if not hypotheses_tested %} The confirmatory tests of H1-H3 need all preregistered seeds and are not complete; every number from fewer seeds or from the validation set is labelled preliminary.{% endif %}
+**Status of this version.** {{ n_evaluated }} of {{ n_runs }} runs in the preregistered run matrix are evaluated.{% if paused %} Training was paused on {{ paused.date }}: {{ paused.note }}{% endif %}{% if not hypotheses_tested %} The confirmatory tests of H1-H3 need all preregistered seeds and are not complete; every number from fewer seeds or from the validation set is labelled preliminary.{% endif %}
 
 
 # Background and related work
