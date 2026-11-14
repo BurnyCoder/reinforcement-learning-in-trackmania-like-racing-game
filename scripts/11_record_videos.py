@@ -224,6 +224,10 @@ def eval_text(c: dict) -> str:
     else:
         res = (f"did not finish: {r['end']} after {c['official_s']:.2f} s and {float(r['progress']):,.0f} m "
                f"(the scripted driver finishes in {c['reference_s']:.2f} s)")
+    for other in c.get("also", []):  # another run's official result on the same track, for comparison
+        o = next(x for x in csv.DictReader(open(RESULTS / other / f"eval_{c['split']}.csv", encoding="utf-8")) if x["track"] == c["track"])
+        res += (f"; on the same track `{other}` " + (f"finished in {int(o['ticks']) * DT:.2f} s" if o["finished"] == "1"
+                                                      else f"did not finish ({o['end']} after {int(o['ticks']) * DT:.2f} s)"))
     check = "" if abs(c["game_s"] - c["official_s"]) < 0.005 else f" (in the browser the replay ended at {c['game_s']:.2f} s)"
     return f"{src}: {res}. The clip replays this run{check}"
 
