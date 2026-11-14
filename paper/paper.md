@@ -96,12 +96,12 @@ Runs follow the preregistered order: (1) the first two models (seed 0), which mu
 
 | Phase | not started | planned | training | trained | evaluated | total |
 |---|---|---|---|---|---|---|
-| 1-first-models | 1 | 1 | 0 | 0 | 0 | 2 |
+| 1-first-models | 1 | 0 | 0 | 1 | 0 | 2 |
 | 2-single-seed | 25 | 0 | 0 | 0 | 0 | 25 |
 | 4-imitation-hybrids | 5 | 0 | 0 | 0 | 0 | 5 |
 | 5-hyperparameters | 4 | 0 | 0 | 0 | 0 | 4 |
 | 6-seed-sensitivity | 65 | 0 | 0 | 0 | 0 | 65 |
-| **all** | 100 | 1 | 0 | 0 | 0 | 101 |
+| **all** | 100 | 0 | 0 | 1 | 0 | 101 |
 
 # Results
 

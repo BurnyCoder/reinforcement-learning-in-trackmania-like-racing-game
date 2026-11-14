@@ -14,12 +14,14 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 
 | Run | Status | Phase | Agent steps | Wall hours | Physics | Commit | Evaluated on |
 |---|---|---|---|---|---|---|---|
-| `specialist-campaign-01/seed0` | planned | 1-first-models | — | — | v1 | — | — |
+| `specialist-campaign-01/seed0` | trained | 1-first-models | 200,278,016 | 0.31 | v1 | d637109562 | — |
 | `generalist/seed0` | not started | 1-first-models | — | — | v1 | — | — |
 
 ## Configuration (logged in each run.json)
 
-_No run of this group has logged its configuration yet (the experiment files are in `configs/experiments/`)._
+| Run | total_steps | num_envs | num_steps | lr | gamma | gae_lambda | ent_coef | clip_coef | hidden | action_mode | weight_decay | loaded_tracks | window_k | blind | time_cost | fall_penalty | random_start_prob | max_steps | hint_weight | scripted_starts | training tracks |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `specialist-campaign-01/seed0` | 200000000 | 16384 | 32 | 0.001 | 0.99 | 0.95 | 0.01 | 0.2 | [256, 256] | factored | 0.0 | 1 | 20 | False | 0.0 | 0.0 | 0.5 | 1500 | 0.0 | False | 1 |
 
 ## Results
 
@@ -39,6 +41,12 @@ _Not yet available: the runs behind this table have no results yet._
 _Not yet available: the runs behind this table have no results yet._
 
 _Figure not yet available: its runs have no results yet._
+
+### Training curves
+
+![Training curves of Specialist (campaign-01) [pilot, seed 0]; one line per seed (seeds 0). Return and finish rate are over training episodes (standing and random starts); validation SWS is the evaluator's score on the validation tracks.](../figures/curves_specialist-campaign-01-pilot.png)
+
+*Training curves of Specialist (campaign-01) [pilot, seed 0]; one line per seed (seeds 0). Return and finish rate are over training episodes (standing and random starts); validation SWS is the evaluator's score on the validation tracks.*
 
 ## Learnings
 
