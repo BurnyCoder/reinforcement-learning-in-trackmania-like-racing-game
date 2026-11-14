@@ -35,6 +35,8 @@ Scripted driver parameters chosen on validation candidates: `a_lat` = 6.0, `look
 
 _Not yet available: the runs behind this table have no results yet._
 
+Rows from other groups are shown for comparison. Track counts: Validation: 197 tracks; Campaign (hand-made): 5 tracks.
+
 ## Learnings
 
 _No hand-written notes yet (add `reports/notes/baselines.md`)._

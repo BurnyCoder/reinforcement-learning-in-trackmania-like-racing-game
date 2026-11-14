@@ -35,9 +35,13 @@ _No run of this group has logged its configuration yet (the experiment files are
 
 _Not yet available: the runs behind this table have no results yet._
 
+Rows from other groups are shown for comparison. Track counts: Validation: 197 tracks; Campaign (hand-made): 5 tracks.
+
 ### Comparison of all configurations
 
-_Figure not yet available: its runs have no results yet._
+![SWS and finish rate on the validation set (development set; preliminary) (197 tracks), mean over seeds with 95 % two-level bootstrap intervals (10,000 resamples of seeds and tracks); n = number of seeds. With one seed the interval reflects track sampling only.](../figures/sws_by_method.png)
+
+*SWS and finish rate on the validation set (development set; preliminary) (197 tracks), mean over seeds with 95 % two-level bootstrap intervals (10,000 resamples of seeds and tracks); n = number of seeds. With one seed the interval reflects track sampling only.*
 
 ### Hypotheses
 
@@ -57,7 +61,9 @@ _Figure not yet available: its runs have no results yet._
 
 ### Exploit flags
 
-_No evaluation has raised an exploit flag._
+| Configuration | Set | Overspeed flags | Coasting energy-gain flags | Seeds | Tracks |
+|---|---|---|---|---|---|
+| Specialist (campaign-01) [pilot, seed 0] | Val | 0 | 1 | 1 | 197 |
 
 ## Learnings
 
