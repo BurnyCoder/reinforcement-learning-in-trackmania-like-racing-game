@@ -26,6 +26,7 @@ On campaign track campaign-01 the generalist (zero-shot) was 2.8 % slower than t
 On campaign track campaign-02 the generalist (zero-shot) was 5.5 % slower than the specialist trained on that track.
 On campaign track campaign-03 the generalist (zero-shot) was 3.3 % slower than the specialist trained on that track.
 On campaign track campaign-04 the generalist (zero-shot) was 7.6 % slower than the specialist trained on that track.
+On campaign track campaign-05 the generalist (zero-shot) was 6.3 % slower than the specialist trained on that track.
 
 # Introduction
 
@@ -40,7 +41,7 @@ This paper asks four questions, fixed in the preregistration ([`reports/preregis
 
 **What is new** is a combination, limited to what our searches found ([`reports/literature-review.md`](https://github.com/BurnyCoder/reinforcement-learning-in-trackmania-like-racing-game/blob/main/reports/literature-review.md), section 14): the same car code runs in a playable browser game and, as a tested batched port, in training; the generalist is tested on held-out generated 3D tracks with hills, banking and jumps, with several seeds against a scripted driver, a blind control and a training-set-size ablation; and exploits of the physics engine are reported as findings rather than removed.
 
-**Status of this version.** 24 of 116 runs in the preregistered run matrix are evaluated. The confirmatory tests of H1-H3 need all preregistered seeds and are not complete; every number from fewer seeds or from the validation set is labelled preliminary.
+**Status of this version.** 25 of 116 runs in the preregistered run matrix are evaluated. The confirmatory tests of H1-H3 need all preregistered seeds and are not complete; every number from fewer seeds or from the validation set is labelled preliminary.
 
 # Background and related work
 
@@ -106,11 +107,11 @@ Runs follow the preregistered order: (1) the first two models (seed 0), which mu
 |---|---|---|---|---|---|---|
 | baselines | 0 | 0 | 0 | 0 | 15 | 15 |
 | 1-first-models | 0 | 0 | 0 | 0 | 2 | 2 |
-| 2-single-seed | 17 | 0 | 0 | 1 | 7 | 25 |
+| 2-single-seed | 17 | 0 | 0 | 0 | 8 | 25 |
 | 4-imitation-hybrids | 5 | 0 | 0 | 0 | 0 | 5 |
 | 5-hyperparameters | 4 | 0 | 0 | 0 | 0 | 4 |
 | 6-seed-sensitivity | 65 | 0 | 0 | 0 | 0 | 65 |
-| **all** | 91 | 0 | 0 | 1 | 24 | 116 |
+| **all** | 91 | 0 | 0 | 0 | 25 | 116 |
 
 # Results
 
@@ -138,6 +139,7 @@ Runs follow the preregistered order: (1) the first two models (seed 0), which mu
 | Specialist (campaign-02) | Specialist | 1 | 0.312 [0.274, 0.351] | 21.0 % | — | — | 0.312 [0.000, 0.937] | 20.0 % |
 | Specialist (campaign-03) | Specialist | 1 | 0.329 [0.291, 0.367] | 22.3 % | — | — | 0.290 [0.000, 0.870] | 20.0 % |
 | Specialist (campaign-04) | Specialist | 1 | 0.076 [0.056, 0.096] | 5.3 % | — | — | 0.424 [0.000, 1.271] | 20.0 % |
+| Specialist (campaign-05) | Specialist | 1 | 0.687 [0.640, 0.735] | 45.2 % | — | — | 0.648 [0.000, 1.332] | 40.0 % |
 
 Track counts: Test (unseen generated): 971 tracks; Validation: 197 tracks; Training sample: 1,000 tracks; Own training tracks: 1,000 tracks; Out-of-range test: 187 tracks; Campaign (hand-made): 5 tracks; Unfiltered test: 200 tracks.
 
@@ -202,6 +204,7 @@ Cross-checks (exploratory, Agarwal et al. 2021):
 | campaign-05 | 56.07 | Scripted driver | reference | 1/1 | 56.03 | s0: 56.03 |
 | campaign-05 | 56.07 | Generalist (PPO) [pilot, seed 0] | zero-shot | 1/1 | 34.96 | s0: 34.96 |
 | campaign-05 | 56.07 | Generalist (PPO) | zero-shot | 1/1 | 34.86 | s1: 34.86 |
+| campaign-05 | 56.07 | Specialist (campaign-05) | own track | 1/1 | 32.79 | s1: 32.79 |
 
 ![Finishing time on each campaign track: small marks are single seeds, large marks the mean over finishing seeds, x marks runs that did not finish (DNF); the black bar is the scripted driver's reference time. Specialists are scored on their own track; the generalist zero-shot.](../reports/figures/specialists_campaign.svg){width=100%}
 
@@ -239,6 +242,7 @@ _No exploit list yet (`results/exploits.json` does not exist)._
 | Specialist (campaign-02) | Test | 0 | 3 | 1 | 971 |
 | Specialist (campaign-03) | Test | 0 | 2 | 1 | 971 |
 | Specialist (campaign-04) | Test | 0 | 6 | 1 | 971 |
+| Specialist (campaign-05) | Test | 0 | 4 | 1 | 971 |
 
 ## Training curves of the generalist
 
@@ -256,6 +260,7 @@ The results so far, in plain words:
 - On campaign track campaign-02 the generalist (zero-shot) was 5.5 % slower than the specialist trained on that track.
 - On campaign track campaign-03 the generalist (zero-shot) was 3.3 % slower than the specialist trained on that track.
 - On campaign track campaign-04 the generalist (zero-shot) was 7.6 % slower than the specialist trained on that track.
+- On campaign track campaign-05 the generalist (zero-shot) was 6.3 % slower than the specialist trained on that track.
 
 A written interpretation will be added once the confirmatory runs are complete.
 
