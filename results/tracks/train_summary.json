@@ -1,0 +1,23 @@
+{
+  "split": "train",
+  "seed_range": [
+    0,
+    50000
+  ],
+  "generated": 50000,
+  "geometric_rejects": 0,
+  "certification_rejects": 1051,
+  "kept": 48949,
+  "scripted": {
+    "a_lat": 6.0,
+    "lookahead_gain": 0.3,
+    "lookahead_min": 8.0,
+    "lookahead_max": 40.0,
+    "a_brake": 8.0,
+    "jump_speed": 25.0,
+    "brake_margin": 1.5,
+    "speed_scale": 1.0
+  },
+  "mean_length_m": 1112.0381131851336,
+  "mean_ref_time_s": 50.7713366973789
+}
