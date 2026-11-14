@@ -33,7 +33,7 @@
     }
   },
   {
-    "title": "Best generalist lap on a hand-made track",
+    "title": "Best generalist lap on a hand-made track it never saw in training",
     "replay": "generalist-seed0",
     "run": "generalist/seed0",
     "split": "campaign",
@@ -66,7 +66,7 @@
     }
   },
   {
-    "title": "Best generalist lap on a held-out generated track",
+    "title": "Best generalist lap on a held-out generated track it never saw in training: it generalized",
     "replay": "generalist-seed0",
     "run": "generalist/seed0",
     "split": "test",
@@ -133,7 +133,7 @@
     }
   },
   {
-    "title": "Typical generalist lap on a held-out generated track",
+    "title": "Typical generalist lap on a held-out generated track it never saw in training",
     "replay": "generalist-seed0",
     "run": "generalist/seed0",
     "split": "test",
