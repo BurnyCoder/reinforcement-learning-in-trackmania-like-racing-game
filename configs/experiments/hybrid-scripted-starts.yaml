@@ -1,0 +1,7 @@
+# Phase 4 hybrid: random starts copied from cars driven by the scripted driver.
+description: PPO with start states from scripted-driver runs
+algo: ppo
+tracks: {pool: train}
+validation: {pool: val}
+env: {scripted_starts: true}
+ppo: {total_steps: 1000000000}

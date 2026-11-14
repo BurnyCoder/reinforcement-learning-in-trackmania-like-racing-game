@@ -72,23 +72,28 @@ Wheel order is front-left, front-right, rear-left, rear-right. The numbers shown
   "center": [[x, y, z], ...],
   "left":   [[x, y, z], ...],
   "gap":    [0, 0, 1, ...],
+  "floor":  [y, y, ...],
   "checkpoints": [40, 95, 160, 211],
   "vertices": [[x, y, z], ...],
   "triangles": [[a, b, c], ...],
   "triangle_segment": [0, 0, 1, 1, ...],
-  "start": { "position": [x, y, z], "yaw": 0.0, "index": 3 },
+  "start": { "position": [x, y, z], "quaternion": [qx, qy, qz, qw], "index": 3 },
   "reference": { "ticks": 2345, "time": 23.45, "actions": [0, 0, 3, ...] },
-  "generator": { "version": 1, "params": { } }
+  "length": 1234.5,
+  "generator": { "version": 1, "split": "train", "variant": "train_ranges", "attempt": 0 },
+  "plan": [ { "kind": "straight", "length": 40.0, "dh": 0.0 }, ... ]
 }
 ```
 
 - `center[i]` is the centreline sample at arc length `i × spacing`; there are `M` samples. The centreline is defined through gaps too (it follows the intended flight path), so progress is always measurable.
 - `left[i]` is the unit vector pointing to the left edge at sample `i`. It includes banking. The surface between samples `i` and `i+1` is the quad with corners `center ± half_width × left`.
 - `gap[i] = 1` means the segment from sample `i` to `i+1` has no surface. `gap` has `M − 1` entries.
-- `checkpoints` are centreline sample indices in driving order; the last one is the finish.
+- `floor[i]`: a car whose chassis centre is below this height while its nearest sample is `i` is out. It is `center[i].y − 3` on road samples, and inside a gap `min(lip height, landing height) − 3`.
+- `checkpoints` are centreline sample indices in driving order; the last one is the finish, 30 m before the end of the road.
 - `vertices` has two entries per sample: `vertices[2i] = center[i] + half_width × left[i]` (left edge) and `vertices[2i+1] = center[i] − half_width × left[i]` (right edge). Every number is rounded to 32-bit float before it is written, because cannon-es stores mesh vertices as `Float32Array`.
 - `triangles`: two per non-gap segment `i`, wound so that normals point up: `[2i, 2i+1, 2i+2]` and `[2i+1, 2i+3, 2i+2]`. `triangle_segment[k]` is the segment index of triangle `k`.
-- `start.position` is the chassis centre at the start; `start.index` is the centreline sample under it.
+- `start.position` is the chassis centre at rest above sample `start.index` (`spawn_height` along the road normal); `start.quaternion` aligns chassis +X with the road direction and +Y with the road normal.
+- `plan` is the segment list the track was built from (`src/racingmania/tracks/ribbon.py`), kept for reproducibility.
 - `reference` is the frozen scripted driver's run from the standing start: its finishing time and its action per agent step (integers 0–8). Absent until the track is certified.
 - A track has at most 16,000 samples, so the mesh stays within the 16-bit index limit of cannon-es.
 
@@ -98,14 +103,35 @@ The training pools are the same data packed into tensors (`<data dir>/tracks/<se
 
 Evaluated once per tick, after the physics step.
 
-- **Progress.** `index` is the nearest centreline sample to the chassis centre, searched only in `[index − 2, index + 6]`. Arc-length progress is `s = spacing × (j + t)`, where segment `j ∈ {index − 1, index}` is the one whose clamped projection of the chassis centre is nearer, and `t ∈ [0, 1]` is the position along it.
-- **Checkpoints.** Checkpoint `k` is passed when `index >= checkpoints[k]` and all earlier ones are passed. The run is **finished** when the last one is passed.
+- **Progress.** `index` is the nearest centreline sample to the chassis centre (squared 3D distance), searched only in `[index − 2, index + 6]`. Arc-length progress is `s = cum[k] + t × (cum[k+1] − cum[k])`, where `cum` is the cumulative 3D length of the centreline, segment `k ∈ {index − 1, index}` is the one whose clamped projection of the chassis centre is nearer, and `t ∈ [0, 1]` is the position along it.
+- **Checkpoints.** Checkpoint `k` is passed when `s >= cum[checkpoints[k]]` and all earlier ones are passed; several can be passed in one tick. The run is **finished** when the last one is passed; finishing is checked before the out conditions.
 - **Out** (the run ends unfinished) when any of these holds:
-  - the chassis centre is more than 3 m below `center[index]` (measured along Y);
+  - the chassis centre is below `floor[index]`;
   - no wheel has touched the track for 500 consecutive ticks;
   - progress has not grown by at least 0.5 m during 200 consecutive ticks.
 - A car that tips over has no wheel rays pointing at the road, falls through the ribbon and is out by the first rule, so there is no separate roll-over rule.
 - In the game an out respawns the player at the last passed checkpoint with the clock running. In training and evaluation it ends the episode.
+
+## Policy model (`web/assets/models/<name>.onnx`)
+
+One ONNX graph per trained model contains the observation function, the frozen observation normaliser and the actor network (`src/racingmania/export/onnx_export.py`). The browser only gathers raw inputs, runs the graph once per agent step, and takes the argmax of each head. All inputs are float32 with batch size 1.
+
+| Input | Shape | Content |
+|---|---|---|
+| `chassis` | `[1, 13]` | chassis state `[px,py,pz, qx,qy,qz,qw, vx,vy,vz, wx,wy,wz]` |
+| `steer` | `[1, 1]` | current front-wheel angle (rad) |
+| `contacts` | `[1, 4]` | 1 if the wheel's suspension ray hit the track on the last tick, else 0, in wheel order |
+| `prev_action` | `[1, 2]` | previous `(steer, pedal)` indices as floats (`(1, 1)` at the start) |
+| `win_center` | `[1, K, 3]` | `center[min(index + 3k, M−1)]` for `k = 0..K−1` (`index` = the rules' nearest sample) |
+| `win_left` | `[1, K, 3]` | `left` at the same samples |
+| `win_gap` | `[1, K]` | `gap` of the segment starting at the same samples (0 at the last sample) |
+
+| Output | Shape | Content |
+|---|---|---|
+| `steer_logits` | `[1, 3]` | scores for left / none / right |
+| `pedal_logits` | `[1, 3]` | scores for gas / coast / brake |
+
+`K` and the stride (3 samples = 6 m) are stored in `web/assets/models/index.json` next to each model, so look-ahead ablations export correctly. The action is held for `ticks_per_action` ticks.
 
 ## Results (`results/<experiment>/<run>/`)
 

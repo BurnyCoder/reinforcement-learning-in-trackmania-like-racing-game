@@ -1,0 +1,7 @@
+# Ablation (e): one action per 100 ms (10 ticks), same simulated driving time (500M steps).
+description: PPO acting at 10 Hz
+algo: ppo
+tracks: {pool: train}
+validation: {pool: val}
+vehicle: {ticks_per_action: 10}
+ppo: {total_steps: 500000000}

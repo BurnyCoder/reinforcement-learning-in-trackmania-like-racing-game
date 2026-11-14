@@ -1,0 +1,6 @@
+# Ablation (a): continuous steer and pedal outputs, mapped to the nearest keyboard action.
+description: PPO with a Gaussian policy over (steer, pedal)
+algo: ppo
+tracks: {pool: train}
+validation: {pool: val}
+ppo: {total_steps: 1000000000, action_mode: continuous}

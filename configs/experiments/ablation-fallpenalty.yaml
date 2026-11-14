@@ -1,0 +1,7 @@
+# Ablation (f): penalty when the run ends by falling, stalling or staying airborne (drone-racing style).
+description: PPO with a penalty on out-terminations
+algo: ppo
+tracks: {pool: train}
+validation: {pool: val}
+env: {fall_penalty: 5.0}
+ppo: {total_steps: 1000000000}

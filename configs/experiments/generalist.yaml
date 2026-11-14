@@ -1,0 +1,6 @@
+# Standard recipe: PPO on the 50,000-track training pool (preregistration, section 7).
+description: Generalist PPO agent trained on the whole generated training pool
+algo: ppo
+tracks: {pool: train}
+validation: {pool: val}
+ppo: {total_steps: 1000000000}

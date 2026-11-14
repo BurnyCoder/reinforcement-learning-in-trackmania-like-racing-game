@@ -1,0 +1,7 @@
+# Phase 4 hybrid: PPO initialised from behaviour-cloned weights.
+description: PPO warm-started from behaviour cloning
+algo: ppo
+bc_init: true
+tracks: {pool: train}
+validation: {pool: val}
+ppo: {total_steps: 1000000000}

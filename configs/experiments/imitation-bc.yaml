@@ -1,0 +1,5 @@
+# Phase 4: behaviour cloning of the scripted driver only (no reward).
+description: Behaviour cloning of the scripted driver
+algo: imitation-bc
+tracks: {pool: train}
+validation: {pool: val}

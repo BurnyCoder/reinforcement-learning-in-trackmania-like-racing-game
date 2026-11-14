@@ -1,0 +1,7 @@
+# Ablation (d): Linesight-style constant time cost per step added to the progress reward.
+description: PPO with a per-step time cost
+algo: ppo
+tracks: {pool: train}
+validation: {pool: val}
+env: {time_cost: 0.06}
+ppo: {total_steps: 1000000000}

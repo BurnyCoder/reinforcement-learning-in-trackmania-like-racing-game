@@ -125,6 +125,44 @@ class TrackBatch:
                    start_index=as_l(start_index), ref_ticks=as_t(ref_ticks), half_width=as_t(half_width),
                    names=[t.get("name", str(t.get("seed"))) for t in tracks])
 
+    @classmethod
+    def from_arrays(cls, p: dict, device="cpu", dtype=torch.float32) -> "TrackBatch":
+        """Vectorised construction from packed pool arrays (``tracks.store.pack``).
+
+        Same geometry as ``from_tracks``: edges ``center ± half_width·left`` rounded to float32,
+        normals ``normalize((c - a) × (a - b))`` per triangle, arc length summed sequentially.
+        """
+        center = p["center"].astype(np.float64); left = p["left"].astype(np.float64)
+        T, M = center.shape[:2]
+        hw = p["half_width"].astype(np.float64)[:, None, None]
+        edges = f32(np.stack((center + hw * left, center - hw * left), axis=2))  # [T, M, 2, 3]
+        lk, rk, lk1, rk1 = edges[:, :-1, 0], edges[:, :-1, 1], edges[:, 1:, 0], edges[:, 1:, 1]
+        normals = []
+        for a, b, c in ((lk, rk, lk1), (rk, rk1, lk1)):
+            ab, cb = a - b, c - a
+            nrm = np.stack((cb[..., 1] * ab[..., 2] - cb[..., 2] * ab[..., 1],
+                            cb[..., 2] * ab[..., 0] - cb[..., 0] * ab[..., 2],
+                            cb[..., 0] * ab[..., 1] - cb[..., 1] * ab[..., 0]), axis=-1)
+            ln = np.sqrt((nrm * nrm).sum(-1, keepdims=True))
+            normals.append(nrm / np.where(ln > 0, ln, 1.0))
+        normals = f32(np.stack(normals, axis=2))  # [T, M-1, 2, 3]
+        d = center[:, 1:] - center[:, :-1]
+        seg = np.sqrt(d[..., 0] * d[..., 0] + d[..., 1] * d[..., 1] + d[..., 2] * d[..., 2])
+        cum = np.concatenate((np.zeros((T, 1)), np.add.accumulate(seg, axis=1)), axis=1)
+        n = p["n"].astype(np.int64)
+        real_seg = np.arange(M - 1)[None, :] < (n - 1)[:, None]
+        seg_valid = ~p["gap"].astype(bool) & real_seg
+        cps = p["checkpoints"]; cp_s = np.full(cps.shape, np.inf)
+        ok = cps >= 0
+        cp_s[ok] = np.take_along_axis(cum, np.where(ok, cps, 0), axis=1)[ok]
+        as_t = lambda a: torch.as_tensor(np.asarray(a), dtype=dtype, device=device)
+        as_l = lambda a: torch.as_tensor(np.asarray(a), dtype=torch.long, device=device)
+        return cls(center=as_t(center), left=as_t(left), floor=as_t(p["floor"]), cum=as_t(cum), n=as_l(n),
+                   seg_valid=torch.as_tensor(seg_valid, device=device), edges=as_t(edges), normals=as_t(normals),
+                   cp_s=as_t(cp_s), n_cp=as_l(p["n_cp"]), start_pos=as_t(p["start_pos"]), start_quat=as_t(p["start_quat"]),
+                   start_index=as_l(p["start_index"]), ref_ticks=as_t(p["ref_ticks"]), half_width=as_t(p["half_width"]),
+                   names=list(p["names"]))
+
     def window_triangles(self, track_id: Tensor, index: Tensor):
         """Triangles of the segments around each car's nearest sample.
 

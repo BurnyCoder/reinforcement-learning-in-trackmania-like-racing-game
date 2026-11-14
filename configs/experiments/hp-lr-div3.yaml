@@ -1,0 +1,6 @@
+# Hyperparameter sensitivity: initial learning rate / 3 (adaptive rule unchanged).
+description: PPO, initial learning rate divided by 3
+algo: ppo
+tracks: {pool: train}
+validation: {pool: val}
+ppo: {total_steps: 1000000000, lr: 0.000333}
