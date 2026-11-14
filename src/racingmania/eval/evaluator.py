@@ -64,7 +64,7 @@ def evaluate(policy, cfg, tracks, device="cuda", dtype=torch.float32, ref_ticks=
             speed = torch.linalg.norm(env.car.vel, dim=1)
             max_speed = torch.where(alive, torch.maximum(max_speed, speed.float()), max_speed)
             energy_after = 0.5 * (env.car.vel ** 2).sum(1) + g * env.car.pos[:, 1]
-            coasting = (action % 3) != 0  # not on the gas
+            coasting = (action % 3) == 1  # coast pedal only (brake at standstill engages reverse, which adds energy)
             gain = torch.where(alive & coasting, (energy_after - energy_before).float(), torch.zeros_like(max_speed))
             coast_energy_gain = torch.maximum(coast_energy_gain, gain)
             if record_replays:

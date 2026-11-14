@@ -146,4 +146,11 @@ def generate_light(seed: int) -> dict | None:
     """``generate_track`` keeping only what track pools need, for worker processes (small to pickle).
     This module imports no PyTorch, so worker processes stay small."""
     t = generate_track(seed)
-    return None if t is None else {k: t[k] for k in LIGHT_KEYS}
+    if t is None:
+        return None
+    out = {k: t[k] for k in LIGHT_KEYS}
+    # Compact NumPy arrays instead of nested lists: ~8x less memory when 50,000 tracks are held at once.
+    for k in ("center", "left", "floor"):
+        out[k] = np.asarray(t[k], dtype=np.float64)
+    out["gap"] = np.asarray(t["gap"], dtype=np.uint8)
+    return out

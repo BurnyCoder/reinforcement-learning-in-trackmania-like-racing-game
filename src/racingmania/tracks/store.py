@@ -58,6 +58,31 @@ def pack(tracks: list[dict], ref_ticks: list[int] | None = None) -> dict:
     return out
 
 
+def merge_pools(pools: list[dict]) -> dict:
+    """Concatenate packed pools with possibly different padding (pads to the largest M and C)."""
+    M = max(p["center"].shape[1] for p in pools)
+    C = max(p["checkpoints"].shape[1] for p in pools)
+    out = {}
+    for k in pools[0]:
+        if k == "names":
+            out[k] = [n for p in pools for n in p[k]]
+            continue
+        parts = []
+        for p in pools:
+            a = p[k]
+            if k in ("center", "left"):  # repeat the last real sample
+                a = np.concatenate((a, np.repeat(a[:, -1:], M - a.shape[1], axis=1)), axis=1)
+            elif k == "floor":
+                a = np.pad(a, ((0, 0), (0, M - a.shape[1])), constant_values=-1e9)
+            elif k == "gap":
+                a = np.pad(a, ((0, 0), (0, M - 1 - a.shape[1])), constant_values=True)
+            elif k == "checkpoints":
+                a = np.pad(a, ((0, 0), (0, C - a.shape[1])), constant_values=-1)
+            parts.append(a)
+        out[k] = np.concatenate(parts, axis=0)
+    return out
+
+
 def save_pool(pool: dict, path: Path, meta: dict | None = None):
     path.parent.mkdir(parents=True, exist_ok=True)
     torch.save({**{k: (torch.from_numpy(v) if isinstance(v, np.ndarray) else v) for k, v in pool.items()},
