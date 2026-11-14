@@ -141,7 +141,7 @@ Each clip replays an official evaluation run in the browser game: the car states
 
 The research question is whether one policy, trained with PPO ([Schulman et al. 2017](https://arxiv.org/abs/1707.06347)) on tens of thousands of procedurally generated tracks, can drive tracks it has never seen, and how it compares with a classical scripted driver and with specialists trained on a single track. The hypotheses, metric and analysis were [preregistered](reports/preregistration.md) before any model was trained.
 
-**How it works, in one paragraph.** The game runs the car physics of [cannon-es](https://github.com/pmndrs/cannon-es) (`RaycastVehicle`, whose code follows Bullet's `btRaycastVehicle`) unchanged in the browser. For training, the same per-tick computation is ported line by line to batched PyTorch, so thousands of cars, each on a different track, run in parallel on one GPU. Tests run the original code in Node.js and require the port to match it: one tick from 6,000 random states agrees to 7e-15 in 64-bit floats. A seeded generator builds tracks from straights, arcs, hills, banking and jumps; a track is kept only if a scripted pure-pursuit driver can finish it, and that driver's time is the reference for the score. The agent sees its own motion and the next 114 m of road in its own frame, presses the same keys a player has (left/none/right × gas/coast/brake, 20 times a second), and is rewarded only for metres of progress along the road.
+**How it works, in one paragraph.** The game runs the car physics of [cannon-es](https://github.com/pmndrs/cannon-es) (`RaycastVehicle`, whose code follows Bullet's `btRaycastVehicle`) unchanged in the browser. For training, the same per-tick computation is ported line by line to batched PyTorch, so thousands of cars, each on a different track, run in parallel on one GPU. Tests run the original code in Node.js and require the port to match it: one tick from 6,000 random states agrees to 7e-15 in 64-bit floats. A seeded generator builds tracks from straights, arcs, hills, banking and jumps; a track is kept only if a scripted pure-pursuit driver can finish it, and that driver's time is the reference for the score. The agent sees its own motion and the next 114 m of road in its own frame, presses the same keys a player has (left/none/right × gas/coast/brake, 20 times a second), and is rewarded only for metres of progress along the road. Its policy is a small neural network (two hidden layers of 256 tanh units) trained with PPO; the network, reward and training settings are spelled out in [Agent](#agent-network-architecture-reward-and-ppo-settings).
 
 **Status (2026-11-14): phase 1 is done and phase 2 is running.** Both first models (a specialist on one track and a generalist on the generated training pool) learned with the preregistered starting recipe and passed their learning gates, so the recipe was frozen unchanged; phase 2 trains one seed of every experiment (blind control, PQN, specialists, training-set sizes, ablations). The numbers are in the [results](#results) section, which is generated from the result files; every single-seed number is preliminary, and the hypotheses are tested only when all seeds exist.
 
@@ -234,9 +234,49 @@ A track is a ribbon in the sense of [Perantoni & Limebeer 2015](https://doi.org/
 
 A candidate track enters a set only if the scripted driver finishes it at 0.9, 1.0 and 1.1 × its target speeds; the time at 1.0 is the track's reference time.
 
-### Agent
+### Agent: network architecture, reward and PPO settings
 
-PPO adapted from CleanRL's GPU script ([CleanRL](https://github.com/vwxyzjn/cleanrl), [Huang et al. 2022](https://iclr-blog-track.github.io/2022/03/25/ppo-implementation-details/)), with separate 2 × 256 tanh actor and critic networks, two 3-way categorical action heads, observation normalisation, bootstrapping on time limits ([Rudin et al. 2021](https://arxiv.org/abs/2109.11978)), a KL-adaptive learning rate, 16,384 parallel cars and 32-step rollouts; a generalist trains for 1 billion agent steps with 4,096 tracks on the GPU at a time, swapped for a new random set every 20 iterations, and a specialist for 200 million steps on its one track. Episodes start at the official start or at random points along the track ([Song et al. 2021](https://arxiv.org/abs/2103.08624)). The reward is 0.1 per metre of progress along the road and nothing else. The observation (160 numbers) is the car's velocity, spin, attitude, steering angle, wheel contacts, previous action, and 20 upcoming centreline points with their left vectors and gap flags, all in the car's frame.
+The learning algorithm is PPO ([Schulman et al. 2017](https://arxiv.org/abs/1707.06347)), adapted from CleanRL's GPU script ([CleanRL](https://github.com/vwxyzjn/cleanrl), [Huang et al. 2022](https://iclr-blog-track.github.io/2022/03/25/ppo-implementation-details/)). Code: [`src/racingmania/rl/networks.py`](src/racingmania/rl/networks.py), [`src/racingmania/rl/ppo.py`](src/racingmania/rl/ppo.py), [`src/racingmania/env/obs.py`](src/racingmania/env/obs.py), [`src/racingmania/env/vec_env.py`](src/racingmania/env/vec_env.py).
+
+**Deep-learning architecture.** An actor-critic made of two separate multilayer perceptrons with no shared layers:
+
+- **Actor (policy):** 160 inputs → 256 tanh units → 256 tanh units → 6 outputs, read as two 3-way categorical distributions: steering (left, none, right) and pedal (gas, coast, brake). The action is the pair, one of the nine keyboard combinations; their log-probabilities and entropies are summed, as in CleanRL's multi-discrete PPO.
+- **Critic (value function):** 160 inputs → 256 tanh units → 256 tanh units → 1 output, the expected discounted return.
+- **Size and initialisation:** 108,550 + 107,265 = 215,815 parameters. Weights are orthogonal with gain √2 in the hidden layers, 0.01 in the actor's output layer (so the untrained policy starts close to uniform) and 1.0 in the critic's output layer (CleanRL's `layer_init`).
+- **Input normalisation:** a running mean and variance of the observations, updated during training and clipped to ±10 standard deviations, frozen for evaluation and export. The browser game runs one ONNX graph that contains the observation code, this normaliser and the actor.
+
+```mermaid
+flowchart LR
+  S["Game state: car, track ahead"] --> O["Observation, 160 numbers, car frame"]
+  O --> N["Running normaliser, clip ±10"]
+  N --> A["Actor MLP: 160 → 256 tanh → 256 tanh → 6"]
+  N --> C["Critic MLP: 160 → 256 tanh → 256 tanh → 1"]
+  A --> H1["Steer: softmax over left, none, right"]
+  A --> H2["Pedal: softmax over gas, coast, brake"]
+  H1 --> K["Keys held for 0.05 s (5 physics ticks)"]
+  H2 --> K
+  C --> V["Value V(s), used only in training"]
+```
+
+**Observation (160 numbers, all in the car's own frame):** velocity (3) and spin (3); the direction of gravity (3), which gives pitch and roll; steering angle (1); which wheels touch the road (4); the previous action, one-hot (6); and the next 20 centreline points, one every 6 m, so 114 m of road ahead (60), the road's left direction at each of them, which encodes heading and banking (60), and whether each is a gap to jump (20).
+
+**Reward and episode details:**
+
+- **Reward per agent step:** 0.1 × the metres of progress made along the road during that step. Progress is the car's position projected onto the track centreline, measured as 3D distance along the road, so driving backwards gives a negative reward. Faster driving earns the same total reward sooner, which the discount turns into a higher return.
+- **Nothing else in the reward:** no time penalty, no crash penalty, no finish bonus, and no terms from the scripted driver. A per-step time cost (0.06) and a fall penalty (5.0) are tested only as ablations.
+- **How a crash costs reward:** falling more than 3 m below the road, being airborne for 5 s, or making less than 0.5 m of progress in 2 s ends the episode as terminal (value 0). The agent loses all the progress it would have made after that point.
+- **Finishing:** the episode also ends as terminal, after the last step's progress is counted.
+- **Starts:** half of the episodes start at the official start line; the other half start at a random point on the centreline, heading along the road, at 0–30 m/s with up to half the half-width of sideways offset ([Song et al. 2021](https://arxiv.org/abs/2103.08624)).
+- **Time limit:** 1,500 agent steps (75 s). A truncated episode is bootstrapped by adding γ·V(final observation) to its last reward ([Rudin et al. 2021](https://arxiv.org/abs/2109.11978)). Episodes cut off when a generalist's tracks are swapped (every 20 iterations) end at a rollout boundary, where the value of the next state continues the return as usual.
+
+**PPO settings (the frozen recipe):**
+
+- **Batch:** 16,384 cars in parallel × 32 steps = 524,288 agent steps per update, in 5 epochs of 4 minibatches.
+- **Returns and advantages:** discount γ = 0.99 (about a 5-second horizon at 20 decisions per second) and GAE λ = 0.95. Advantages are normalised per minibatch; there is no reward normalisation.
+- **Loss:** clipped surrogate objective with clip 0.2; value loss 0.5 × squared error, weight 1.0, not clipped; entropy bonus 0.01.
+- **Optimiser:** Adam (eps 1e-5) with gradient-norm clipping at 1.0. The learning rate starts at 1e-3 and is adapted after every minibatch towards a KL divergence of 0.01: divided by 1.5 above 0.02, multiplied by 1.5 below 0.005, kept within 1e-5 and 1e-2 (Rudin et al. 2021).
+- **Budget:** a generalist trains for 1 billion agent steps, with 4,096 tracks on the GPU at a time, swapped for a new random set every 20 iterations; a specialist trains for 200 million steps on its one track.
+- **Changes from CleanRL's GPU script:** categorical action heads (the script has continuous actions only), the entropy bonus (its default is 0), the KL-adaptive learning rate and the time-limit bootstrapping (both from Rudin et al. 2021).
 
 ### The scripted driver
 
