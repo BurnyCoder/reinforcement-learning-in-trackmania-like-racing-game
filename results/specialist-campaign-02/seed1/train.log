@@ -1,0 +1,45 @@
+2026-11-14 18:38:12.409 INFO racingmania.rl.ppo: validation @ 0 steps: SWS 0.000, finished 0.0%
+2026-11-14 18:42:29.332 INFO racingmania.rl.ppo: it 1 | 0.5M steps | 2044 sps | return 2.89 | finished 18.2% | progress 29 m | kl 0.0082 | lr 2.3e-03
+2026-11-14 18:42:32.217 INFO racingmania.rl.ppo: it 2 | 1.0M steps | 190431 sps | return 2.05 | finished 1.6% | progress 21 m | kl 0.0112 | lr 3.4e-03
+2026-11-14 18:42:35.060 INFO racingmania.rl.ppo: it 3 | 1.6M steps | 195299 sps | return 2.46 | finished 1.6% | progress 25 m | kl 0.0256 | lr 2.0e-04
+2026-11-14 18:42:37.840 INFO racingmania.rl.ppo: it 4 | 2.1M steps | 201201 sps | return 3.58 | finished 3.3% | progress 36 m | kl 0.0245 | lr 1.0e-05
+2026-11-14 18:42:55.984 INFO racingmania.rl.ppo: it 11 | 5.8M steps | 251709 sps | return 12.64 | finished 20.3% | progress 126 m | kl 0.0102 | lr 1.3e-03
+2026-11-14 18:43:20.323 INFO racingmania.rl.ppo: it 21 | 11.0M steps | 232697 sps | return 31.73 | finished 63.9% | progress 317 m | kl 0.0081 | lr 6.7e-03
+2026-11-14 18:43:45.183 INFO racingmania.rl.ppo: it 31 | 16.3M steps | 232305 sps | return 49.23 | finished 98.2% | progress 492 m | kl 0.0314 | lr 3.9e-04
+2026-11-14 18:44:09.658 INFO racingmania.rl.ppo: it 41 | 21.5M steps | 232104 sps | return 65.74 | finished 99.7% | progress 657 m | kl 0.0059 | lr 1.0e-02
+2026-11-14 18:44:34.055 INFO racingmania.rl.ppo: it 51 | 26.7M steps | 238435 sps | return 54.25 | finished 99.9% | progress 543 m | kl 0.0067 | lr 1.0e-02
+2026-11-14 18:44:59.392 INFO racingmania.rl.ppo: it 61 | 32.0M steps | 211804 sps | return 53.84 | finished 99.9% | progress 538 m | kl 0.0093 | lr 1.0e-02
+2026-11-14 18:45:26.470 INFO racingmania.rl.ppo: it 71 | 37.2M steps | 243743 sps | return 59.96 | finished 99.3% | progress 600 m | kl 0.0049 | lr 1.0e-02
+2026-11-14 18:45:52.240 INFO racingmania.rl.ppo: validation @ 39321600 steps: SWS 1.539, finished 100.0%
+2026-11-14 18:46:07.141 INFO racingmania.rl.ppo: it 81 | 42.5M steps | 192970 sps | return 55.06 | finished 99.8% | progress 551 m | kl 0.0064 | lr 1.0e-02
+2026-11-14 18:46:31.272 INFO racingmania.rl.ppo: it 91 | 47.7M steps | 237787 sps | return 56.94 | finished 99.7% | progress 569 m | kl 0.0058 | lr 1.0e-02
+2026-11-14 18:46:55.114 INFO racingmania.rl.ppo: it 101 | 53.0M steps | 243688 sps | return 58.39 | finished 99.7% | progress 584 m | kl 0.0079 | lr 1.0e-02
+2026-11-14 18:47:18.840 INFO racingmania.rl.ppo: it 111 | 58.2M steps | 233574 sps | return 57.37 | finished 99.9% | progress 574 m | kl 0.0087 | lr 6.7e-03
+2026-11-14 18:47:42.005 INFO racingmania.rl.ppo: it 121 | 63.4M steps | 231365 sps | return 57.35 | finished 99.6% | progress 573 m | kl 0.0067 | lr 1.0e-02
+2026-11-14 18:48:04.821 INFO racingmania.rl.ppo: it 131 | 68.7M steps | 275653 sps | return 57.64 | finished 99.6% | progress 576 m | kl 0.0071 | lr 1.0e-02
+2026-11-14 18:48:26.124 INFO racingmania.rl.ppo: it 141 | 73.9M steps | 274070 sps | return 57.39 | finished 99.4% | progress 574 m | kl 0.0096 | lr 1.0e-02
+2026-11-14 18:48:47.906 INFO racingmania.rl.ppo: it 151 | 79.2M steps | 270082 sps | return 57.09 | finished 99.8% | progress 571 m | kl 0.0077 | lr 1.0e-02
+2026-11-14 18:49:08.968 INFO racingmania.rl.ppo: it 161 | 84.4M steps | 264749 sps | return 57.38 | finished 99.9% | progress 574 m | kl 0.0114 | lr 6.7e-03
+2026-11-14 18:49:30.314 INFO racingmania.rl.ppo: it 171 | 89.7M steps | 269572 sps | return 57.59 | finished 99.9% | progress 576 m | kl 0.0115 | lr 6.7e-03
+2026-11-14 18:49:51.238 INFO racingmania.rl.ppo: it 181 | 94.9M steps | 272686 sps | return 57.43 | finished 99.8% | progress 574 m | kl 0.0103 | lr 6.7e-03
+2026-11-14 18:50:12.572 INFO racingmania.rl.ppo: it 191 | 100.1M steps | 269513 sps | return 56.30 | finished 99.9% | progress 563 m | kl 0.0070 | lr 1.0e-02
+2026-11-14 18:50:33.650 INFO racingmania.rl.ppo: it 201 | 105.4M steps | 261158 sps | return 57.40 | finished 99.8% | progress 574 m | kl 0.0089 | lr 1.0e-02
+2026-11-14 18:50:53.670 INFO racingmania.rl.ppo: it 211 | 110.6M steps | 285690 sps | return 58.11 | finished 99.5% | progress 581 m | kl 0.0093 | lr 1.0e-02
+2026-11-14 18:51:14.688 INFO racingmania.rl.ppo: it 221 | 115.9M steps | 271944 sps | return 56.14 | finished 99.7% | progress 561 m | kl 0.0142 | lr 6.7e-03
+2026-11-14 18:51:35.069 INFO racingmania.rl.ppo: it 231 | 121.1M steps | 212115 sps | return 56.40 | finished 99.4% | progress 564 m | kl 0.0065 | lr 4.4e-03
+2026-11-14 18:51:55.540 INFO racingmania.rl.ppo: it 241 | 126.4M steps | 280784 sps | return 58.42 | finished 99.7% | progress 584 m | kl 0.0085 | lr 1.0e-02
+2026-11-14 18:52:17.010 INFO racingmania.rl.ppo: it 251 | 131.6M steps | 266261 sps | return 57.12 | finished 99.9% | progress 571 m | kl 0.0084 | lr 1.0e-02
+2026-11-14 18:52:37.663 INFO racingmania.rl.ppo: it 261 | 136.8M steps | 272861 sps | return 58.11 | finished 99.6% | progress 581 m | kl 0.0093 | lr 1.0e-02
+2026-11-14 18:52:59.005 INFO racingmania.rl.ppo: it 271 | 142.1M steps | 264962 sps | return 56.72 | finished 99.7% | progress 567 m | kl 0.0069 | lr 6.7e-03
+2026-11-14 18:53:20.784 INFO racingmania.rl.ppo: it 281 | 147.3M steps | 266124 sps | return 58.37 | finished 99.8% | progress 584 m | kl 0.0095 | lr 1.0e-02
+2026-11-14 18:53:41.007 INFO racingmania.rl.ppo: it 291 | 152.6M steps | 273018 sps | return 57.71 | finished 99.7% | progress 577 m | kl 0.0090 | lr 1.0e-02
+2026-11-14 18:54:02.604 INFO racingmania.rl.ppo: it 301 | 157.8M steps | 274556 sps | return 56.56 | finished 99.6% | progress 566 m | kl 0.0135 | lr 1.0e-02
+2026-11-14 18:54:24.344 INFO racingmania.rl.ppo: it 311 | 163.1M steps | 263078 sps | return 57.07 | finished 99.9% | progress 571 m | kl 0.0092 | lr 1.0e-02
+2026-11-14 18:54:44.931 INFO racingmania.rl.ppo: it 321 | 168.3M steps | 272986 sps | return 57.24 | finished 99.9% | progress 572 m | kl 0.0096 | lr 1.0e-02
+2026-11-14 18:55:06.029 INFO racingmania.rl.ppo: it 331 | 173.5M steps | 271326 sps | return 57.91 | finished 99.8% | progress 579 m | kl 0.0092 | lr 1.0e-02
+2026-11-14 18:55:27.365 INFO racingmania.rl.ppo: it 341 | 178.8M steps | 276899 sps | return 57.74 | finished 99.7% | progress 577 m | kl 0.0130 | lr 1.0e-02
+2026-11-14 18:55:47.595 INFO racingmania.rl.ppo: it 351 | 184.0M steps | 269634 sps | return 57.60 | finished 99.9% | progress 576 m | kl 0.0112 | lr 1.0e-02
+2026-11-14 18:56:06.746 INFO racingmania.rl.ppo: validation @ 185597952 steps: SWS 1.558, finished 100.0%
+2026-11-14 18:56:22.497 INFO racingmania.rl.ppo: it 361 | 189.3M steps | 274475 sps | return 57.60 | finished 99.9% | progress 576 m | kl 0.0099 | lr 1.0e-02
+2026-11-14 18:56:44.278 INFO racingmania.rl.ppo: it 371 | 194.5M steps | 271857 sps | return 57.35 | finished 99.7% | progress 573 m | kl 0.0145 | lr 3.0e-03
+2026-11-14 18:57:05.808 INFO racingmania.rl.ppo: it 381 | 199.8M steps | 278347 sps | return 57.43 | finished 99.7% | progress 574 m | kl 0.0130 | lr 1.0e-02
