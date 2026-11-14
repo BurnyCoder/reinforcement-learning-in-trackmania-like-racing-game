@@ -22,7 +22,7 @@ tags:
 
 Every result file of the RacingMania project: per-run `run.json` (status, configuration, hardware, physics version), per-track evaluation CSVs (`eval_<set>.csv`: track, finished, ticks, time, reference ticks, score, end reason, progress, maximum speed, exploit flags), training and validation curves, track-set summaries, the test-access log, and the generated reports and paper. Column definitions: `docs/formats.md` in the repository.
 
-Snapshot of 2026-11-14: 20 registered runs (20 evaluated), 49,312 per-track evaluation rows.
+Snapshot of 2026-11-14: 21 registered runs (20 evaluated), 49,312 per-track evaluation rows.
 
 ## Headline (Test (unseen generated))
 
