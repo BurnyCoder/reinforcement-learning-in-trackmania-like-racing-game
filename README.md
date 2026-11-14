@@ -165,6 +165,12 @@ The research question is whether one policy, trained with PPO ([Schulman et al. 
 | Physics specification | [`docs/physics.md`](docs/physics.md) |
 | File formats | [`docs/formats.md`](docs/formats.md) |
 
+**Track menu.** Pick a track on the left (five hand-made campaign tracks, then held-out tracks no agent trained on). The track's panel shows your best time, the medal targets and the AI drivers table: every network and recorded official run, best time on this track first, with its medal, whether it was trained on this track, and a ghost toggle. The chosen driver is the one you race (Race vs AI), watch live (Watch AI) or replay (Watch replay).
+
+![RacingMania track menu: track list, medal targets and the AI drivers table sorted by time](docs/images/menu.png)
+
+**Racing.** The chase camera on campaign track 1, with the timer, checkpoint count, speed, and the ghost of your best run (the grey car) ahead.
+
 ![RacingMania in the browser](docs/images/game.png)
 
 ## What is new here
