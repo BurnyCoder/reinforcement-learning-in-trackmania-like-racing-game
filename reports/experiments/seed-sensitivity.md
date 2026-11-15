@@ -32,7 +32,7 @@ _Not yet available: needs test results from two or more seeds of a configuration
 |  | Hypothesis | Tested quantity | Seeds (have/required) | Estimate [95 % CI] | Test statistic | p (one-sided) | p (Holm) | Decision | Preliminary reading (not a test) |
 |---|---|---|---|---|---|---|---|---|---|
 | H1 | The generalist drives unseen tracks better than the scripted driver | SWS > 1.0 | generalist 1/10 | 1.214 [1.177, 1.250] (preliminary) | — | — | — | **not yet tested** | preliminary (1 seed, track resampling only): the interval lies above 1.0, consistent with H1 |
-| H2 | Track diversity is what generalises (50,000 tracks vs 1 track) | SWS difference > 0.1 | generalist 1/10, size-1 1/5 | 0.675 [0.624, 0.727] (preliminary) | — | — | — | **not yet tested** | preliminary (1 seed per group, track resampling only): the interval lies above 0.1, consistent with H2 |
+| H2 | Track diversity is what generalises (the whole training pool, 48,949 tracks from 50,000 seeds, vs 1 track) | SWS difference > 0.1 | generalist 1/10, size-1 1/5 | 0.675 [0.624, 0.727] (preliminary) | — | — | — | **not yet tested** | preliminary (1 seed per group, track resampling only): the interval lies above 0.1, consistent with H2 |
 | H3 | The agent uses the look-ahead (generalist vs blind control) | SWS difference > 0.1 | generalist 1/10, blind 1/5 | 0.204 [0.164, 0.245] (preliminary) | — | — | — | **not yet tested** | preliminary (1 seed per group, track resampling only): the interval lies above 0.1, consistent with H3 |
 
 ### Cross-checks (Agarwal et al. 2021)

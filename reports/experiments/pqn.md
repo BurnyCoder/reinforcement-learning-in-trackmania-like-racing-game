@@ -22,7 +22,7 @@ Metric: success-weighted speed (SWS) and finish rate; intervals are 95 % two-lev
 
 | Run | total_steps | num_envs | num_steps | lr | gamma | gae_lambda | ent_coef | clip_coef | hidden | action_mode | weight_decay | loaded_tracks | window_k | blind | time_cost | fall_penalty | random_start_prob | max_steps | hint_weight | scripted_starts | training tracks |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `pqn/seed1` | 1000000000 | 16384 | 32 | 0.00025 | 0.99 | 0.95 | 0.01 | 0.2 | [256, 256] | factored | 0.0 | 4096 | 20 | False | 0.0 | 0.0 | 0.5 | 1500 | 0.0 | False | 48949 |
+| `pqn/seed1` | 1000000000 | 16384 | 32 | 0.00025 | 0.99 | 0.95 | 0.01 | 0.2 | [256, 256] | joint | 0.0 | 4096 | 20 | False | 0.0 | 0.0 | 0.5 | 1500 | 0.0 | False | 48949 |
 
 ## Results
 
