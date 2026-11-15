@@ -19,8 +19,10 @@ def _seeds(n: int) -> str:
 
 
 def _lc(label: str) -> str:
-    """A run label inside a sentence: first letter lowercased unless the first word is an acronym (PQN, CEM)."""
-    return label if label[:2].isupper() else label[:1].lower() + label[1:]
+    """A run label inside a sentence: first letter lowercased unless the first word is an acronym (PQN, CEM);
+    a label that is a participle phrase ("Trained on 1 track") gets a noun ("agent trained on 1 track")."""
+    s = label if label[:2].isupper() else label[:1].lower() + label[1:]
+    return "agent " + s if s.startswith("trained on") else s
 
 
 def _set_phrase(s: str, n_tracks: int) -> str:
@@ -39,7 +41,7 @@ def headline(an, detail: bool = True) -> list[str]:
     key = "generalist" if an.summary("generalist", s) else ("generalist-pilot" if an.summary("generalist-pilot", s) else None)
     if key:
         g, lab = an.summary(key, s), an.config(key)["label"]
-        out.append(f"The {lab} ({_seeds(g['n_seeds'])}) finished {pct(g['finish'])} of {_set_phrase(s, g['n_tracks'])} "
+        out.append(f"The {_lc(lab)} ({_seeds(g['n_seeds'])}) finished {pct(g['finish'])} of {_set_phrase(s, g['n_tracks'])} "
                    f"(95 % CI {pct(g['finish_lo'])} to {pct(g['finish_hi'])}), with a success-weighted speed (SWS) of "
                    f"{ci(g['sws'], g['sws_lo'], g['sws_hi'])}; an SWS of 1.0 would mean finishing every track as fast as the scripted driver.")
         r = g["time_ratio_finished"]

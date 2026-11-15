@@ -37,7 +37,7 @@
       256,
       256
     ],
-    "action_mode": "factored",
+    "action_mode": "joint",
     "eval_every_minutes": 10.0,
     "checkpoint_every_minutes": 10.0,
     "rotate_tracks_every": 20,

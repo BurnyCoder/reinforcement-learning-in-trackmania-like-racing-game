@@ -3,10 +3,11 @@
 Source: CleanRL ``ppo_continuous_action_isaacgym.py`` (https://github.com/vwxyzjn/cleanrl, MIT,
 with an NVIDIA BSD-3 notice; see THIRD_PARTY_NOTICES.md). Changes, each with its reason:
 - two 3-way categorical action heads (keyboard actions) instead of a Gaussian, log-probabilities and
-  entropies summed (CleanRL ``ppo_multidiscrete.py``);
+  entropies summed (``ppo_multidiscrete.py`` of https://github.com/vwxyzjn/ppo-implementation-details);
 - observation normalisation with clipping (Huang et al. 2022, "37 implementation details");
-- bootstrapping on time limits: ``r += γ·V(final_obs)`` for truncated episodes (Rudin et al. 2021
-  bootstrap with the critic's prediction; Gymnasium's termination/truncation rule);
+- bootstrapping on time limits: ``r += γ·V(final_obs)`` for truncated episodes (the idea of
+  bootstrapping time-outs with the critic is from Rudin et al. 2021, whose rsl_rl code uses the value of
+  the pre-step state; the final observation follows Gymnasium's termination/truncation rule);
 - learning rate adapted to a KL target (Rudin et al. 2021; rsl_rl's rule: ÷1.5 above 2× target,
   ×1.5 below ½ target, bounded to [1e-5, 1e-2]) and an entropy bonus of 0.01;
 - full checkpoint/resume (model, optimiser, normaliser, environment and RNG state) every few

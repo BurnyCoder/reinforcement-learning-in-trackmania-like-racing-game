@@ -50,19 +50,25 @@ def run_clips(repo: Path, rid: str | None = None, readme_only: bool = False) -> 
     """Recorded video clips (scripts/11_record_videos.py): the README clips (docs/videos/videos.json), then the clips
     recorded for the Hugging Face cards (docs/videos/cards/videos.json); only run ``rid``'s if given, and only clips
     whose MP4 exists."""
-    files = [repo / "docs" / "videos" / "videos.json"] + ([] if readme_only else [repo / "docs" / "videos" / "cards" / "videos.json"])
-    clips = [c for f in files if f.exists() for c in json.loads(f.read_text(encoding="utf-8"))]
+    readme = repo / "docs" / "videos" / "videos.json"
+    files = [readme] + ([] if readme_only else [repo / "docs" / "videos" / "cards" / "videos.json"])
+    # README clips keep their README number, so captions that say "clip 7" point at the same clip everywhere.
+    clips = [c | ({"readme_no": i + 1} if f == readme else {}) for f in files if f.exists()
+             for i, c in enumerate(json.loads(f.read_text(encoding="utf-8")))]
     return [c for c in clips if (rid is None or c.get("run") == rid) and c.get("mp4") and (repo / c["mp4"]).exists()]
 
 
 def video_section(clips: list[dict], url) -> str:
     """Markdown for clips: an HTML5 <video> per clip (Hugging Face cards render it, as in the Hub's own examples, e.g.
     https://huggingface.co/mishig/test_vid) and the clip's caption parts from videos.json. ``url(clip)`` gives the
-    MP4's address."""
+    MP4's address. README clips are headed with their README number; in-page README anchors in captions become
+    absolute links, because a card has no such sections."""
     out = []
     for c in clips:
-        cap = c.get("caption") or {"What you see": c.get("explain", "").strip()}
-        out.append("\n".join([f"### {c['title']}", "",
+        cap = {k: str(v).replace("](#", f"]({REPO_URL}#")
+               for k, v in (c.get("caption") or {"What you see": c.get("explain", "").strip()}).items()}
+        head = f"### Clip {c['readme_no']}: {c['title']}" if "readme_no" in c else f"### {c['title']}"
+        out.append("\n".join([head, "",
                               f'<video src="{url(c)}" controls muted loop playsinline width="100%"></video>', "",
                               *[f"- **{k}:** {v}" for k, v in cap.items()]]))
     return "\n\n".join(out)
@@ -84,7 +90,7 @@ def model_card(res, rid: str, repo_id: str | None = None) -> str:
             continue
         v = scores[s]
         results.append({"task": {"type": "reinforcement-learning", "name": "reinforcement-learning"},
-                        "dataset": {"name": f"RacingMania {tx.SET_LABELS[s].lower()} tracks", "type": f"racingmania-{s}"},
+                        "dataset": {"name": f"RacingMania {tx.SET_LABELS[s].lower().removesuffix(' tracks')} tracks", "type": f"racingmania-{s}"},
                         "metrics": [{"type": "success_weighted_speed", "value": round(v["sws"], 4), "name": "SWS", "verified": False},
                                     {"type": "finish_rate", "value": round(v["finish"], 4), "name": "Finish rate", "verified": False}]})
     meta = {"library_name": "pytorch", "license": "mit",
@@ -111,7 +117,7 @@ def model_card(res, rid: str, repo_id: str | None = None) -> str:
         base = f"https://huggingface.co/{repo_id}/resolve/main/videos/" if repo_id else "videos/"
         parts += ["## Videos", "Official evaluation runs of this model replayed in the browser game (\"Watch replay\"): the car "
                   "states the evaluator recorded while scoring the run, so each clip is exactly the run its caption describes. "
-                  f"More clips, including the controls: <{REPO_URL}#videos>.",
+                  f"Clip numbers are those of the README, which has more clips, including the controls: <{REPO_URL}#videos>.",
                   video_section(clips, lambda c: base + Path(c["mp4"]).name)]
     parts += [
         "## Model",
@@ -184,8 +190,9 @@ def dataset_card(res, an) -> str:
     ]
     clips = run_clips(res.paths.repo, readme_only=True)  # the README's clips, controls included; MP4s under videos/
     if clips:
-        parts[-1:-1] = ["## Videos", "The README's clips: official evaluation runs replayed in the browser game, chosen by fixed "
-                        "rules (best, typical and failure cases, then the controls). Each model's own clips are on its model card.",
+        parts[-1:-1] = ["## Videos", "The README's clips, numbered as in the README: official evaluation runs replayed in the "
+                        "browser game, chosen by fixed rules (best, typical and failure cases, then the controls). Each "
+                        "model's own clips are on its model card.",
                         video_section(clips, lambda c: f"https://huggingface.co/datasets/{HF_RESULTS_REPO}/resolve/main/videos/"
                                                        f"{Path(c['mp4']).name}")]
     return "\n\n".join(_clean(p) for p in parts) + "\n"

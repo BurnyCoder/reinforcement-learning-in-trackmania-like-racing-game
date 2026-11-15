@@ -165,7 +165,7 @@ def size_curve(an, out: Path) -> dict | None:
         g = p.get("gap")
         if g:
             axes[1].errorbar(xi, g["estimate"], yerr=_err(g["estimate"], g["lo"], g["hi"]), fmt=marker, color=colour, ms=6, capsize=2.5)
-    axes[0].plot(x, [p["sws"] for p in pts], color=AXIS, lw=1, zorder=0)
+    # No line between the points: sizes without results would otherwise look like interpolated measurements.
     axes[0].set_ylim(bottom=0)
     axes[0].axhline(1.0, color=INK2, lw=0.8)
     axes[0].set_ylabel("SWS")

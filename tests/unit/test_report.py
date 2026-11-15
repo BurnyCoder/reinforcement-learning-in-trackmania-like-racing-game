@@ -251,5 +251,6 @@ def test_model_card_plays_the_run_clips_from_its_repo(built):
     for c in clips:
         name = Path(c["mp4"]).name
         assert f'<video src="https://huggingface.co/someone/racingmania-generalist-seed0/resolve/main/videos/{name}"' in card
-        assert f"### {c['title']}" in card
+        # README clips are headed with their README number, so "clip 7" in a caption means the same clip everywhere
+        assert (f"### Clip {c['readme_no']}: {c['title']}" if "readme_no" in c else f"### {c['title']}") in card
     assert "## Videos" not in build.model_card("no-such-run/seed1", results_dir=results)

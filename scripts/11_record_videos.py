@@ -82,6 +82,10 @@ def model_text(run: str) -> str:
     trained_on = "1 track" if info.get("n_train_tracks") == 1 else f"{info['n_train_tracks']:,} generated training tracks"
     if info.get("track"):
         trained_on = f"{info['track']} only"
+    exp_cfg = ROOT / "configs" / "experiments" / f"{info['experiment']}.yaml"  # warm starts are recorded in the config
+    init = (yaml.safe_load(exp_cfg.read_text(encoding="utf-8")) or {}).get("init_from") if exp_cfg.exists() else None
+    if init:
+        trained_on += f", starting from the weights of `{init}`"
     steps = info["global_step"]
     amount = f"{round(steps / 1e9, 1):g} billion" if steps >= 1e9 else f"{steps / 1e6:,.0f} million"  # budgets end at the first rollout past them
     return (f"`{run}`: {info['algo'].upper()}, trained by reinforcement learning for {amount} agent steps on {trained_on} "
@@ -95,7 +99,8 @@ def map_text(track: str, run: str, split: str) -> str:
     seen = track in run  # a specialist's run id names its training track; generalists never train on campaign or test tracks
     jumps = "no jumps" if f["jumps"] == 0 else f"{f['jumps']} jump{'' if f['jumps'] == 1 else 's'}"
     if run.startswith("baselines/scripted/"):
-        relation = "the scripted driver is not trained; it drove this track once before, to certify it and set its reference time"
+        relation = ("the scripted driver is not trained; it drove this track before at three speed settings to certify it, "
+                    "and its run at the normal setting set the reference time")
     elif run.startswith(("baselines/untrained/", "demos/untrained-sampled/")):
         relation = "this network was never trained on any track"
     elif run.startswith("baselines/random/"):
@@ -213,7 +218,11 @@ def compare_text(c: dict) -> str:
 def eval_text(c: dict) -> str:
     """The official result, the scripted driver's reference and what the browser showed."""
     r = c["row"]
-    src = (f"official evaluation in `results/{c['run']}/eval_{c['split']}.csv` (standing start, most probable action, final checkpoint)"
+    how = ("deterministic controller" if c["run"].startswith("baselines/scripted/") else
+           "seeded random keys" if c["run"].startswith("baselines/random/") else
+           "most probable action, untrained weights" if c["run"].startswith("baselines/untrained/") else
+           "most probable action, final checkpoint")
+    src = (f"official evaluation in `results/{c['run']}/eval_{c['split']}.csv` (standing start, {how})"
            if not c["run"].startswith("demos/") else
            f"demonstration run through the same evaluator, recorded in `results/{c['run']}/eval_{c['split']}.csv` (standing start, "
            f"sampled actions; not scored)")
@@ -224,8 +233,9 @@ def eval_text(c: dict) -> str:
         res = (f"finished in {c['official_s']:.2f} s; the scripted driver needs {c['reference_s']:.2f} s, so this is "
                f"{c['reference_s'] / c['official_s']:.2f}× its speed")
     else:
-        res = (f"did not finish: {r['end']} after {c['official_s']:.2f} s and {float(r['progress']):,.0f} m "
-               f"(the scripted driver finishes in {c['reference_s']:.2f} s)")
+        # progress is the arc-length position on the centreline; every start line is at sample 3, about the 6 m mark
+        res = (f"did not finish: {r['end']} after {c['official_s']:.2f} s at the {float(r['progress']):,.0f} m mark of "
+               f"the road, whose start line is at about 6 m; the scripted driver finishes in {c['reference_s']:.2f} s")
     for other in c.get("also", []):  # another run's official result on the same track, for comparison
         o = next(x for x in csv.DictReader(open(RESULTS / other / f"eval_{c['split']}.csv", encoding="utf-8")) if x["track"] == c["track"])
         res += (f"; on the same track `{other}` " + (f"finished in {int(o['ticks']) * DT:.2f} s" if o["finished"] == "1"

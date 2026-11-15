@@ -2,8 +2,9 @@
 
 Global context: the run table's "Training-free baselines" row (reports/plan.md): uniformly random
 actions (the floor), an untrained network (10 random initialisations; shows what training adds),
-and the frozen scripted driver (the reference, score 1.0 by construction on certified sets). The
-CEM planner (``drivers/cem.py``) gives near-optimal times on a few tracks and is run separately.
+and the frozen scripted driver (the reference, score about 1.0 by construction on certified sets; float32
+rounding can make it fail a certified track). The CEM planner (``drivers/cem.py``) gives planning
+reference times on a few tracks and is run separately.
 Results go to ``results/baselines/<name>/seed<k>/`` like any other run.
 """
 
