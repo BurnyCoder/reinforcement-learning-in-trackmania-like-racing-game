@@ -18,7 +18,7 @@ clips:
   rule: best
   explain: 'The specialist has driven only this one track during training, so it knows every corner. Watch it accelerate hard
     from the start, hold high speed on the straights, keep its speed through the bends by staying close to the edge, and take
-    the jump without slowing down. It is the fastest of all drivers evaluated so far on this track, but what it learned is
+    the jump without slowing down. Only two runs evaluated so far were faster here, by a few hundredths of a second, both trained on another hand-made track (campaign-05), but what it learned is
     how to drive this one track: on tracks with a different layout it mostly falls off (see the results).'
   group: Positive results
 - title: 'Best generalist lap on a hand-made track it never saw in training: it generalized'
@@ -38,7 +38,7 @@ clips:
   split: test
   rule: best
   explain: 'Generalization again, now on a generated track from the held-out test seeds: the same kind of track as in training,
-    but never this one, driven from the standing start to the finish. Watch it slow down for each bend, hug the inside edge
+    but never this one, driven from the standing start to the finish. Watch it slow down for each bend, keep to the inside half of the road
     through it and accelerate out again, using only what it sees of the road ahead. Compare it with the next clip, the scripted
     driver on the same track.'
   group: Positive results
@@ -49,7 +49,7 @@ clips:
   rule: best
   rule_run: generalist/seed0
   explain: 'The same track as the clip before, driven by the hand-written scripted driver. It drives the track cleanly, but
-    it is cautious: in the bends it slows to well under half the generalist''s speed, and it never reaches the speeds the
+    it is cautious: in the bends it drives at about half the generalist''s speed, about a third in the tightest ones, and it never reaches the speeds the
     generalist holds on the straights, so it needs almost twice as long (speeds measured from both recorded runs). Its time
     on each track is the yardstick of the score: 1.0 means as fast as this driver.'
   group: Positive results
@@ -119,8 +119,8 @@ clips:
   split: campaign
   track: campaign-01
   until: out
-  explain: Like every evaluated driver, the network takes its most probable action at each step instead of sampling one. With
-    random initial weights its output layer starts close to zero (standard deviation 0.01, the CleanRL convention), so it
+  explain: Like every evaluated network, it takes its most probable action at each step instead of sampling one. With
+    random initial weights its output layer starts close to zero (orthogonal initialisation with gain 0.01, the CleanRL convention), so it
     picks almost the same keys every step, here steering right while coasting, and never presses gas. Sampled instead of taken
     greedily, the same network would press keys almost uniformly at random, which is how PPO starts exploring.
   group: Controls

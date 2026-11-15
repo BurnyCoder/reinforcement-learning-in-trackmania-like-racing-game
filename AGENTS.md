@@ -22,7 +22,7 @@ Notes for coding agents (and people) working on this repository. The README expl
 | `configs/` | `run_matrix.yaml` (preregistered run order) and `experiments/*.yaml` |
 | `results/` | Small result files tracked in git (`run.json`, per-track CSVs, replays); checkpoints live under `RACINGMANIA_DATA_DIR` |
 | `reports/`, `paper/` | Generated reports, figures, diagrams and the paper (`paper.md.j2` is the template) |
-| `docs/` | `formats.md` (every file format), `physics.md`, `videos/` (README clips) and `videos/cards/` (Hugging Face card clips) |
+| `docs/` | `formats.md` (track, model, replay and result file formats), `physics.md`, `videos/` (README clips) and `videos/cards/` (Hugging Face card clips) |
 
 ## Commands
 
@@ -45,7 +45,7 @@ uv run python scripts/07_make_report.py
 ## Rules of this project
 
 - **No hand-typed result numbers** in the README results block, reports or paper: they come from `scripts/07_make_report.py`, which reads `results/`. Hand-written prose may describe results qualitatively.
-- **Test tracks are protected.** Only the evaluator reads them, and every read is appended to `results/test_access_log.jsonl`. Never tune anything on the test set.
+- **Test tracks are protected.** Only evaluation-type code reads them (the evaluator, the CEM baseline, `scripts/10_diagnose_flag.py` and `scripts/12_export_unseen_track.py`), and every read is appended to `results/test_access_log.jsonl` (`eval.evaluator._log_access`). Never tune anything on the test set.
 - **The preregistered recipe is frozen.** Any change to settings, rules or analysis is a dated amendment in `reports/preregistration.md` and `reports/plan.md`.
 - **Two physics implementations on purpose.** `web/vendor/cannon-es` is the unmodified reference; `src/racingmania/sim` must match it tick by tick (parity tests). Patches, if ever needed, go into both and get a new physics version.
 - **Git:** work on a branch, open a pull request, merge it yourself; never commit credentials or `.env`; no AI attribution in commits or PRs.
