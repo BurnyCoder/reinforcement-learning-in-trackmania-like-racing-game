@@ -3,10 +3,6 @@
   "private": true,
   "description": "Node tooling for RacingMania: pinned browser libraries that are copied into web/vendor, and the parity harness that runs the original cannon-es car physics headless.",
   "type": "module",
-  "scripts": {
-    "vendor": "node scripts/vendor_web_libs.mjs",
-    "test:core": "node --test tests/js/"
-  },
   "devDependencies": {
     "cannon-es": "0.20.0",
     "three": "0.187.0",

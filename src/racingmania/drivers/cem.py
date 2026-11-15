@@ -1,8 +1,9 @@
-"""CEM planner: a near-optimal reference time per track from search in the true simulator.
+"""CEM planner: a planning reference time per track from search in the true simulator.
 
-Global context: the run table's "CEM reference" (reports/plan.md) gives an approximate upper bound on
-how fast a track can be driven with this car and these actions, to put learned and scripted times
-in context. It is model-predictive control with the cross-entropy method (Rubinstein 1999; as a
+Global context: the run table's "CEM reference" (reports/plan.md) puts learned and scripted times in
+context. It was meant as an approximate upper bound, but with its 4.5 s horizon it is slower than the
+trained generalist on every track both finish, so it is reported as a planning reference, not a
+near-optimal bound (reports/plan.md, amendment on the CEM horizon). It is model-predictive control with the cross-entropy method (Rubinstein 1999; as a
 planner e.g. iCEM, Pinneri et al. 2020, arXiv:2008.06389): at every agent step, sample ``P``
 action sequences of length ``H`` from per-step categorical distributions, simulate them from the
 current state in the deterministic simulator, refit the distributions to the best 10 %, repeat a

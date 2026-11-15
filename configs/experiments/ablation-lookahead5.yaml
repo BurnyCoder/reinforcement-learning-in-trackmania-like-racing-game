@@ -1,4 +1,4 @@
-# Ablation (b): 5 upcoming points (30 m) instead of 20.
+# Ablation (b): 5 upcoming points (24 m: one every 6 m from the nearest sample) instead of 20.
 description: PPO observing 5 upcoming centreline points
 algo: ppo
 tracks: {pool: train}

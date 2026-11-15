@@ -62,6 +62,7 @@ class PQNConfig(PPOConfig):
     num_minibatches: int = 4
     max_grad_norm: float = 10.0
     adaptive_lr: bool = False
+    action_mode: str = "joint"  # QAgent always has one 9-way head; recorded as such in run.json
 
 
 class PQNTrainer(PPOTrainer):

@@ -14,7 +14,9 @@ amendments in reports/preregistration.md):
   Annals of Applied Statistics 1(2):386-411, https://arxiv.org/abs/0712.1111), which is mildly
   conservative (Owen & Eckles 2012, https://arxiv.org/abs/1106.2125).
 - Confirmation: one-sided one-sample t-test (H1) and one-sided Welch t-test (H2, H3) on per-seed
-  scores, as Colas et al. recommend for small samples (arXiv:1806.08295, arXiv:1904.06979), with
+  scores: Colas et al. recommend Welch's test over bootstrap tests below about 50 samples and warn
+  that t-tests with fewer than 5 seeds have high false-positive rates and with 5-10 seeds detect only
+  large effects (arXiv:1806.08295, arXiv:1904.06979), with
   Holm's step-down correction across the three hypotheses (Holm 1979, "A simple sequentially
   rejective multiple test procedure", Scandinavian Journal of Statistics 6(2):65-70,
   https://www.jstor.org/stable/4615733).

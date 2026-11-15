@@ -132,7 +132,8 @@ def train_run(experiment: str, seed: int, track: str | None = None, resume: bool
                     description=exp.get("description", ""), git_commit=git_commit(), physics=PHYSICS_VERSION,
                     hardware=hardware(), ppo=dataclasses.asdict(ppo), env=dataclasses.asdict(env_cfg),
                     n_train_tracks=int(len(ids) if ids is not None else len(pool["n"])),
-                    vehicle_overrides=exp.get("vehicle", {}), checkpoint_dir=str(ckpt_dir), tensorboard_dir=str(tb_dir))
+                    vehicle_overrides=exp.get("vehicle", {}), checkpoint_dir=str(ckpt_dir), tensorboard_dir=str(tb_dir),
+                    init_from=exp.get("init_from"), bc_init=bool(exp.get("bc_init")))  # warm starts, if any
     if algo.startswith("imitation"):
         return _train_imitation_run(exp, seed, cfg, env_cfg, pool, ids, res_dir, ckpt_dir, device)
     init = None

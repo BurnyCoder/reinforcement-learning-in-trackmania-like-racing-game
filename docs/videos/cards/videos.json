@@ -330,7 +330,7 @@
     "gif": null,
     "caption": {
       "What you see": "A specialist made by fine-tuning the seed-1 generalist on this one hand-made track: it starts from a policy that already drives generated tracks and then trains on this track only. The results compare it with the from-scratch specialist and show what it forgets on other tracks.",
-      "Model": "`specialist-finetune-campaign-01/seed1`: PPO, trained by reinforcement learning for 200 million agent steps on campaign-01 only (seed 1, 0.3 h on one GPU).",
+      "Model": "`specialist-finetune-campaign-01/seed1`: PPO, trained by reinforcement learning for 200 million agent steps on campaign-01 only, starting from the weights of `generalist/seed1` (seed 1, 0.3 h on one GPU).",
       "Map": "First Flight (`campaign-01`), a hand-made campaign track, 628 m long with 1 jump and up to 6\u00b0 of banking; the track this model was trained on.",
       "Evaluation": "official evaluation in `results/specialist-finetune-campaign-01/seed1/eval_campaign.csv` (standing start, most probable action, final checkpoint): finished in 19.76 s; the scripted driver needs 30.17 s, so this is 1.53\u00d7 its speed. The clip replays this run."
     },
@@ -368,7 +368,7 @@
     "gif": null,
     "caption": {
       "What you see": "A specialist made by fine-tuning the seed-1 generalist on this one hand-made track: it starts from a policy that already drives generated tracks and then trains on this track only. The results compare it with the from-scratch specialist and show what it forgets on other tracks.",
-      "Model": "`specialist-finetune-campaign-02/seed1`: PPO, trained by reinforcement learning for 200 million agent steps on campaign-02 only (seed 1, 0.3 h on one GPU).",
+      "Model": "`specialist-finetune-campaign-02/seed1`: PPO, trained by reinforcement learning for 200 million agent steps on campaign-02 only, starting from the weights of `generalist/seed1` (seed 1, 0.3 h on one GPU).",
       "Map": "Rolling Hills (`campaign-02`), a hand-made campaign track, 793 m long with no jumps and up to 8\u00b0 of banking; the track this model was trained on.",
       "Evaluation": "official evaluation in `results/specialist-finetune-campaign-02/seed1/eval_campaign.csv` (standing start, most probable action, final checkpoint): finished in 23.37 s; the scripted driver needs 36.43 s, so this is 1.56\u00d7 its speed. The clip replays this run."
     },
@@ -406,7 +406,7 @@
     "gif": null,
     "caption": {
       "What you see": "A specialist made by fine-tuning the seed-1 generalist on this one hand-made track: it starts from a policy that already drives generated tracks and then trains on this track only. The results compare it with the from-scratch specialist and show what it forgets on other tracks.",
-      "Model": "`specialist-finetune-campaign-03/seed1`: PPO, trained by reinforcement learning for 200 million agent steps on campaign-03 only (seed 1, 0.3 h on one GPU).",
+      "Model": "`specialist-finetune-campaign-03/seed1`: PPO, trained by reinforcement learning for 200 million agent steps on campaign-03 only, starting from the weights of `generalist/seed1` (seed 1, 0.3 h on one GPU).",
       "Map": "Banked Sweepers (`campaign-03`), a hand-made campaign track, 1,160 m long with 1 jump and up to 14\u00b0 of banking; the track this model was trained on.",
       "Evaluation": "official evaluation in `results/specialist-finetune-campaign-03/seed1/eval_campaign.csv` (standing start, most probable action, final checkpoint): finished in 33.24 s; the scripted driver needs 48.50 s, so this is 1.46\u00d7 its speed. The clip replays this run."
     },
@@ -444,7 +444,7 @@
     "gif": null,
     "caption": {
       "What you see": "A specialist made by fine-tuning the seed-1 generalist on this one hand-made track: it starts from a policy that already drives generated tracks and then trains on this track only. The results compare it with the from-scratch specialist and show what it forgets on other tracks.",
-      "Model": "`specialist-finetune-campaign-04/seed1`: PPO, trained by reinforcement learning for 200 million agent steps on campaign-04 only (seed 1, 0.3 h on one GPU).",
+      "Model": "`specialist-finetune-campaign-04/seed1`: PPO, trained by reinforcement learning for 200 million agent steps on campaign-04 only, starting from the weights of `generalist/seed1` (seed 1, 0.3 h on one GPU).",
       "Map": "Technical (`campaign-04`), a hand-made campaign track, 666 m long with no jumps and up to 5\u00b0 of banking; the track this model was trained on.",
       "Evaluation": "official evaluation in `results/specialist-finetune-campaign-04/seed1/eval_campaign.csv` (standing start, most probable action, final checkpoint): finished in 20.07 s; the scripted driver needs 42.52 s, so this is 2.12\u00d7 its speed. The clip replays this run."
     },
@@ -482,7 +482,7 @@
     "gif": null,
     "caption": {
       "What you see": "A specialist made by fine-tuning the seed-1 generalist on this one hand-made track: it starts from a policy that already drives generated tracks and then trains on this track only. The results compare it with the from-scratch specialist and show what it forgets on other tracks.",
-      "Model": "`specialist-finetune-campaign-05/seed1`: PPO, trained by reinforcement learning for 200 million agent steps on campaign-05 only (seed 1, 0.3 h on one GPU).",
+      "Model": "`specialist-finetune-campaign-05/seed1`: PPO, trained by reinforcement learning for 200 million agent steps on campaign-05 only, starting from the weights of `generalist/seed1` (seed 1, 0.3 h on one GPU).",
       "Map": "Grand Tour (`campaign-05`), a hand-made campaign track, 1,111 m long with 2 jumps and up to 12\u00b0 of banking; the track this model was trained on.",
       "Evaluation": "official evaluation in `results/specialist-finetune-campaign-05/seed1/eval_campaign.csv` (standing start, most probable action, final checkpoint): finished in 32.78 s; the scripted driver needs 56.07 s, so this is 1.71\u00d7 its speed. The clip replays this run."
     },

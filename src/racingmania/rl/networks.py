@@ -6,7 +6,9 @@ critic MLPs with two hidden layers of 256 tanh units, as in CleanRL's GPU PPO sc
 initialisation (``layer_init``: gain √2 for hidden layers, 0.01 for the policy output, 1.0 for the
 value output; Huang et al. 2022, "The 37 Implementation Details of PPO"). The actor has two
 3-way categorical heads (steer, pedal) whose log-probabilities and entropies are summed, the
-pattern of CleanRL's ``ppo_multidiscrete.py``; ablations swap in one 9-way head or a Gaussian head.
+pattern of ``ppo_multidiscrete.py`` in Huang et al.'s companion repository
+(https://github.com/vwxyzjn/ppo-implementation-details, not CleanRL itself); ablations swap in one
+9-way head or a Gaussian head.
 """
 
 from __future__ import annotations

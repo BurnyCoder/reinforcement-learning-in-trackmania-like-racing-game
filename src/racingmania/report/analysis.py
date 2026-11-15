@@ -41,7 +41,7 @@ HYPOTHESES = [
     # id, statement, treatment config, comparison config (None = constant), threshold, required seeds
     ("H1", "The generalist drives unseen tracks better than the scripted driver", "generalist", None, H1_THRESHOLD,
      {"generalist": 10}),
-    ("H2", "Track diversity is what generalises (50,000 tracks vs 1 track)", "generalist", "size-1", SMALLEST_EFFECT,
+    ("H2", "Track diversity is what generalises (the whole training pool, 48,949 tracks from 50,000 seeds, vs 1 track)", "generalist", "size-1", SMALLEST_EFFECT,
      {"generalist": 10, "size-1": 5}),
     ("H3", "The agent uses the look-ahead (generalist vs blind control)", "generalist", "blind", SMALLEST_EFFECT,
      {"generalist": 10, "blind": 5}),

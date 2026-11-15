@@ -18,7 +18,7 @@ The files are byte-for-byte copies of the npm packages pinned in `package.json`.
 |---|---|---|---|
 | cannon-es `RaycastVehicle`, `WheelInfo`, `Body.integrate`, `Body.applyImpulse`, `World.internalStep` order, `Quaternion.integrate`, `Ray._intersectTrimesh`, `Ray.pointInTriangle`, `Trimesh.computeNormal` | MIT, Copyright (c) 2015 cannon.js Authors | The per-tick car physics, rewritten as batched PyTorch tensor code | `src/racingmania/sim/` |
 
-cannon-es's vehicle is itself a port of Bullet's `btRaycastVehicle` (zlib licence, Copyright (c) 2005 Erwin Coumans, https://github.com/bulletphysics/bullet3).
+cannon-es's vehicle code follows Bullet's `btRaycastVehicle` (shared structure and helper names such as `resolveSingleBilateral`; no port is declared in the cannon-es sources) (zlib licence, Copyright (c) 2005 Erwin Coumans, https://github.com/bulletphysics/bullet3).
 
 ## Adapted
 
