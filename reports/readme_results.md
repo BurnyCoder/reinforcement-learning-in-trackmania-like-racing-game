@@ -1,4 +1,4 @@
-_Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-15; 31 of 116 planned runs evaluated. Training was paused on 2026-11-14; the remaining runs are postponed. Full tables: [`reports/summary.md`](reports/summary.md)._
+_Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-22; 31 of 116 planned runs evaluated. Training was paused on 2026-11-14; the remaining runs are postponed. Full tables: [`reports/summary.md`](reports/summary.md)._
 
 - The generalist (PPO) (1 seed) finished 81.5 % of the 971 unseen test tracks (95 % CI 79.0 % to 83.8 %), with a success-weighted speed (SWS) of 1.214 [1.177, 1.250]; an SWS of 1.0 would mean finishing every track as fast as the scripted driver.
 - On the tracks it finished, it needed 0.67 times the scripted driver's time (32.7 % less time on average).
@@ -9,11 +9,11 @@ _Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-15;
 - H3: The agent uses the look-ahead (generalist vs blind control). SWS difference, paired on the same tracks, 0.204 [0.164, 0.245]; preliminary (1 seed per group, track resampling only): the interval lies above 0.1, consistent with H3.
 - Exploratory and not H2 itself: specialists trained on one hand-made track each finished 5.3 % to 45.2 % of the unseen test tracks (5 runs, seed 1), against 81.5 % for the generalist.
 - With one seed per configuration these intervals reflect only which tracks were sampled; seed-to-seed and checkpoint-to-checkpoint variation are not in them yet, so they can be too narrow. Training was paused on 2026-11-14; not done yet and postponed: one seed of every experiment (phase 2): 14 of 25 runs evaluated, the rest postponed; imitation and hybrids (phase 4): 0 of 5 runs evaluated, the rest postponed; hyperparameter sensitivity (phase 5): 0 of 4 runs evaluated, the rest postponed; seed sensitivity (phase 6): 0 of 65 runs evaluated, the rest postponed.
-- On campaign track campaign-01 the generalist (zero-shot) was 2.8 % slower than the specialist trained on that track.
-- On campaign track campaign-02 the generalist (zero-shot) was 5.5 % slower than the specialist trained on that track.
-- On campaign track campaign-03 the generalist (zero-shot) was 3.3 % slower than the specialist trained on that track.
-- On campaign track campaign-04 the generalist (zero-shot) was 7.6 % slower than the specialist trained on that track.
-- On campaign track campaign-05 the generalist (zero-shot) was 6.3 % slower than the specialist trained on that track.
+- On campaign track campaign-01 the generalist (zero-shot, 1 seed) was 2.8 % slower than the specialist trained on that track (1 seed; a single run on each side, so no interval).
+- On campaign track campaign-02 the generalist (zero-shot, 1 seed) was 5.5 % slower than the specialist trained on that track (1 seed; a single run on each side, so no interval).
+- On campaign track campaign-03 the generalist (zero-shot, 1 seed) was 3.3 % slower than the specialist trained on that track (1 seed; a single run on each side, so no interval).
+- On campaign track campaign-04 the generalist (zero-shot, 1 seed) was 7.6 % slower than the specialist trained on that track (1 seed; a single run on each side, so no interval).
+- On campaign track campaign-05 the generalist (zero-shot, 1 seed) was 6.3 % slower than the specialist trained on that track (1 seed; a single run on each side, so no interval).
 
 **Main evaluation table** (SWS = success-weighted speed, 1.0 = as fast as the scripted driver on every track; 95 % two-level bootstrap intervals over seeds and tracks):
 

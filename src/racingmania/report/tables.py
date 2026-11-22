@@ -170,8 +170,15 @@ def cross_check_table(an) -> str:
     rows = [[c["label_b"], c["set"], f"{c['seeds_a']} / {c['seeds_b']}", num(c["iqm_a"]), num(c["iqm_b"]),
              num(c["prob_improvement"]), num(c["time_ratio_both_finished"]), num(c["n_both_finished"])]
             for c in an.cross_checks]
-    return md_table(["Generalist vs", "Set", "Seeds (generalist / other)", "IQM generalist", "IQM other",
-                     "P(generalist > other)", "Time ratio where both finish", "Tracks both finish"], rows)
+    table = md_table(["Generalist vs", "Set", "Seeds (generalist / other)", "IQM generalist", "IQM other",
+                      "P(generalist > other)", "Time ratio where both finish", "Tracks both finish"], rows)
+    if rows and any(c["seeds_a"] == 1 or c["seeds_b"] == 1 for c in an.cross_checks):
+        # With one run per agent each per-track Mann-Whitney share is 0, 1/2 or 1, so the average over tracks is a
+        # per-track win share (a sign-test statistic), not a comparison across independent training runs.
+        table += ("\n\nWith one seed on either side, P(generalist > other) is close to the share of tracks on which the "
+                  "generalist scores higher (ties, mostly tracks neither finishes, count one half); it says nothing about "
+                  "seed-to-seed variation. Time ratio: generalist time / other time, averaged over the tracks both finish.")
+    return table
 
 
 def seed_table(an) -> str:
@@ -272,15 +279,15 @@ def glossary_table(vehicle: dict | None = None) -> str:
         ["Reference time", "The scripted driver's finishing time on a track (it certifies that every kept track can be finished).", "The time to beat."],
         ["Generalist", "One PPO policy trained on the whole generated training pool.", "One driver that has practised on many tracks."],
         ["Specialist", "A policy trained on one campaign track only.", "A driver that has practised one track."],
-        ["Blind control", "The generalist recipe without the upcoming-track points in the input.", "The same driver, but it cannot see the road ahead."],
+        ["Blind control", "The generalist recipe trained with every upcoming-track point replaced by the nearest centreline point (a training-time input ablation).", "The same driver, but it cannot see the road ahead."],
         ["Training-set size ablation", "The generalist recipe trained on only N tracks (1 to 10,000).", "Does practising on more different tracks help on new ones?"],
         ["PPO / PQN", "Proximal Policy Optimization (Schulman et al. 2017) / Parallelised Q-Network (Gallici et al. 2025).", "Two ways to learn from trial and error."],
         ["Seed", "One independent training run with its own random initialisation and data order.", "Repeating the experiment to see how much luck matters."],
         ["Test / validation / out-of-range / campaign", "Disjoint track sets: test (never used for decisions), validation (development decisions), out-of-range (one generator factor beyond training), campaign (5 hand-made).", "Exams with tracks the driver never practised on."],
         ["Train-test gap", "Score on the run's own training tracks minus score on test tracks (Kirk et al. 2023).", "How much better it drives tracks it practised on."],
-        ["95 % CI (two-level bootstrap)", "Percentile interval from 10,000 resamples of seeds and tracks (Owen 2007).", "The range the true score plausibly lies in."],
+        ["95 % CI (two-level bootstrap)", "Percentile interval from 10,000 resamples of seeds and tracks (Owen 2007).", "A range of plausible values for the score, given the seeds and tracks drawn; with one seed it covers only the luck of which tracks were drawn, not seed-to-seed variation."],
         ["Holm correction", "Step-down adjustment of p-values for testing three hypotheses (Holm 1979).", "Guards against lucky findings when testing several things."],
-        ["Welch's t-test", "t-test without assuming equal variances, on per-seed scores (Colas et al. 2019).", "Is the difference between two groups of runs bigger than chance?"],
+        ["Welch's t-test", "t-test without assuming equal variances, on per-seed scores (Colas et al. 2019); for H2 and H3 the null hypothesis is a difference of at most 0.10, not zero.", "Is the difference between two groups of runs larger than 0.10, beyond what seed-to-seed luck explains?"],
         ["IQM, probability of improvement", "Interquartile mean; share of run pairs where one agent beats the other, averaged over tracks (Agarwal et al. 2021).", "Robust averages and head-to-head win rates."],
         ["Exploit flag", "Evaluator detector: speed above 1.2x top speed, or energy gained while coasting.", "A hint that the agent found a bug in the physics."],
         ["Physics version", "Tag of the simulator; v1 is the unmodified cannon-es port; patched versions fix exploits.", "Which rules of the game world were used."],
