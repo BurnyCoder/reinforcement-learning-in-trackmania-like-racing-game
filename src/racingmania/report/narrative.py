@@ -76,8 +76,11 @@ def headline(an, detail: bool = True) -> list[str]:
     for t in an.specialists:
         p = t.get("generalist_slower_pct")
         if p == p and p is not None:
-            out.append(f"On campaign track {t['track']} the generalist (zero-shot) was {abs(p):.1f} % "
-                       f"{'slower' if p > 0 else 'faster'} than the specialist trained on that track.")
+            n = {e["key"]: e["n_finished"] for e in t["entries"]}  # seeds averaged on each side (finished runs only)
+            ng, ns = n.get("generalist", 0), n.get("specialist-" + t["track"], 0)
+            single = "; a single run on each side, so no interval" if ng == 1 and ns == 1 else ""
+            out.append(f"On campaign track {t['track']} the generalist (zero-shot, {_seeds(ng)}) was {abs(p):.1f} % "
+                       f"{'slower' if p > 0 else 'faster'} than the specialist trained on that track ({_seeds(ns)}{single}).")
     return out
 
 
