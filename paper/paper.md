@@ -1,7 +1,7 @@
 ---
 title: "RacingMania: can one reinforcement-learning driver handle unseen tracks in a 3D time-attack racing game?"
 author: 'Libor "Burny" Burian'
-date: "2026-11-15"
+date: "2026-11-22"
 papersize: a4
 fontsize: 10pt
 header-includes: |
@@ -22,15 +22,15 @@ The generalist (PPO) (1 seed) finished 81.5 % of the 971 unseen test tracks (95 
 On the tracks it finished, it needed 0.67 times the scripted driver's time (32.7 % less time on average).
 Its finish rate was 8.1 percentage points more than the blind control (73.3 %, 1 seed); 45.0 percentage points more than the agent trained on 1 track (36.5 %, 1 seed); 1.6 percentage points more than the PQN (79.8 %, 1 seed); 81.5 percentage points more than the untrained network (0.0 %, 10 seeds); 81.5 percentage points more than the random actions (0.0 %, 3 seeds).
 Preliminary readings from the seeds so far, not the preregistered tests: consistent with H1 and H2 and H3. Training was paused on 2026-11-14; not done yet and postponed: one seed of every experiment (phase 2), imitation and hybrids (phase 4), hyperparameter sensitivity (phase 5), seed sensitivity (phase 6).
-On campaign track campaign-01 the generalist (zero-shot) was 2.8 % slower than the specialist trained on that track.
-On campaign track campaign-02 the generalist (zero-shot) was 5.5 % slower than the specialist trained on that track.
-On campaign track campaign-03 the generalist (zero-shot) was 3.3 % slower than the specialist trained on that track.
-On campaign track campaign-04 the generalist (zero-shot) was 7.6 % slower than the specialist trained on that track.
-On campaign track campaign-05 the generalist (zero-shot) was 6.3 % slower than the specialist trained on that track.
+On campaign track campaign-01 the generalist (zero-shot, 1 seed) was 2.8 % slower than the specialist trained on that track (1 seed; a single run on each side, so no interval).
+On campaign track campaign-02 the generalist (zero-shot, 1 seed) was 5.5 % slower than the specialist trained on that track (1 seed; a single run on each side, so no interval).
+On campaign track campaign-03 the generalist (zero-shot, 1 seed) was 3.3 % slower than the specialist trained on that track (1 seed; a single run on each side, so no interval).
+On campaign track campaign-04 the generalist (zero-shot, 1 seed) was 7.6 % slower than the specialist trained on that track (1 seed; a single run on each side, so no interval).
+On campaign track campaign-05 the generalist (zero-shot, 1 seed) was 6.3 % slower than the specialist trained on that track (1 seed; a single run on each side, so no interval).
 
 # Introduction
 
-TrackMania-style time-attack games ask for one thing: finish an unfamiliar track as fast as possible. RL agents have reached record level on fixed tracks ([Linesight](https://github.com/Linesight-RL/linesight); GT Sophy, [Wurman et al. 2022](https://doi.org/10.1038/s41586-021-04357-7); [Fuchs et al. 2021](https://arxiv.org/abs/2008.07971)), but evidence that one policy can drive *unseen* car tracks is thin: the Gran Turismo agent of Fuchs et al. got stuck in a hairpin on a new track, and the Learn-to-Race SAC baseline dropped from 31.1 % to 11.8 % track completion on an unseen track ([Herman et al. 2021](https://arxiv.org/abs/2103.11575)). The closest positive result is for drones: [Green et al. 2026](https://arxiv.org/abs/2606.27348) (a preprint) report 69.8 % success on 40 unseen tracks (31 generated, 9 human-designed; state-based policy) for a PPO generalist against 0.0 % for single-track policies, and [Song et al. 2021](https://arxiv.org/abs/2103.08624) 97.4 % on 1,000 randomly generated drone tracks.
+TrackMania-style time-attack games ask for one thing: finish an unfamiliar track as fast as possible. RL agents have reached record level on fixed tracks ([Linesight](https://github.com/Linesight-RL/linesight); GT Sophy, [Wurman et al. 2022](https://doi.org/10.1038/s41586-021-04357-7); [Fuchs et al. 2021](https://arxiv.org/abs/2008.07971)), but evidence that one policy can drive *unseen* car tracks is thin: the Gran Turismo agent of Fuchs et al. got stuck in a hairpin on a new track, and the Learn-to-Race SAC baseline dropped from 31.1 % to 11.8 % track completion on an unseen track, even after a one-hour adaptation period there ([Herman et al. 2021](https://arxiv.org/abs/2103.11575)). The closest positive result is for drones: [Green et al. 2026](https://arxiv.org/abs/2606.27348) (a preprint) report 69.8 % success on 40 unseen tracks (31 generated, 9 human-designed; state-based policy) for a PPO generalist against 0.0 % for single-track policies, and [Song et al. 2021](https://arxiv.org/abs/2103.08624) 97.4 % on 1,000 randomly generated drone tracks.
 
 This paper asks four questions, fixed in the preregistration ([`reports/preregistration.md`](https://github.com/BurnyCoder/reinforcement-learning-in-trackmania-like-racing-game/blob/main/reports/preregistration.md)) before any model was trained:
 
@@ -49,7 +49,7 @@ This paper asks four questions, fixed in the preregistration ([`reports/preregis
 
 **Minimum-time racing in fast simulators.** In drone racing, PPO with a gate-progress reward and random start states along the course is standard ([Song et al. 2021](https://arxiv.org/abs/2103.08624), [Song et al. 2023](https://arxiv.org/abs/2310.10943), [Kaufmann et al. 2023](https://pmc.ncbi.nlm.nih.gov/articles/PMC10468397/)). Green et al. 2026 trained a PPO generalist on generated tracks, compared it with per-track specialists (the generalist was 14.52 % slower) and fine-tuned specialists from it; their findings are our stated expectations.
 
-**Zero-shot generalisation.** [Kirk et al. 2023](https://arxiv.org/abs/2111.09794) describe testing on held-out seeds of a procedural generator as a weak test of generalisation and recommend controllable factors of variation, one test set per kind of generalisation, several training-set sizes and reporting test performance before the train-test gap; our out-of-range set and training-set-size ablation follow this. In Procgen ([Cobbe et al. 2020](https://arxiv.org/abs/1912.01588)) the generalisation gap closes at about 10,000 training levels, while in CoinRun ([Cobbe et al. 2019](https://arxiv.org/abs/1812.02341)) overfitting is still visible with 16,000; level-replay methods ([Jiang et al. 2021](https://arxiv.org/abs/2010.03934)) are our reserve curriculum.
+**Zero-shot generalisation.** [Kirk et al. 2023](https://arxiv.org/abs/2111.09794) call training on a procedural generator's whole distribution and testing on held-out seeds (their protocol C, which our generalist is close to) a weak test of generalisation, and recommend controllable factors of variation, several test sets and reporting test performance before the train-test gap; our out-of-range set follows this, and the training-set-size ablation varies what they call context efficiency. In Procgen ([Cobbe et al. 2020](https://arxiv.org/abs/1912.01588)) the generalisation gap closes at about 10,000 training levels, while in CoinRun ([Cobbe et al. 2019](https://arxiv.org/abs/1812.02341)) overfitting is still visible with 16,000; level-replay methods ([Jiang et al. 2021](https://arxiv.org/abs/2010.03934)) are our reserve curriculum.
 
 **Algorithms.** PPO ([Schulman et al. 2017](https://arxiv.org/abs/1707.06347)) adapted from CleanRL's GPU script ([Huang et al. 2022](https://jmlr.org/papers/v23/21-1342.html), [implementation details](https://iclr-blog-track.github.io/2022/03/25/ppo-implementation-details/)) with the massively parallel settings of [Rudin et al. 2021](https://arxiv.org/abs/2109.11978); PQN ([Gallici et al. 2025](https://arxiv.org/abs/2407.04811)) is the one alternative algorithm.
 
@@ -63,7 +63,7 @@ This paper asks four questions, fixed in the preregistration ([`reports/preregis
 
 ## Game and physics
 
-The browser game (three.js and the unmodified, vendored cannon-es 0.20.0) and the training simulator share one car model and one track format ([`docs/formats.md`](https://github.com/BurnyCoder/reinforcement-learning-in-trackmania-like-racing-game/blob/main/docs/formats.md)). Physics runs at a fixed tick of 0.01 s; the agent, like a keyboard player, acts once every 5 ticks. The training simulator is a line-by-line batched PyTorch port of `RaycastVehicle`, `WheelInfo`, `Body.integrate`, the step order of `World.internalStep` and cannon's ray-against-triangle test ([`docs/physics.md`](https://github.com/BurnyCoder/reinforcement-learning-in-trackmania-like-racing-game/blob/main/docs/physics.md)). Its tests compare it with the original running in Node.js: one tick from random states must agree to 1e-9 in 64-bit floats, and driven runs must stay close (Appendix C). Known quirks of the original (unlimited straight-line braking grip, single-ray wheels, no rolling resistance when coasting) are kept and mirrored, and listed as candidate exploits.
+The browser game (three.js and the unmodified, vendored cannon-es 0.20.0) and the training simulator share one car model and one track format ([`docs/formats.md`](https://github.com/BurnyCoder/reinforcement-learning-in-trackmania-like-racing-game/blob/main/docs/formats.md)). Physics runs at a fixed tick of 0.01 s; the agent, like a keyboard player, acts once every 5 ticks. The training simulator is a line-by-line batched PyTorch port of `RaycastVehicle`, `WheelInfo`, `Body.integrate`, the step order of `World.internalStep` and cannon's ray-against-triangle test ([`docs/physics.md`](https://github.com/BurnyCoder/reinforcement-learning-in-trackmania-like-racing-game/blob/main/docs/physics.md)). Its tests compare it with the original running in Node.js: one tick from random states must agree to 1e-9 in 64-bit floats, and driven runs must stay close (Appendix C). Known quirks of the original (braking is not limited by grip on a wheel whose side impulse is exactly zero, single-ray wheels, no rolling resistance under throttle) are kept and mirrored, and listed as candidate exploits; the game adds a small brake impulse when coasting, identically on both sides.
 
 A run ends *finished* when the car passes the last checkpoint, and *out* when the chassis falls more than 3 m below the track, no wheel touches the track for 5 s, or progress stalls for 2 s.
 
@@ -191,6 +191,8 @@ Cross-checks (exploratory, Agarwal et al. 2021):
 | Random actions | test | 1 / 3 | 1.464 | 0.000 | 0.907 | — | 0 |
 | Untrained network | test | 1 / 10 | 1.464 | 0.000 | 0.907 | — | 0 |
 
+With one seed on either side, P(generalist > other) is close to the share of tracks on which the generalist scores higher (ties, mostly tracks neither finishes, count one half); it says nothing about seed-to-seed variation. Time ratio: generalist time / other time, averaged over the tracks both finish.
+
 ## Training-set size
 
 | Training tracks | Configuration | Seeds | SWS [95 % CI] | Train - test gap [95 % CI] | Training score from |
@@ -293,19 +295,21 @@ The results so far, in plain words:
 - On the tracks it finished, it needed 0.67 times the scripted driver's time (32.7 % less time on average).
 - Its finish rate was 8.1 percentage points more than the blind control (73.3 %, 1 seed); 45.0 percentage points more than the agent trained on 1 track (36.5 %, 1 seed); 1.6 percentage points more than the PQN (79.8 %, 1 seed); 81.5 percentage points more than the untrained network (0.0 %, 10 seeds); 81.5 percentage points more than the random actions (0.0 %, 3 seeds).
 - Preliminary readings from the seeds so far, not the preregistered tests: consistent with H1 and H2 and H3. Training was paused on 2026-11-14; not done yet and postponed: one seed of every experiment (phase 2), imitation and hybrids (phase 4), hyperparameter sensitivity (phase 5), seed sensitivity (phase 6).
-- On campaign track campaign-01 the generalist (zero-shot) was 2.8 % slower than the specialist trained on that track.
-- On campaign track campaign-02 the generalist (zero-shot) was 5.5 % slower than the specialist trained on that track.
-- On campaign track campaign-03 the generalist (zero-shot) was 3.3 % slower than the specialist trained on that track.
-- On campaign track campaign-04 the generalist (zero-shot) was 7.6 % slower than the specialist trained on that track.
-- On campaign track campaign-05 the generalist (zero-shot) was 6.3 % slower than the specialist trained on that track.
+- On campaign track campaign-01 the generalist (zero-shot, 1 seed) was 2.8 % slower than the specialist trained on that track (1 seed; a single run on each side, so no interval).
+- On campaign track campaign-02 the generalist (zero-shot, 1 seed) was 5.5 % slower than the specialist trained on that track (1 seed; a single run on each side, so no interval).
+- On campaign track campaign-03 the generalist (zero-shot, 1 seed) was 3.3 % slower than the specialist trained on that track (1 seed; a single run on each side, so no interval).
+- On campaign track campaign-04 the generalist (zero-shot, 1 seed) was 7.6 % slower than the specialist trained on that track (1 seed; a single run on each side, so no interval).
+- On campaign track campaign-05 the generalist (zero-shot, 1 seed) was 6.3 % slower than the specialist trained on that track (1 seed; a single run on each side, so no interval).
 
 A written interpretation will be added once the confirmatory runs are complete.
 
 # Limitations
 
-- **The reference is not optimal.** SWS compares with a scripted driver tuned on validation tracks, not with the fastest possible time; SWS above 1.0 means "faster than this driver", not near-optimal. A CEM planner (4.5 s horizon) is a planning reference only: the generalist was faster on every track both finished.
-- **Filtered test sets.** Test tracks are kept only if the scripted driver finishes them, so the scripted driver scores about 1.0 by construction and the test distribution excludes tracks it cannot drive; an unfiltered test set is reported as a secondary check.
+- **The reference is not optimal.** SWS compares with a scripted driver tuned on validation tracks, not with the fastest possible time; SWS above 1.0 means "faster than this driver", not near-optimal. Its tuning rule put reliability first (the highest share of validation tracks finished at all three speed settings, then the lowest mean time among settings within one percentage point of that share), so it chose the most cautious cornering setting of its grid; H1 is a comparison with this cautious driver. A CEM planner (4.5 s horizon) is a planning reference only: the generalist was faster on every track both finished. Its horizon was re-chosen on validation tracks after a first configuration (1.5 s) failed on the campaign and 25 test tracks, so that test read informed the decision to re-tune it (`reports/plan.md`, amendments).
+- **Filtered test sets.** Test tracks are kept only if the scripted driver finishes them, so the scripted driver scores about 1.0 by construction and the test distribution excludes tracks it cannot drive; an unfiltered test set is reported as a secondary check. On its seeds the scripted driver finished every track at its normal speed (the tracks certification removed failed only at 0.9× or 1.1× speed), so that check does not cover tracks the scripted driver cannot drive at all; on such a track no agent could score, because it would have no reference time.
+- **Numerical noise.** Float32 rounding differences between GPU batch shapes decide the outcome on a few percent of tracks (`reports/notes/first-models.md`, amendments in `reports/plan.md`). The bootstrap intervals treat each track's outcome as fixed, so they do not include this evaluation noise; run-level differences of about one percentage point are within it.
 - **One simulator.** All numbers come from the PyTorch port of one engine; quirks of cannon-es's raycast vehicle may be learned and exploited, and transfer to other physics is not tested.
+- **What H2 and H3 measure.** H3 compares the generalist with a blind agent *trained* without the look-ahead, so it shows that the look-ahead input raises the score the recipe reaches; it is not an inference-time test of how the trained generalist uses that input (zeroing or shuffling the look-ahead of the trained policy would be one). H2 compares the two ends of the training-set-size range (1 track against the whole pool); the intermediate sizes (10 to 10,000 tracks) that would show the shape of the dependence are postponed.
 - **Track model.** A ribbon cannot represent loops, wall-rides or open terrain; the generator's ranges define what "unseen" means (held-out seeds of the same distribution, plus one out-of-range set).
 - **Seeds and tuning.** Once complete, five to ten seeds per configuration support the preregistered tests but not fine-grained comparisons (Colas et al. 2019 show that t-tests with so few seeds detect only large effects); so far every trained configuration has one seed; exploratory comparisons with one to three seeds are descriptive. The alternative algorithm gets the same tuning effort as PPO, which may still favour PPO, whose settings come from more prior work.
 - **Prior-work comparison.** The expectations taken from Green et al. 2026 come from a preprint with a different vehicle and task.
