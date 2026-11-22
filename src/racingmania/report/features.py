@@ -100,7 +100,7 @@ def load_features(results_dir: Path, repo: Path) -> dict[str, dict]:
             for name, v in f.items():
                 w.writerow({"track": name, **{k: (round(v[k], 4) if isinstance(v[k], float) else v[k]) for k in FEATURE_COLUMNS[1:]}})
         log.info("track features of %s cached in %s (%d tracks)", split, cache, len(f))
-        feats.update(f)
+        feats.update(_read_cache(cache))  # the rounded cached values, so the first build equals every later one
     return feats
 
 
