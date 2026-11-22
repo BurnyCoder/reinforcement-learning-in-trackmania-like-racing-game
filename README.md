@@ -150,7 +150,7 @@ The research question is whether one policy, trained with PPO ([Schulman et al. 
 ![Run matrix status by phase: runs evaluated and postponed](reports/figures/diagram_run_status.png)
 
 **Findings so far (preliminary, one or two seeds):**
-- Hypotheses, read preliminarily from one seed per configuration (not the preregistered tests): H1 (beats the scripted driver on unseen tracks), H2 (track diversity is what generalises) and H3 (uses the look-ahead) all point the predicted way, with intervals clear of their thresholds. These intervals reflect only which test tracks were sampled, not seed-to-seed variation. Seed sensitivity, hyperparameter sensitivity, imitation and hybrids, and the rest of phase 2 are not done. Numbers: [Results](#results).
+- Hypotheses, read preliminarily from one seed per configuration (not the preregistered tests): H1 (beats the scripted driver on unseen tracks), H2 (track diversity is what generalises) and H3 (uses the look-ahead) all point the predicted way, with intervals clear of their thresholds. These intervals reflect only which test tracks were sampled, not seed-to-seed variation. H3 compares with a blind agent trained without the look-ahead, so it shows that the look-ahead helps the recipe, not how the trained generalist uses it; H2 compares only the two ends of the training-set-size range (1 track and the whole pool). Seed sensitivity, hyperparameter sensitivity, imitation and hybrids, and the rest of phase 2 are not done. Numbers: [Results](#results).
 - Trained on a single generated track instead of the whole pool, the same recipe drives that one track fast but finishes only about a third of the unseen test tracks, against about four in five for the generalist (one seed each).
 - Specialists fine-tuned from the generalist on one campaign track become specialists: they finish far fewer unseen test tracks than the generalist they started from (one seed per track).
 - The generalist finishes most held-out test tracks it never saw and, on the tracks it finishes, is clearly faster than the scripted driver; its scores on unseen tracks and on its own training tracks are about the same. It also finishes all five hand-made campaign tracks, which were never used in training, a few percent slower than the specialist trained on each of them (see [Results](#results)).
@@ -169,6 +169,7 @@ The research question is whether one policy, trained with PPO ([Schulman et al. 
 | Notes for contributors and coding agents | [`AGENTS.md`](AGENTS.md) |
 | Preregistration | [`reports/preregistration.md`](reports/preregistration.md) |
 | Literature review (fact-checked, 286 claims) | [`reports/literature-review.md`](reports/literature-review.md), [`reports/source-ledger.md`](reports/source-ledger.md) |
+| Independent audit of methods, results and citations (2026-11-22) | [`reports/reviews/audit-2026-11-22.md`](reports/reviews/audit-2026-11-22.md) |
 | Physics specification | [`docs/physics.md`](docs/physics.md) |
 | File formats | [`docs/formats.md`](docs/formats.md) |
 
@@ -187,7 +188,7 @@ Prior work trained agents for TrackMania against the real game, sped up through 
 ## Results
 
 <!-- RESULTS:START -->
-_Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-15; 31 of 116 planned runs evaluated. Training was paused on 2026-11-14; the remaining runs are postponed. Full tables: [`reports/summary.md`](reports/summary.md)._
+_Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-22; 31 of 116 planned runs evaluated. Training was paused on 2026-11-14; the remaining runs are postponed. Full tables: [`reports/summary.md`](reports/summary.md)._
 
 - The generalist (PPO) (1 seed) finished 81.5 % of the 971 unseen test tracks (95 % CI 79.0 % to 83.8 %), with a success-weighted speed (SWS) of 1.214 [1.177, 1.250]; an SWS of 1.0 would mean finishing every track as fast as the scripted driver.
 - On the tracks it finished, it needed 0.67 times the scripted driver's time (32.7 % less time on average).
@@ -198,11 +199,11 @@ _Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-15;
 - H3: The agent uses the look-ahead (generalist vs blind control). SWS difference, paired on the same tracks, 0.204 [0.164, 0.245]; preliminary (1 seed per group, track resampling only): the interval lies above 0.1, consistent with H3.
 - Exploratory and not H2 itself: specialists trained on one hand-made track each finished 5.3 % to 45.2 % of the unseen test tracks (5 runs, seed 1), against 81.5 % for the generalist.
 - With one seed per configuration these intervals reflect only which tracks were sampled; seed-to-seed and checkpoint-to-checkpoint variation are not in them yet, so they can be too narrow. Training was paused on 2026-11-14; not done yet and postponed: one seed of every experiment (phase 2): 14 of 25 runs evaluated, the rest postponed; imitation and hybrids (phase 4): 0 of 5 runs evaluated, the rest postponed; hyperparameter sensitivity (phase 5): 0 of 4 runs evaluated, the rest postponed; seed sensitivity (phase 6): 0 of 65 runs evaluated, the rest postponed.
-- On campaign track campaign-01 the generalist (zero-shot) was 2.8 % slower than the specialist trained on that track.
-- On campaign track campaign-02 the generalist (zero-shot) was 5.5 % slower than the specialist trained on that track.
-- On campaign track campaign-03 the generalist (zero-shot) was 3.3 % slower than the specialist trained on that track.
-- On campaign track campaign-04 the generalist (zero-shot) was 7.6 % slower than the specialist trained on that track.
-- On campaign track campaign-05 the generalist (zero-shot) was 6.3 % slower than the specialist trained on that track.
+- On campaign track campaign-01 the generalist (zero-shot, 1 seed) was 2.8 % slower than the specialist trained on that track (1 seed; a single run on each side, so no interval).
+- On campaign track campaign-02 the generalist (zero-shot, 1 seed) was 5.5 % slower than the specialist trained on that track (1 seed; a single run on each side, so no interval).
+- On campaign track campaign-03 the generalist (zero-shot, 1 seed) was 3.3 % slower than the specialist trained on that track (1 seed; a single run on each side, so no interval).
+- On campaign track campaign-04 the generalist (zero-shot, 1 seed) was 7.6 % slower than the specialist trained on that track (1 seed; a single run on each side, so no interval).
+- On campaign track campaign-05 the generalist (zero-shot, 1 seed) was 6.3 % slower than the specialist trained on that track (1 seed; a single run on each side, so no interval).
 
 **Main evaluation table** (SWS = success-weighted speed, 1.0 = as fast as the scripted driver on every track; 95 % two-level bootstrap intervals over seeds and tracks):
 
@@ -248,7 +249,7 @@ _Results generated from `results/` by `scripts/07_make_report.py` on 2026-11-15;
 - **Car.** A chassis box (500 kg, 4.7 × 1.1 × 2.0 m) on four spring-damper suspension rays; tyre forces are cannon-es's side-friction and rolling-friction impulses limited by a friction ellipse (sideways grip up to `side_acceleration` × `friction_slip` = 3 × 1.5 times the wheel load, about 4.5 g on flat ground). The engine force fades to zero at the top speed (45 m/s), braking is an impulse per tick, and steering is rate-limited and loses authority with speed. All numbers live in [`web/assets/vehicle.json`](web/assets/vehicle.json), read by both the game and the port.
 - **Tick.** 100 physics ticks per second; one action is held for 5 ticks. One tick is gravity → velocity damping → `RaycastVehicle.updateVehicle` → semi-implicit Euler integration, exactly as in cannon-es ([`docs/physics.md`](docs/physics.md)).
 - **Rules.** Checkpoints in order; a run is *out* when the car falls 3 m below the road, stays airborne for 5 s, or makes no 0.5 m of progress in 2 s. Players respawn at the last checkpoint with the clock running; for the agent an out ends the episode.
-- **Known quirks** of cannon-es (unlimited straight-line braking grip, no rolling resistance under throttle (the game adds a small brake impulse when coasting), one ray per wheel, and a wheel touching a surface at a steep angle pushing up to 10× harder without damping) are left in on purpose and reported if agents exploit them ([`docs/physics.md`](docs/physics.md)), the way TrackMania players use "uberbugs" ([TAS Exchange FAQ](https://tmtas.exchange/faq)) and OpenAI's hide-and-seek agents learned box surfing ([Baker et al. 2020](https://arxiv.org/abs/1909.07528)).
+- **Known quirks** of cannon-es (braking not limited by grip on a wheel whose side impulse is exactly zero, no rolling resistance under throttle (the game adds a small brake impulse when coasting), one ray per wheel, and a wheel touching a surface at a steep angle pushing up to 10× harder without damping) are left in on purpose and reported if agents exploit them ([`docs/physics.md`](docs/physics.md)), the way TrackMania players use "uberbugs" ([TAS Exchange FAQ](https://tmtas.exchange/faq)) and OpenAI's hide-and-seek agents learned box surfing ([Baker et al. 2020](https://arxiv.org/abs/1909.07528)).
 
 ### Tracks
 
@@ -260,7 +261,7 @@ A track is a ribbon in the sense of [Perantoni & Limebeer 2015](https://doi.org/
 | Validation | 1,000,000–1,000,199 | every development decision |
 | Test | 2,000,000–2,000,999 | reported scores only; each read is logged |
 | Out-of-range test | 3,000,000–3,000,199 | one factor beyond the training range |
-| Unfiltered test | 2,000,000–2,000,199, without certification | secondary check that the certification filter does not flatter the score |
+| Unfiltered test | 2,000,000–2,000,199, without certification | secondary check that the certification filter does not flatter the score; the scripted driver finished every one of these tracks at its normal speed (the ones certification removed failed only at 0.9× or 1.1×), so this set does not contain tracks the scripted driver cannot drive at all |
 | Campaign | 5 hand-made | the game, the specialist experiment, and a hand-made set no generalist trains on |
 
 A candidate track enters a set only if the scripted driver finishes it at 0.9, 1.0 and 1.1 × its target speeds; the time at 1.0 is the track's reference time.
@@ -310,7 +311,7 @@ The scripted driver ([`src/racingmania/drivers/scripted.py`](src/racingmania/dri
 2. **Follows a speed profile** planned once per track, in the style of racing-line tools such as [TUM's trajectory_planning_helpers](https://github.com/TUMFTM/trajectory_planning_helpers). The target speed at each 2 m sample is the fastest cornering speed √(a_lat / κ) with a_lat = 6 m/s², capped at the car's top speed of 45 m/s and at 25 m/s from 30 m before a jump to its end. A backward pass then limits braking to 8 m/s², so it slows down early enough before corners.
 3. **Works the pedal**: gas below the target speed, brake when more than 1.5 m/s above it, coast in between.
 
-Only two parameters were tuned, on the validation tracks and before any training: a_lat and the look-ahead gain ([`results/tracks/scripted_tuning.json`](results/tracks/scripted_tuning.json)). The chosen a_lat = 6 m/s² is the lowest value of the grid, because faster settings finished fewer tracks at all three certification speeds (0.9, 1.0 and 1.1 × the profile). It is therefore a cautious driver, which is why the trained agents are much faster than it. Its time on a track is that track's reference time, so it scores about 1.0 by construction: in its official evaluation, run in different GPU batches than certification, float32 rounding made it fall on 2 of the 971 certified test tracks and 1 of the 1,000 training-sample tracks (`results/baselines/scripted/seed0/eval_*.csv`). A generated track is kept only if it finishes at all three speeds.
+Only two parameters were tuned, on the validation tracks and before any training: a_lat and the look-ahead gain ([`results/tracks/scripted_tuning.json`](results/tracks/scripted_tuning.json)). The tuning rule puts reliability first: the highest share of validation tracks finished at all three certification speeds (0.9, 1.0 and 1.1 × the profile), then, among settings within one percentage point of that share, the lowest mean time ([`src/racingmania/tracks/validate.py`](src/racingmania/tracks/validate.py), `tune_scripted`). The chosen a_lat = 6 m/s² is the lowest value of the grid, because faster settings finished fewer tracks at all three speeds. It is therefore a cautious driver, which is why the trained agents are much faster than it. Its time on a track is that track's reference time, so it scores about 1.0 by construction: in its official evaluation, run in different GPU batches than certification, float32 rounding made it fall on 2 of the 971 certified test tracks and 1 of the 1,000 training-sample tracks (`results/baselines/scripted/seed0/eval_*.csv`). A generated track is kept only if it finishes at all three speeds.
 
 ### Evaluation
 
