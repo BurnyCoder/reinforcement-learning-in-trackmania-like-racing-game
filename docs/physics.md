@@ -56,7 +56,7 @@ For each wheel `w` (all quantities in world space unless noted):
 
 ## Grip limit
 
-The friction limit above is an ellipse, not a circle: a wheel slides only when `(forwardImpulse · 0.5 / forwardAcceleration)² + (side / sideAcceleration)² > maximp²` (`web/vendor/cannon-es/cannon-es.js`, `updateFriction`). With `side_acceleration` = 3 and `friction_slip` = 1.5 (`web/assets/vehicle.json`), a wheel's side impulse can reach 3 × 1.5 = 4.5 times its suspension impulse before it slides, so on flat ground, with the wheels carrying the car's weight, the sideways grip allows up to about 4.5 g (≈ 44 m/s²). The side impulse itself removes only 20 % of the sideways contact velocity per tick (`resolveSingleBilateral` above), so this is an upper bound. The scripted driver plans corners for 6 m/s² (`results/tracks/scripted_tuning.json`), far below it, which leaves room for the faster cornering of the trained agents. Neither exploit detector looks at cornering grip.
+The friction limit above is an ellipse, not a circle: a wheel slides only when `(forwardImpulse · 0.5 / forwardAcceleration)² + (side / sideAcceleration)² > maximp²` (`web/vendor/cannon-es/cannon-es.js`, `updateFriction`). With `side_acceleration` = 3 and `friction_slip` = 1.5 (`web/assets/vehicle.json`), a wheel's side impulse can reach 3 × 1.5 = 4.5 times its suspension impulse before it slides, so on flat ground, with the wheels carrying the car's weight, the sideways grip allows up to about 4.5 g (≈ 44 m/s²). Below that limit each wheel's side impulse is 0.2 × its sideways contact velocity × the chassis mass per tick (`resolveSingleBilateral` above), so the 4.5 g is a cap that is reached only with enough sideways slip (about 0.55 m/s at each of four equally loaded wheels: 0.2 · v · m = 4.5 · m g/4 · dt), not a cornering acceleration the car always has. The scripted driver plans corners for 6 m/s² (`results/tracks/scripted_tuning.json`), far below it, which leaves room for the faster cornering of the trained agents. Neither exploit detector looks at cornering grip.
 
 ## Triangle mesh details that affect parity
 
@@ -69,7 +69,7 @@ The friction limit above is an ellipse, not a circle: a wheel slides only when `
 
 | Quirk | Cause |
 |---|---|
-| Straight-line braking is not limited by grip | The skid scaling runs only for wheels with `sideImpulse !== 0` |
+| Braking is not limited by grip on a wheel whose side impulse is exactly zero | The skid scaling runs only for wheels with `sideImpulse !== 0` (`updateFriction`). In practice it hardly matters: the configured brake (`brake_impulse` 15 N·s per wheel per tick, at most 4 × 15 / (500 kg × 0.01 s) = 12 m/s², about 1.2 g) stays below the forward grip limit on flat ground (a forward impulse of up to 2 × `friction_slip` = 3 times the suspension impulse, about 3 g), so only lightly loaded wheels with exactly zero side impulse could brake beyond grip |
 | A wheel can sink into a ramp lip, and the suspension can bottom out on hard landings | One ray per wheel; `suspensionLength` is clamped at `restLength − maxSuspensionTravel` and the chassis itself touches nothing |
 | No rolling resistance or engine braking under throttle | `maxImpulse = brake` is zero when the brake is off, so with gas held only the 1 % per second velocity damping slows the car. The game's controls apply `coast_brake_impulse` (1 N·s per wheel per tick) while coasting as a small rolling resistance (`web/js/core/controls.js`, `src/racingmania/sim/controls.py`) |
 | One sliding wheel reduces grip on all wheels | The vehicle-wide `sliding` flag |
